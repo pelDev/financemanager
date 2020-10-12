@@ -21,6 +21,8 @@ import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
 
+    // home screen
+
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
