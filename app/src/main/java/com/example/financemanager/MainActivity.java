@@ -9,6 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -27,6 +29,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     // home screen
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerExpenditure;
     private LinearLayoutManager mExpenditureLayoutManager;
     private ExpenditureRecyclerAdapter mExpenditureRecyclerAdapter;
+    private ArrayList<BarEntry> mDataValue1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 //        setSupportActionBar(toolbar);
 
         mDbOpenHelper = new ExpenditureOpenHelper(this);
+        mDataValue1 = new ArrayList<>();
 
         Window window = MainActivity.this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -79,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         displayExpenditures();
     }
 
+
+
     private void displayExpenditures() {
         mRecyclerExpenditure.setLayoutManager(mExpenditureLayoutManager);
         mRecyclerExpenditure.setAdapter(mExpenditureRecyclerAdapter);
@@ -110,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME,
                 ExpenditureInfoEntry.COLUMN_EXPENDITURE_TIMESTAMP,
                 ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT,
+                ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID,
                 ExpenditureInfoEntry._ID
         };
         //String noteOrderBy = CourseInfoEntry.COLUMN_COURSE_TITLE + ", " + NoteInfoEntry.COLUMN_NOTE_TITLE;

@@ -2,9 +2,11 @@ package com.example.financemanager;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
     private int mExpenditureNamePos;
     private int mExpenditureTimestampPos;
     private int mExpenditureAmountPos;
+    private int mExpenditureIdPos;
 
     public ExpenditureRecyclerAdapter(Context context, Cursor cursor) {
         mContext = context;
@@ -43,6 +46,8 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             mExpenditureTimestampPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_TIMESTAMP);
             // get the column position for expenditure amount from table
             mExpenditureAmountPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
+            // get column position for expenditure id
+            mExpenditureIdPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID);
             // get column position for the unique id from table
             mIdPos = mCursor.getColumnIndex(ExpenditureInfoEntry._ID);
         }
@@ -72,11 +77,19 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         String expenditureName = mCursor.getString(mExpenditureNamePos);
         String expenditureTimestamp = mCursor.getString(mExpenditureTimestampPos);
         String expenditureAmount = Integer.toString(mCursor.getInt(mExpenditureAmountPos));
+        String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
 
         holder.mTextExpenditureName.setText(expenditureName);
         holder.mTextExpenditureTimestamp.setText(expenditureTimestamp);
         holder.mTextExpenditureAmount.setText(expenditureAmount);
+        if (expenditureId.equals("shelter")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_housing);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#393ab5"));
+        } else if (expenditureId.equals("food")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_food);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+        }
         holder.mId = id;
     }
 
@@ -90,6 +103,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         public final TextView mTextExpenditureName;
         public final TextView mTextExpenditureAmount;
         public final TextView mTextExpenditureTimestamp;
+        public final ImageView mExpenditureIcon;
         public int mId;
 
         public ViewHolder(@NonNull View itemView) {
@@ -97,6 +111,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             mTextExpenditureName = (TextView) itemView.findViewById(R.id.textViewF);
             mTextExpenditureAmount = (TextView) itemView.findViewById(R.id.textView_amount);
             mTextExpenditureTimestamp = (TextView) itemView.findViewById(R.id.textViewG);
+            mExpenditureIcon = (ImageView) itemView.findViewById(R.id.expenditure_icon);
 //            itemView.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
