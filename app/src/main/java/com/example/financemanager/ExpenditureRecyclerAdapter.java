@@ -22,9 +22,14 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
     private final LayoutInflater mLayoutInflater;
     private int mIdPos;
     private int mExpenditureNamePos;
-    private int mExpenditureTimestampPos;
+    private int mExpenditureDayPos;
     private int mExpenditureAmountPos;
     private int mExpenditureIdPos;
+    private int mExpenditureMonthPos;
+    private int mExpenditureYearPos;
+    private String mExpenditureDay;
+    private String mExpenditureMonth;
+    private String mExpenditureYear;
 
     public ExpenditureRecyclerAdapter(Context context, Cursor cursor) {
         mContext = context;
@@ -42,8 +47,12 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
 
             // get the column position for expenditure name in the table
             mExpenditureNamePos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME);
-            // get the column position for expenditure timestamp from table
-            mExpenditureTimestampPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_TIMESTAMP);
+            // get the column position for expenditure day from table
+            mExpenditureDayPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY);
+            // get the column position for expenditure month from table
+            mExpenditureMonthPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH);
+            // get the column position for expenditure year from table
+            mExpenditureYearPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR);
             // get the column position for expenditure amount from table
             mExpenditureAmountPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
             // get column position for expenditure id
@@ -75,13 +84,15 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         mCursor.moveToPosition(position);
         // get value for course, title and id
         String expenditureName = mCursor.getString(mExpenditureNamePos);
-        String expenditureTimestamp = mCursor.getString(mExpenditureTimestampPos);
+        mExpenditureDay = mCursor.getString(mExpenditureDayPos);
+        mExpenditureMonth = mCursor.getString(mExpenditureMonthPos);
+        mExpenditureYear = mCursor.getString(mExpenditureYearPos);
         String expenditureAmount = Integer.toString(mCursor.getInt(mExpenditureAmountPos));
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
 
         holder.mTextExpenditureName.setText(expenditureName);
-        holder.mTextExpenditureTimestamp.setText(expenditureTimestamp);
+        holder.mTextExpenditureTimestamp.setText(expenditureTimestamp());
         holder.mTextExpenditureAmount.setText(expenditureAmount);
         if (expenditureId.equals("shelter")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_housing);
@@ -91,6 +102,10 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
         }
         holder.mId = id;
+    }
+
+    private String expenditureTimestamp() {
+        return mExpenditureDay + ", " + mExpenditureMonth + " " + mExpenditureYear;
     }
 
     @Override

@@ -1,19 +1,21 @@
 package com.example.financemanager;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public final class ExpenditureInfo  {
 
     private String mExpenditureName;
-    private String mExpenditureTimestamp;
+    private String mExpenditureDay;
+    private String mExpenditureMonth;
+    private String mExpenditureYear;
     private String mExpenditureId;
     private int mExpenditureAmount;
     private int mId;
 
-    public ExpenditureInfo(String expenditureName, String expenditureTimestamp, String expenditureId, int expenditureAmount, int id) {
+    public ExpenditureInfo(String expenditureName, String expenditureDay,
+                           String expenditureMonth, String expenditureYear , String expenditureId, int expenditureAmount, int id) {
         mExpenditureName = expenditureName;
-        mExpenditureTimestamp = expenditureTimestamp;
+        mExpenditureDay = expenditureDay;
+        mExpenditureMonth = expenditureMonth;
+        mExpenditureYear = expenditureYear;
         mExpenditureId = expenditureId;
         mExpenditureAmount = expenditureAmount;
         mId = id;
@@ -34,12 +36,12 @@ public final class ExpenditureInfo  {
         mExpenditureName = expenditureName;
     }
 
-    public String getExpenditureTimestamp() {
-        return mExpenditureTimestamp;
+    public String getExpenditureDay() {
+        return mExpenditureDay;
     }
 
-    public void setExpenditureTimestamp(String expenditureTimestamp) {
-        mExpenditureTimestamp = expenditureTimestamp;
+    public void setExpenditureDay(String expenditureDay) {
+        mExpenditureDay = expenditureDay;
     }
 
 //    private String getCompareKey() {
@@ -101,5 +103,29 @@ public final class ExpenditureInfo  {
 
     public void setExpenditureAmount(int expenditureAmount) {
         mExpenditureAmount = expenditureAmount;
+    }
+
+    public String getExpenditureId() {
+        return mExpenditureId;
+    }
+
+    public void setExpenditureId(String expenditureId) {
+        mExpenditureId = expenditureId;
+    }
+
+    public String getExpenditureMonth() {
+        return mExpenditureMonth;
+    }
+
+    public void setExpenditureMonth(String expenditureMonth) {
+        mExpenditureMonth = expenditureMonth;
+    }
+
+    public String getExpenditureYear() {
+        return mExpenditureYear;
+    }
+
+    public void setExpenditureYear(String expenditureYear) {
+        mExpenditureYear = expenditureYear;
     }
 }

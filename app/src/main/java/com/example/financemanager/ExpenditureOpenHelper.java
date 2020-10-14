@@ -7,10 +7,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
 
 public class ExpenditureOpenHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "Expenditure.db";
+    public static final String DATABASE_NAME = "FinanceManager.db";
     public static final int DATABASE_VERSION = 1;
 
     public ExpenditureOpenHelper(@Nullable Context context) {
@@ -21,9 +22,12 @@ public class ExpenditureOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ExpenditureInfoEntry.SQL_CREATE_TABLE);
         db.execSQL(ExpenditureInfoEntry.SQL_CREATE_INDEX1);
+        db.execSQL(IncomeInfoEntry.SQL_CREATE_TABLE);
+        db.execSQL(IncomeInfoEntry.SQL_CREATE_INDEX1);
 
         DatabaseDataWorker worker = new DatabaseDataWorker(db);
-        worker.insertSampleNotes();
+        worker.insertSampleExpenditures();
+        worker.insertSampleIncome();
     }
 
     @Override

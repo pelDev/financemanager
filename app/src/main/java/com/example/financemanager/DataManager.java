@@ -29,7 +29,9 @@ public class DataManager {
 
         final String[] noteColumns = {
                 ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME,
-                ExpenditureInfoEntry.COLUMN_EXPENDITURE_TIMESTAMP,
+                ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY,
+                ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH,
+                ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR,
                 ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT,
                 ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID,
                 ExpenditureInfoEntry._ID};
@@ -40,7 +42,9 @@ public class DataManager {
 
     private static void loadExpendituresFromDatabase(Cursor cursor) {
         int expenditureNamePos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME);
-        int expenditureTimestampPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_TIMESTAMP);
+        int expenditureDayPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY);
+        int expenditureMonthPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH);
+        int expenditureYearPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR);
         int expenditureAmountPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
         int expenditureIdPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID);
         int idPosition = cursor.getColumnIndex(ExpenditureInfoEntry._ID);
@@ -49,13 +53,16 @@ public class DataManager {
         dm.mExpenditures.clear();
         while (cursor.moveToNext()) {
             String expenditureName = cursor.getString(expenditureNamePos);
-            String expenditureTimestamp = cursor.getString(expenditureTimestampPos);
+            String expenditureDay = cursor.getString(expenditureDayPos);
+            String expenditureMonth = cursor.getString(expenditureMonthPos);
+            String expenditureYear = cursor.getString(expenditureYearPos);
             String expenditureId = cursor.getString(expenditureIdPos);
             int expenditureAmount = cursor.getInt(expenditureAmountPos);
             int id = cursor.getInt(idPosition);
 
 
-            ExpenditureInfo expenditure = new ExpenditureInfo(expenditureName, expenditureTimestamp, expenditureId, expenditureAmount, id);
+            ExpenditureInfo expenditure = new ExpenditureInfo(expenditureName, expenditureDay
+                    , expenditureMonth, expenditureYear, expenditureId, expenditureAmount, id);
 
             dm.mExpenditures.add(expenditure);
         }
