@@ -42,7 +42,7 @@ public class DatabaseDataWorker {
 
         insertIncome("10000", "2", "January", "2020", "Side Job");
 
-        insertIncome("5000", "15", "January", "2020", "Gift");
+        insertIncome("15000", "15", "January", "2020", "Gift");
     }
 
     private void insertIncome(String income_amount, String income_day, String income_month, String income_year, String incomeSource) {

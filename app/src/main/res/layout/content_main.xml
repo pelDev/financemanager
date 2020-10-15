@@ -66,7 +66,7 @@
 
 
     <View
-        android:id="@+id/view2"
+        android:id="@+id/expenditure_bar"
         android:layout_width="0dp"
         android:layout_height="100dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -82,10 +82,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@android:color/black"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
-        app:layout_constraintEnd_toEndOf="@+id/view2"
-        app:layout_constraintStart_toStartOf="@+id/view2"
-        app:layout_constraintTop_toTopOf="@+id/view2" />
+        app:layout_constraintBottom_toBottomOf="@+id/expenditure_bar"
+        app:layout_constraintEnd_toEndOf="@+id/expenditure_bar"
+        app:layout_constraintStart_toStartOf="@+id/expenditure_bar"
+        app:layout_constraintTop_toTopOf="@+id/expenditure_bar" />
 
     <TextView
         android:id="@+id/textView9"
@@ -107,7 +107,7 @@
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2">
+        app:layout_constraintTop_toBottomOf="@+id/expenditure_bar">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardA"
@@ -267,14 +267,15 @@
 
 
     <include
-        layout="@layout/chart"
+        layout="@layout/chart_report"
         android:id="@+id/chart_include"
         android:layout_width="0dp"
         android:layout_height="120dp"
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/textViewE"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_expenditure"

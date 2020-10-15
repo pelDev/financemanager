@@ -1,16 +1,22 @@
 package com.example.financemanager;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.Menu;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
@@ -19,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -49,7 +56,16 @@ public class MainActivity extends AppCompatActivity {
     private int mExpenditureMonthPos;
     private View mIncomeBar;
     private int mTotalIncome = 0;
-    private ViewGroup.LayoutParams mIncomeBarLayoutParamstParams;
+    private View mExpenditureBar;
+    private LinearLayout.LayoutParams mIncomeBarLp;
+    private LinearLayout.LayoutParams mExpenditureBarLp;
+    private View mRightSpacer;
+    private LinearLayout.LayoutParams mRSLp;
+    private LinearLayout.LayoutParams mMSLp;
+    private LinearLayout.LayoutParams mLSLp;
+    private View mLeftSpacer;
+    private View mMiddleSpacer;
+    private Animation mAnimSlideUp;
 
 
     @Override
@@ -61,8 +77,26 @@ public class MainActivity extends AppCompatActivity {
 
         mDbOpenHelper = new ExpenditureOpenHelper(this);
         mDataValue1 = new ArrayList<>();
+        mExpenditureBar = (View) findViewById(R.id.view2);
+        mExpenditureBarLp = (LinearLayout.LayoutParams) mExpenditureBar.getLayoutParams();
         mIncomeBar = (View) findViewById(R.id.view);
-        mIncomeBarLayoutParamstParams = (ViewGroup.LayoutParams) mIncomeBar.getLayoutParams();
+        mIncomeBarLp = (LinearLayout.LayoutParams) mIncomeBar.getLayoutParams();
+        mRightSpacer = (View) findViewById(R.id.view7);
+        mRSLp = (LinearLayout.LayoutParams) mRightSpacer.getLayoutParams();
+        mMiddleSpacer = (View) findViewById(R.id.view6);
+        mMSLp = (LinearLayout.LayoutParams) mMiddleSpacer.getLayoutParams();
+        mLeftSpacer = (View) findViewById(R.id.view8);
+        mLSLp = (LinearLayout.LayoutParams) mLeftSpacer.getLayoutParams();
+        mAnimSlideUp = AnimationUtils.loadAnimation(this, R.anim.scale);
+
+        mRSLp.width = (int) Math.round(getScreenWidth() * 0.1);
+        mRightSpacer.setLayoutParams(mRSLp);
+
+        mMSLp.width = (int) Math.round(getScreenWidth() * 0.1);
+        mMiddleSpacer.setLayoutParams(mMSLp);
+
+        mLSLp.width = (int) Math.round(getScreenWidth() * 0.1);
+        mLeftSpacer.setLayoutParams(mLSLp);
 
         Window window = MainActivity.this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -87,6 +121,10 @@ public class MainActivity extends AppCompatActivity {
         initializeDisplayContent();
     }
 
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
     private void initializeDisplayContent() {
         DataManager.loadFromDatabase(mDbOpenHelper);
         mRecyclerExpenditure = (RecyclerView) findViewById(R.id.list_expenditure);
@@ -107,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mTotalIncome = 0;
         // get all sets of data from database
         loadExpenditureInBackground();
     }
@@ -116,8 +155,8 @@ public class MainActivity extends AppCompatActivity {
             @Nullable
             @Override
             public Object loadInBackground() {
-                loadExpenditures();
                 loadIncomes();
+                loadExpenditures();
                 return null;
             }
         };
@@ -160,12 +199,37 @@ public class MainActivity extends AppCompatActivity {
 
         int totalExpenditure = 0;
         mExpenditureCursorForTotal.moveToFirst();
-        while (mExpenditureCursorForTotal.isAfterLast() == false) {
+        while (!mExpenditureCursorForTotal.isAfterLast()) {
             int amount = mExpenditureCursorForTotal.getInt(mExpenditureAmountPos);
             totalExpenditure = totalExpenditure + amount;
             mExpenditureCursorForTotal.moveToNext();
         }
-        Log.i("Income", "Total Expenditure " + totalExpenditure);
+
+        float barHeight = (((float) totalExpenditure / (float) mTotalIncome) * 100f);
+        Log.i("Income", "Bar Height In dp " + Math.round(barHeight) );
+        if (barHeight > 0 && barHeight <= 100) {
+            Log.i("Income", "Total Income for calculating Expenditure " + (float) mTotalIncome );
+            int height = dpToPx(Math.round(barHeight));
+            Log.i("Income", "Bar Height In px " + height );
+            setExpenditureBar(height);
+        } else if (barHeight > 100) {
+            updateExpenditure();
+        }
+        Log.i("Income", "Total Expenditure " + (float) totalExpenditure);
+    }
+
+    private void updateExpenditure() {
+        mExpenditureBarLp.width = (int)  Math.round(getScreenWidth() * 0.35);
+        mExpenditureBarLp.height = dpToPx(100);
+        mExpenditureBar.setLayoutParams(mExpenditureBarLp);
+        mExpenditureBar.setBackgroundColor(Color.rgb(255, 0, 0));
+    }
+
+    private void setExpenditureBar(int height) {
+        mExpenditureBarLp.width = (int)  Math.round(getScreenWidth() * 0.35);
+        mExpenditureBarLp.height = height;
+        mExpenditureBar.setLayoutParams(mExpenditureBarLp);
+        mExpenditureBar.startAnimation(mAnimSlideUp);
     }
 
     private void populateExpenditureColumnPosition() {
@@ -209,22 +273,33 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.open();
     }
 
+    // get total amount of income received in a particular month from the income table.
     public void getIncomeTotal() {
         populateIncomeColumnPosition();
 
+        // move cursor to the first row
         mIncomeCursor.moveToFirst();
+
+        //check if the cursor has passed the last row of the table
         while (mIncomeCursor.isAfterLast() == false) {
             int amount = mIncomeCursor.getInt(mIncomeAmountPos);
             mTotalIncome = mTotalIncome + amount;
             mIncomeCursor.moveToNext();
         }
         if(mTotalIncome > 0) {
-            mIncomeBarLayoutParamstParams.height = dpToPx(10);
-            mIncomeBar.setLayoutParams(mIncomeBarLayoutParamstParams);
+            setIncomeBar();
         }
         Log.i("Income", "Total Income" + mTotalIncome);
     }
 
+    private void setIncomeBar() {
+        mIncomeBarLp.width = (int) Math.round(getScreenWidth() * 0.35);
+        mIncomeBarLp.height = dpToPx(100);
+        mIncomeBar.setLayoutParams(mIncomeBarLp);
+        mIncomeBar.startAnimation(mAnimSlideUp);
+    }
+
+    // get column positions from the income table
     private void populateIncomeColumnPosition() {
         if(mIncomeCursor != null) {
             // get column position for income_amount in the table
@@ -238,6 +313,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // convert dp tp px
     public final int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
