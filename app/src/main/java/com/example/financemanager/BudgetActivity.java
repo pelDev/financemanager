@@ -17,7 +17,7 @@ public class BudgetActivity extends AppCompatActivity {
         Window window = BudgetActivity.this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
 
     }
