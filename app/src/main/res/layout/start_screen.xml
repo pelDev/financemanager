@@ -35,13 +35,15 @@
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
         android:background="@drawable/btn_login"
         android:text="login"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
+        android:onClick="goToLogin"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/textView7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
     <TextView
@@ -67,6 +69,7 @@
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:onClick="goToRegister"
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
