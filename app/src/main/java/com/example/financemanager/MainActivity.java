@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
-import com.github.mikephil.charting.data.BarEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 

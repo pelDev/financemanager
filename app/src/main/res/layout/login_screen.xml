@@ -80,6 +80,7 @@
             android:background="@drawable/btn_login"
             android:text="Login"
             android:textColor="#FFFFFF"
+            android:onClick="moveToMainActivity"
             android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/tv_password_reset"
             app:layout_constraintStart_toStartOf="@+id/et_password_layout"

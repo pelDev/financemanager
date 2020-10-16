@@ -54,6 +54,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:layout_constraintStart_toStartOf="parent"
+    android:background="@color/bckGround"
     app:layout_constraintTop_toBottomOf="@+id/home_screen_nav"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
@@ -61,7 +62,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout
 
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/bckGround">
 
 
 
