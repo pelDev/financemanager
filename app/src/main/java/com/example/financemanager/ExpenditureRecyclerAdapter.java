@@ -1,6 +1,7 @@
 package com.example.financemanager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -94,12 +95,18 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         holder.mTextExpenditureName.setText(expenditureName);
         holder.mTextExpenditureTimestamp.setText(expenditureTimestamp());
         holder.mTextExpenditureAmount.setText(expenditureAmount);
-        if (expenditureId.equals("shelter")) {
+        if (expenditureId.equals("housing")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_housing);
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#393ab5"));
         } else if (expenditureId.equals("food")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_food);
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+        } else if (expenditureId.equals("recreation")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_recreation);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
+        } else if (expenditureId.equals("education")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_education);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#FF0000"));
         }
         holder.mId = id;
     }
@@ -127,14 +134,14 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             mTextExpenditureAmount = (TextView) itemView.findViewById(R.id.textView_amount);
             mTextExpenditureTimestamp = (TextView) itemView.findViewById(R.id.textViewG);
             mExpenditureIcon = (ImageView) itemView.findViewById(R.id.expenditure_icon);
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(mContext, NoteActivity.class);
-//                    intent.putExtra(NoteActivity.NOTE_ID, mId);
-//                    mContext.startActivity(intent);
-//                }
-//            });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, AddExpenseActivity.class);
+                    intent.putExtra(AddExpenseActivity.EXPENDITURE_ID, mId);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 }

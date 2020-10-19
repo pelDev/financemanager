@@ -7,16 +7,19 @@ public final class ExpenditureInfo  {
     private String mExpenditureMonth;
     private String mExpenditureYear;
     private String mExpenditureId;
+    private String mExpenditureDescription;
     private int mExpenditureAmount;
     private int mId;
 
     public ExpenditureInfo(String expenditureName, String expenditureDay,
-                           String expenditureMonth, String expenditureYear , String expenditureId, int expenditureAmount, int id) {
+                           String expenditureMonth, String expenditureYear , String expenditureId,
+                           String expenditureDescription ,int expenditureAmount, int id) {
         mExpenditureName = expenditureName;
         mExpenditureDay = expenditureDay;
         mExpenditureMonth = expenditureMonth;
         mExpenditureYear = expenditureYear;
         mExpenditureId = expenditureId;
+        mExpenditureDescription = expenditureDescription;
         mExpenditureAmount = expenditureAmount;
         mId = id;
     }
