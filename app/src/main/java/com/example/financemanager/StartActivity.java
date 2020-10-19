@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.firebase.FirebaseApp;
+
 public class StartActivity extends AppCompatActivity {
 
     @Override
@@ -20,6 +22,8 @@ public class StartActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+
+        FirebaseApp.initializeApp(this);
     }
 
     public void goToLogin(View view) {
