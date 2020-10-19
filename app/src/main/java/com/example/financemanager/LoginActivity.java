@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private ProgressBar mProgressBar;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +47,18 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_password);
         btnLogin = findViewById(R.id.btn_login);
         mProgressBar = findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.GONE);
+
+        mAuth = FirebaseAuth.getInstance();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = etEmail.getText().toString().trim();
-                String password = etPassword.getText().toString().trim();
+                String email = etEmail.getText().toString();
+                String password = etPassword.getText().toString();
 
                 if (!isEmpty(email) && !isEmpty(password)) {
-
                     signInUser(email, password);
-
                 } else {
                     Toast.makeText(LoginActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
                 }
@@ -65,10 +68,12 @@ public class LoginActivity extends AppCompatActivity {
 
     public void signInUser(String email, String password) {
         mProgressBar.setVisibility(View.VISIBLE);
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+
+        mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Authenticated with: " +
                                             FirebaseAuth.getInstance().getCurrentUser().getEmail(),

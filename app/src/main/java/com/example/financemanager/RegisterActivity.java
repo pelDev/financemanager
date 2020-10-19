@@ -51,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmPassword = findViewById(R.id.et_confirm_password);
         btnRegister = findViewById(R.id.btn_register);
         mProgressBar = findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.GONE);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,25 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
                             User user = new User();
                             user.setName(etName.getText().toString().trim());
 
-                            userRef.set(user)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-//                                                Sign out the user
-                                                FirebaseAuth.getInstance().signOut();
-
-//                                                Redirect the user to the login screen
-                                                Log.d(TAG, "onComplete: redirecting to login screen");
-                                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                                finish();
-
-                                            } else {
-                                                Log.d(TAG, "onComplete: User Details upload failed");
-                                                Toast.makeText(RegisterActivity.this, "Unable to save details", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
+                            saveUserDetails(userRef, user);
                         } else {
 //                            Check if the email is already registered
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
@@ -136,6 +119,28 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         }
                         mProgressBar.setVisibility(View.GONE);
+                    }
+
+                    private void saveUserDetails(DocumentReference userRef, User user) {
+                        userRef.set(user)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+//                                                Sign out the user
+                                            FirebaseAuth.getInstance().signOut();
+
+//                                                Redirect the user to the login screen
+                                            Log.d(TAG, "onComplete: redirecting to login screen");
+                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                            finish();
+
+                                        } else {
+                                            Log.d(TAG, "onComplete: User Details upload failed");
+                                            Toast.makeText(RegisterActivity.this, "Unable to save details", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                     }
                 });
     }
