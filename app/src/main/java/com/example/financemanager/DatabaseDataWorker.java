@@ -16,16 +16,18 @@ public class DatabaseDataWorker {
 
     public void insertSampleExpenditures() {
         insertExpenditure("food", "Food",
-                "27", "January", "2020", "40000");
-        insertExpenditure("shelter", "Housing",
-                "1", "January", "2020", "10000");
+                "27", "January", "2020", "4000", "I " +
+                        "bought akara and moi-moi at aunty kudi");
+        insertExpenditure("housing", "Housing",
+                "1", "January", "2020", "10000",
+                "Paid my sons house rent");
 
 
     }
 
 
      private void insertExpenditure(String expenditure_id, String expenditure_name, String expenditure_day,
-                                    String expenditure_month, String expenditure_year, String expenditure_amount) {
+                                    String expenditure_month, String expenditure_year, String expenditure_amount, String description) {
         ContentValues values = new ContentValues();
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID, expenditure_id);
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME, expenditure_name);
@@ -33,6 +35,7 @@ public class DatabaseDataWorker {
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH, expenditure_month);
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR, expenditure_year);
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT, Integer.parseInt(expenditure_amount));
+        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DESCRIPTION, description);
 
         long newRowId = mDb.insert(ExpenditureInfoEntry.TABLE_NAME, null, values);
     }
