@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+
+import java.text.NumberFormat;
 
 public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<ExpenditureRecyclerAdapter.ViewHolder> {
 
@@ -88,13 +91,17 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         mExpenditureDay = mCursor.getString(mExpenditureDayPos);
         mExpenditureMonth = mCursor.getString(mExpenditureMonthPos);
         mExpenditureYear = mCursor.getString(mExpenditureYearPos);
-        String expenditureAmount = Integer.toString(mCursor.getInt(mExpenditureAmountPos));
+        int expenditureAmount = mCursor.getInt(mExpenditureAmountPos);
+        Long amnt = new Long(expenditureAmount);
+        NumberFormat myFormat = NumberFormat.getInstance();
+        myFormat.setGroupingUsed(true);
+        String n = myFormat.format(amnt);
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
-
+        Log.d("Expense", "Formatted Amount " + n);
         holder.mTextExpenditureName.setText(expenditureName);
         holder.mTextExpenditureTimestamp.setText(expenditureTimestamp());
-        holder.mTextExpenditureAmount.setText(expenditureAmount);
+        holder.mTextExpenditureAmount.setText(n);
         if (expenditureId.equals("housing")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_housing);
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#393ab5"));
@@ -107,6 +114,24 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         } else if (expenditureId.equals("education")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_education);
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#FF0000"));
+        } else if (expenditureId.equals("entertainment")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_entertainment);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#782D2D"));
+        } else if (expenditureId.equals("transportation")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_transport);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
+        } else if (expenditureId.equals("investment")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_investement);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#09094C"));
+        } else if (expenditureId.equals("technology")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_tech);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+        } else if (expenditureId.equals("fashion")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_fashion);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#12536A"));
+        } else if (expenditureId.equals("others")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_others);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#000000"));
         }
         holder.mId = id;
     }

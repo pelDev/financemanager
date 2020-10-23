@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.view.Window;
@@ -15,10 +16,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import com.example.financemanager.ExpenditureDatabaseContract.AmountInfoEntry;
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +31,8 @@ import androidx.core.content.ContextCompat;
 import android.content.Loader;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.widget.TextView;
+
 import androidx.loader.content.AsyncTaskLoader;
 //import androidx.loader.content.CursorLoader;
 //import androidx.loader.content.Loader;
@@ -36,7 +42,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+import java.text.NumberFormat;
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+NavigationView.OnNavigationItemSelectedListener{
+    public static final int LOADER_AMOUNT = 3;
 
     // home screen
 
@@ -62,7 +72,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private boolean mIncomeQueryFinished;
     private boolean mExpenseTotalQueryFinished;
     private int mTotalExpenditure;
+    private TextView greetings;
     private Cursor mExpenditureCursor;
+    private FirebaseAuth mAuth;
+    private int mBalance;
+    private TextView mAmountLeft;
 
 
     @Override
@@ -73,15 +87,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //        setSupportActionBar(toolbar);
 
         mDbOpenHelper = new ExpenditureOpenHelper(this);
-        mExpenditureBar = (View) findViewById(R.id.view2);
+        mAuth = FirebaseAuth.getInstance();
+        mExpenditureBar = findViewById(R.id.view2);
         mExpenditureBarLp = (LinearLayout.LayoutParams) mExpenditureBar.getLayoutParams();
-        mIncomeBar = (View) findViewById(R.id.view);
+        mIncomeBar = findViewById(R.id.view);
         mIncomeBarLp = (LinearLayout.LayoutParams) mIncomeBar.getLayoutParams();
-        View rightSpacer = (View) findViewById(R.id.view7);
+        mAmountLeft = findViewById(R.id.text_amount_left);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View rightSpacer = findViewById(R.id.view7);
         LinearLayout.LayoutParams RSLp = (LinearLayout.LayoutParams) rightSpacer.getLayoutParams();
-        View middleSpacer = (View) findViewById(R.id.view6);
+        View middleSpacer = findViewById(R.id.view6);
         LinearLayout.LayoutParams MSLp = (LinearLayout.LayoutParams) middleSpacer.getLayoutParams();
-        View leftSpacer = (View) findViewById(R.id.view8);
+        View leftSpacer = findViewById(R.id.view8);
         LinearLayout.LayoutParams LSLp = (LinearLayout.LayoutParams) leftSpacer.getLayoutParams();
         mAnimSlideUp = AnimationUtils.loadAnimation(this, R.anim.scale);
 
@@ -93,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         LSLp.width = (int) Math.round(getScreenWidth() * 0.1);
         leftSpacer.setLayoutParams(LSLp);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Window window = MainActivity.this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -107,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
 //        // Passing each menu ID as a set of Ids because each
 //        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -130,7 +149,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         displayExpenditures();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
 
+    }
 
     private void displayExpenditures() {
         mRecyclerExpenditure.setLayoutManager(mExpenditureLayoutManager);
@@ -146,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getLoaderManager().restartLoader(LOADER_INCOME, null, this);
         getLoaderManager().restartLoader(LOADER_EXPENSE, null, this);
         getLoaderManager().restartLoader(LOADER_EXPENSE_TOTAL, null, this);
+        getLoaderManager().restartLoader(LOADER_AMOUNT, null, this);
     }
 
 
@@ -188,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mExpenditureBarLp.width = (int)  Math.round(getScreenWidth() * 0.35);
         mExpenditureBarLp.height = height;
         mExpenditureBar.setLayoutParams(mExpenditureBarLp);
+        mExpenditureBar.setBackgroundColor(Color.parseColor("#62b7d5"));
         mExpenditureBar.startAnimation(mAnimSlideUp);
     }
 
@@ -279,8 +304,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             loader = createLoaderExpense();
         } else if (id == LOADER_EXPENSE_TOTAL) {
             loader = createLoaderExpenseTotal();
+        } else if (id == LOADER_AMOUNT) {
+            loader = createLoaderAmount();
         }
         return loader;
+    }
+
+    private CursorLoader createLoaderAmount() {
+        return new CursorLoader(this) {
+            @Override
+            public Cursor loadInBackground() {
+                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+                String[] columns = {AmountInfoEntry.COLUMN_AMOUNT};
+                return db.query(AmountInfoEntry.TABLE_NAME, columns, null, null,
+                        null, null, null);
+            }
+        };
     }
 
     private CursorLoader createLoaderExpenseTotal() {
@@ -295,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 };
 
                 String selection = ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH + " = ?";
-                String[] selectionArgs = {"January"};
+                String[] selectionArgs = {"October"};
                 return db.query(ExpenditureInfoEntry.TABLE_NAME, expenditureColumnsForTotal,
                         selection, selectionArgs, null, null, null);
             }
@@ -365,15 +404,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mExpenseTotalQueryFinished = true;
                 setBarWhenQueriesFinished();
             }
+        } else if (loader.getId() == LOADER_AMOUNT) {
+            setBalance(data);
         }
+    }
+
+    private void setBalance(Cursor cursor) {
+        cursor.moveToFirst();
+        int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
+        int amountFromSql =cursor.getInt(amountPos);
+        Long amountLong = new Long(amountFromSql);
+        NumberFormat myFormat = NumberFormat.getInstance();
+        myFormat.setGroupingUsed(true);
+        String amount = myFormat.format(amountLong);
+        mAmountLeft.setText("N"  + amount);
+
     }
 
     private void setBarWhenQueriesFinished() {
         if(mExpenseTotalQueryFinished && mIncomeQueryFinished) {
             setExpenditureBar();
             setIncomeBar();
+//            setAmountBalance();
         }
     }
+
+//    private void setAmountBalance() {
+//        mBalance = 0;
+//    }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -387,5 +445,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             if (mExpenditureCursorForTotal != null)
                 mExpenditureCursorForTotal.close();
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nave_logout) {
+            mAuth.signOut();
+            startActivity(new Intent(this, StartActivity.class));
+            finish();
+        }
+        return false;
     }
 }

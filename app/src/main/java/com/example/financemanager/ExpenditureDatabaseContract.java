@@ -67,4 +67,14 @@ public final class ExpenditureDatabaseContract {
                         COLUMN_INCOME_YEAR + " TEXT NOT NULL)";
     }
 
+    public static final class AmountInfoEntry {
+        public static final String TABLE_NAME = "amount_info";
+        public static final String COLUMN_AMOUNT = "amount_amount";
+
+        public static final String SQL_CREATE_TABLE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        COLUMN_AMOUNT + " INTEGER)";
+
+    }
+
 }
