@@ -1,10 +1,5 @@
 package com.example.financemanager;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
-
 import java.util.ArrayList;
 import java.util.List;
 

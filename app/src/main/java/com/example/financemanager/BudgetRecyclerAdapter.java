@@ -14,28 +14,28 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.NumberFormat;
 
-public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<ExpenditureRecyclerAdapter.ViewHolder> {
+public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAdapter.ViewHolder> {
 
     private final Context mContext;
     //private final List<NoteInfo> mNotes;
     private Cursor mCursor;
     private final LayoutInflater mLayoutInflater;
     private int mIdPos;
-    private int mExpenditureNamePos;
-    private int mExpenditureDayPos;
-    private int mExpenditureAmountPos;
-    private int mExpenditureIdPos;
-    private int mExpenditureMonthPos;
-    private int mExpenditureYearPos;
+    private int mBudgetCategoryPos;
+    private int mBudgetDayPos;
+    private int mBudgetAmountPos;
+    private int mBudgetMonthPos;
+    private int mBudgetYearPos;
     private String mExpenditureDay;
     private String mExpenditureMonth;
     private String mExpenditureYear;
 
-    public ExpenditureRecyclerAdapter(Context context, Cursor cursor) {
+    public BudgetRecyclerAdapter(Context context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
         //mNotes = notes;
@@ -49,20 +49,18 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         } else {
             // get column indexes from cursor
 
-            // get the column position for expenditure name in the table
-            mExpenditureNamePos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME);
-            // get the column position for expenditure day from table
-            mExpenditureDayPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY);
-            // get the column position for expenditure month from table
-            mExpenditureMonthPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH);
-            // get the column position for expenditure year from table
-            mExpenditureYearPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR);
-            // get the column position for expenditure amount from table
-            mExpenditureAmountPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
-            // get column position for expenditure id
-            mExpenditureIdPos = mCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID);
+            // get the column position for budget category in the table
+            mBudgetCategoryPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY);
+            // get the column position for budget day from table
+            mBudgetDayPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_DAY);
+            // get the column position for budget month from table
+            mBudgetMonthPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_MONTH);
+            // get the column position for budget year from table
+            mBudgetYearPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_YEAR);
+            // get the column position for budget amount from table
+            mBudgetAmountPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT);
             // get column position for the unique id from table
-            mIdPos = mCursor.getColumnIndex(ExpenditureInfoEntry._ID);
+            mIdPos = mCursor.getColumnIndex(BudgetInfoEntry._ID);
         }
     }
 
@@ -77,28 +75,25 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
 
     @NonNull
     @Override
-    public ExpenditureRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BudgetRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = mLayoutInflater.inflate(R.layout.item_expenditure, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExpenditureRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BudgetRecyclerAdapter.ViewHolder holder, int position) {
         // move the cursor position as required by the on bind view holder
         mCursor.moveToPosition(position);
         // get value for course, title and id
-        String expenditureName = mCursor.getString(mExpenditureNamePos);
-        mExpenditureDay = mCursor.getString(mExpenditureDayPos);
-        mExpenditureMonth = mCursor.getString(mExpenditureMonthPos);
-        mExpenditureYear = mCursor.getString(mExpenditureYearPos);
-        String expenditureAmount = mCursor.getString(mExpenditureAmountPos);
-        //long amnt = Long.parseLong(expenditureAmount);
+        String expenditureName = mCursor.getString(mBudgetCategoryPos);
+        mExpenditureDay = mCursor.getString(mBudgetDayPos);
+        mExpenditureMonth = mCursor.getString(mBudgetMonthPos);
+        mExpenditureYear = mCursor.getString(mBudgetYearPos);
+        int expenditureAmount = mCursor.getInt(mBudgetAmountPos);
+        Long amnt = new Long(expenditureAmount);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
-        String n = myFormat.format(Double.parseDouble(expenditureAmount));
-        if (n.length() > 6) {
-            n = n.substring(0, 4) + "..";
-        }
+        String n = myFormat.format(amnt);
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
         Log.d("Expense", "Formatted Amount " + n);

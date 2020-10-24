@@ -1,14 +1,11 @@
 package com.example.financemanager;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import androidx.loader.content.CursorLoader;
-
-import com.example.financemanager.ExpenditureDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 
 
 public class DatabaseDataWorker {
