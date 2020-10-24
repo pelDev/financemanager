@@ -13,4 +13,5 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="home_heading">Report</string>
+    <string name="menu_logout">Logout</string>
 </resources>

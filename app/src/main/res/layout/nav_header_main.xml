@@ -21,10 +21,10 @@
         android:textColor="#FFFFFF" />
 
     <TextView
+        android:id="@+id/nav_user_greeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Hi, User"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 </LinearLayout>

@@ -14,6 +14,7 @@ public final class ExpenditureDatabaseContract {
         public static final String COLUMN_EXPENDITURE_MONTH = "expenditure_month";
         public static final String COLUMN_EXPENDITURE_YEAR = "expenditure_year";
         public static final String COLUMN_EXPENDITURE_AMOUNT = "expenditure_amount";
+        public static final String COLUMN_EXPENDITURE_DESCRIPTION = "expenditure_description";
 
         // create index expenditure_info_index1 ON expenditure_info (expenditure_name)
         public static final String INDEX1 = TABLE_NAME + "_index1";
@@ -29,12 +30,13 @@ public final class ExpenditureDatabaseContract {
         public static final String SQL_CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
                         _ID + " INTEGER PRIMARY KEY, " +
-                        COLUMN_EXPENDITURE_ID + " TEXT UNIQUE NOT NULL, " +
+                        COLUMN_EXPENDITURE_ID + " TEXT NOT NULL, " +
                         COLUMN_EXPENDITURE_NAME + " TEXT NOT NULL, " +
                         COLUMN_EXPENDITURE_DAY + " TEXT NOT NULL, " +
                         COLUMN_EXPENDITURE_MONTH + " TEXT NOT NULL, " +
                         COLUMN_EXPENDITURE_YEAR + " TEXT NOT NULL, " +
-                        COLUMN_EXPENDITURE_AMOUNT + " INTEGER)";
+                        COLUMN_EXPENDITURE_AMOUNT + " INTEGER, " +
+                        COLUMN_EXPENDITURE_DESCRIPTION + " TEXT)";
     }
 
     public static final class IncomeInfoEntry implements BaseColumns {
@@ -63,6 +65,16 @@ public final class ExpenditureDatabaseContract {
                         COLUMN_INCOME_DAY + " TEXT NOT NULL, " +
                         COLUMN_INCOME_MONTH + " TEXT NOT NULL, " +
                         COLUMN_INCOME_YEAR + " TEXT NOT NULL)";
+    }
+
+    public static final class AmountInfoEntry {
+        public static final String TABLE_NAME = "amount_info";
+        public static final String COLUMN_AMOUNT = "amount_amount";
+
+        public static final String SQL_CREATE_TABLE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        COLUMN_AMOUNT + " INTEGER)";
+
     }
 
 }

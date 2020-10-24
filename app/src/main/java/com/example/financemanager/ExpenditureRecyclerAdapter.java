@@ -1,8 +1,10 @@
 package com.example.financemanager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+
+import java.text.NumberFormat;
 
 public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<ExpenditureRecyclerAdapter.ViewHolder> {
 
@@ -87,19 +91,47 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         mExpenditureDay = mCursor.getString(mExpenditureDayPos);
         mExpenditureMonth = mCursor.getString(mExpenditureMonthPos);
         mExpenditureYear = mCursor.getString(mExpenditureYearPos);
-        String expenditureAmount = Integer.toString(mCursor.getInt(mExpenditureAmountPos));
+        int expenditureAmount = mCursor.getInt(mExpenditureAmountPos);
+        Long amnt = new Long(expenditureAmount);
+        NumberFormat myFormat = NumberFormat.getInstance();
+        myFormat.setGroupingUsed(true);
+        String n = myFormat.format(amnt);
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
-
+        Log.d("Expense", "Formatted Amount " + n);
         holder.mTextExpenditureName.setText(expenditureName);
         holder.mTextExpenditureTimestamp.setText(expenditureTimestamp());
-        holder.mTextExpenditureAmount.setText(expenditureAmount);
-        if (expenditureId.equals("shelter")) {
+        holder.mTextExpenditureAmount.setText(n);
+        if (expenditureId.equals("housing")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_housing);
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#393ab5"));
         } else if (expenditureId.equals("food")) {
             holder.mExpenditureIcon.setImageResource(R.drawable.ic_food);
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+        } else if (expenditureId.equals("recreation")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_recreation);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
+        } else if (expenditureId.equals("education")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_education);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#FF0000"));
+        } else if (expenditureId.equals("entertainment")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_entertainment);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#782D2D"));
+        } else if (expenditureId.equals("transportation")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_transport);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
+        } else if (expenditureId.equals("investment")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_investement);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#09094C"));
+        } else if (expenditureId.equals("technology")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_tech);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+        } else if (expenditureId.equals("fashion")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_fashion);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#12536A"));
+        } else if (expenditureId.equals("others")) {
+            holder.mExpenditureIcon.setImageResource(R.drawable.ic_others);
+            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#000000"));
         }
         holder.mId = id;
     }
@@ -127,14 +159,14 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             mTextExpenditureAmount = (TextView) itemView.findViewById(R.id.textView_amount);
             mTextExpenditureTimestamp = (TextView) itemView.findViewById(R.id.textViewG);
             mExpenditureIcon = (ImageView) itemView.findViewById(R.id.expenditure_icon);
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(mContext, NoteActivity.class);
-//                    intent.putExtra(NoteActivity.NOTE_ID, mId);
-//                    mContext.startActivity(intent);
-//                }
-//            });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, AddExpenseActivity.class);
+                    intent.putExtra(AddExpenseActivity.EXPENDITURE_ID, mId);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 }
