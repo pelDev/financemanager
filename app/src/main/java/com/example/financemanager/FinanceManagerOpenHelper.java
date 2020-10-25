@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 
@@ -26,10 +27,12 @@ public class FinanceManagerOpenHelper extends SQLiteOpenHelper {
         db.execSQL(IncomeInfoEntry.SQL_CREATE_TABLE);
         db.execSQL(IncomeInfoEntry.SQL_CREATE_INDEX1);
         db.execSQL(AmountInfoEntry.SQL_CREATE_TABLE);
+        db.execSQL(BudgetInfoEntry.SQL_CREATE_TABLE);
 
         DatabaseDataWorker worker = new DatabaseDataWorker(db);
 //        worker.insertSampleExpenditures();
         worker.insertSampleIncome();
+        worker.insertBudget();
         worker.insertAmount();
     }
 

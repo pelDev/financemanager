@@ -7,7 +7,7 @@
     android:layout_marginBottom="4dp">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/expenditure_icon_container"
+        android:id="@+id/budget_icon_container"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="4dp"
@@ -15,29 +15,29 @@
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/linear_expenditure_name"
+        app:layout_constraintEnd_toStartOf="@+id/linear_budget_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/expenditure_icon"
+            android:id="@+id/budget_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center" />
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linear_expenditure_name"
+        android:id="@+id/linear_budget_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/expenditure_icon_container"
+        app:layout_constraintStart_toEndOf="@+id/budget_icon_container"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewF"
+            android:id="@+id/budget_category_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
@@ -51,7 +51,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout3"
+        android:id="@+id/constraintLayout70"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -61,18 +61,18 @@
 
 
         <TextView
-            android:id="@+id/textView_amount"
+            android:id="@+id/budget_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="N1,230"
             android:textColor="@android:color/black"
             android:textSize="15dp"
-            app:layout_constraintBottom_toTopOf="@+id/textView10"
+            app:layout_constraintBottom_toTopOf="@+id/budget_amount_left"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/budget_amount_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -85,15 +85,17 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
-        android:id="@+id/progressBar2"
+        android:id="@+id/progressBarBudget"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
+        android:max="100"
+        android:theme="@style/ProgressBarStyle"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/constraintLayout3"
-        app:layout_constraintStart_toEndOf="@+id/expenditure_icon_container" />
+        app:layout_constraintEnd_toStartOf="@+id/constraintLayout70"
+        app:layout_constraintStart_toEndOf="@+id/budget_icon_container" />
 
 
 

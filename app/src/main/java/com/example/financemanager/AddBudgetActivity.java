@@ -140,6 +140,7 @@ public class AddBudgetActivity extends AppCompatActivity {
         values.put(BudgetInfoEntry.COLUMN_BUDGET_DAY, day);
         values.put(BudgetInfoEntry.COLUMN_BUDGET_MONTH, monthName);
         values.put(BudgetInfoEntry.COLUMN_BUDGET_YEAR, year);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "0");
 
         AsyncTask task = new AsyncTask() {
             @Override
@@ -162,12 +163,6 @@ public class AddBudgetActivity extends AppCompatActivity {
         return monthString;
     }
 
-    private String capitalize(String str) {
-        if (str.isEmpty() || str == null) {
-            return str;
-        }
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
 
     private String deCapitalize(String str) {
         if(str.isEmpty()) {

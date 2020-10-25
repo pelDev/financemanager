@@ -1,25 +1,30 @@
 package com.example.financemanager;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.util.Log;
+import android.os.Build;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.NumberFormat;
 
-public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAdapter.ViewHolder> {
+public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAdapter.ViewHolder>
+ implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final Context mContext;
     //private final List<NoteInfo> mNotes;
@@ -27,13 +32,10 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
     private final LayoutInflater mLayoutInflater;
     private int mIdPos;
     private int mBudgetCategoryPos;
-    private int mBudgetDayPos;
     private int mBudgetAmountPos;
-    private int mBudgetMonthPos;
-    private int mBudgetYearPos;
-    private String mExpenditureDay;
-    private String mExpenditureMonth;
-    private String mExpenditureYear;
+    private int mBudgetAmountLeftPos;
+    private int mBudgetAmount;
+    private double mAmountSpent;
 
     public BudgetRecyclerAdapter(Context context, Cursor cursor) {
         mContext = context;
@@ -51,14 +53,10 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
 
             // get the column position for budget category in the table
             mBudgetCategoryPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY);
-            // get the column position for budget day from table
-            mBudgetDayPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_DAY);
-            // get the column position for budget month from table
-            mBudgetMonthPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_MONTH);
-            // get the column position for budget year from table
-            mBudgetYearPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_YEAR);
             // get the column position for budget amount from table
             mBudgetAmountPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT);
+            // get column position for budget amount left
+            mBudgetAmountLeftPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT);
             // get column position for the unique id from table
             mIdPos = mCursor.getColumnIndex(BudgetInfoEntry._ID);
         }
@@ -76,95 +74,141 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
     @NonNull
     @Override
     public BudgetRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mLayoutInflater.inflate(R.layout.item_expenditure, parent, false);
+        View itemView = mLayoutInflater.inflate(R.layout.item_budget, parent, false);
         return new ViewHolder(itemView);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onBindViewHolder(@NonNull BudgetRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // move the cursor position as required by the on bind view holder
         mCursor.moveToPosition(position);
         // get value for course, title and id
-        String expenditureName = mCursor.getString(mBudgetCategoryPos);
-        mExpenditureDay = mCursor.getString(mBudgetDayPos);
-        mExpenditureMonth = mCursor.getString(mBudgetMonthPos);
-        mExpenditureYear = mCursor.getString(mBudgetYearPos);
-        int expenditureAmount = mCursor.getInt(mBudgetAmountPos);
-        Long amnt = new Long(expenditureAmount);
+        String budgetCategory = mCursor.getString(mBudgetCategoryPos);
+        mBudgetAmount = Integer.parseInt(mCursor.getString(mBudgetAmountPos));
+        Long amnt = new Long(mBudgetAmount);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
         String n = myFormat.format(amnt);
-        String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
-        Log.d("Expense", "Formatted Amount " + n);
-        holder.mTextExpenditureName.setText(expenditureName);
-        holder.mTextExpenditureTimestamp.setText(expenditureTimestamp());
-        holder.mTextExpenditureAmount.setText(n);
-        if (expenditureId.equals("housing")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_housing);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#393ab5"));
-        } else if (expenditureId.equals("food")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_food);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
-        } else if (expenditureId.equals("recreation")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_recreation);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
-        } else if (expenditureId.equals("education")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_education);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#FF0000"));
-        } else if (expenditureId.equals("entertainment")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_entertainment);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#782D2D"));
-        } else if (expenditureId.equals("transportation")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_transport);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
-        } else if (expenditureId.equals("investment")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_investement);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#09094C"));
-        } else if (expenditureId.equals("technology")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_tech);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
-        } else if (expenditureId.equals("fashion")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_fashion);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#12536A"));
-        } else if (expenditureId.equals("others")) {
-            holder.mExpenditureIcon.setImageResource(R.drawable.ic_others);
-            holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#000000"));
+
+        holder.mBudgetCategoryName.setText(capitalize(budgetCategory));
+        holder.mTextBudgetAmount.setText(n);
+        switch (budgetCategory) {
+            case "housing":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_housing);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#393ab5"));
+                break;
+            case "food":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_food);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+                break;
+            case "recreation":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_recreation);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
+                break;
+            case "education":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_education);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#FF0000"));
+                break;
+            case "entertainment":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_entertainment);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#782D2D"));
+                holder.mProgressBar.setProgress(50, true);
+                break;
+            case "transportation":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_transport);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#62b7d5"));
+                break;
+            case "investment":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_investement);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#09094C"));
+                break;
+            case "technology":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_tech);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#ec5b22"));
+                break;
+            case "fashion":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_fashion);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#12536A"));
+                break;
+            case "others":
+                holder.mBudgetIcon.setImageResource(R.drawable.ic_others);
+                holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#000000"));
+                break;
         }
+
+        int progress = getBudgetProgress();
+        holder.mProgressBar.setProgress(progress, true);
+        holder.mTextBudgetAmountLeft.setText(getAmountLeft());
         holder.mId = id;
     }
 
-    private String expenditureTimestamp() {
-        return mExpenditureDay + ", " + mExpenditureMonth + " " + mExpenditureYear;
+    private String getAmountLeft() {
+        double amountLeft = mBudgetAmount - mAmountSpent;
+        return "Left: " + amountLeft;
     }
+
+    private int getBudgetProgress() {
+        mAmountSpent = Double.parseDouble(mCursor.getString(mBudgetAmountLeftPos));
+        double budgetAmount = mBudgetAmount;
+        double percent = (mAmountSpent / budgetAmount) * 100.0;
+        return (int) Math.round(percent);
+    }
+
+    private String capitalize(String str) {
+        if (str.isEmpty() || str == null) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
 
     @Override
     public int getItemCount() {
         return mCursor == null ? 0 : mCursor.getCount();
     }
 
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final TextView mTextExpenditureName;
-        public final TextView mTextExpenditureAmount;
-        public final TextView mTextExpenditureTimestamp;
-        public final ImageView mExpenditureIcon;
+        public final TextView mBudgetCategoryName;
+        public final TextView mTextBudgetAmount;
+        public final TextView mTextBudgetAmountLeft;
+        public final ImageView mBudgetIcon;
+        public final ProgressBar mProgressBar;
         public int mId;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mTextExpenditureName = (TextView) itemView.findViewById(R.id.textViewF);
-            mTextExpenditureAmount = (TextView) itemView.findViewById(R.id.textView_amount);
-            mTextExpenditureTimestamp = (TextView) itemView.findViewById(R.id.textViewG);
-            mExpenditureIcon = (ImageView) itemView.findViewById(R.id.expenditure_icon);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(mContext, AddExpenseActivity.class);
-                    intent.putExtra(AddExpenseActivity.EXPENDITURE_ID, mId);
-                    mContext.startActivity(intent);
-                }
-            });
+            mProgressBar = itemView.findViewById(R.id.progressBarBudget);
+            mBudgetCategoryName = (TextView) itemView.findViewById(R.id.budget_category_view);
+            mTextBudgetAmount = (TextView) itemView.findViewById(R.id.budget_amount);
+            mTextBudgetAmountLeft = (TextView) itemView.findViewById(R.id.budget_amount_left);
+            mBudgetIcon = (ImageView) itemView.findViewById(R.id.budget_icon);
+//            itemView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(mContext, AddExpenseActivity.class);
+//                    intent.putExtra(AddExpenseActivity.EXPENDITURE_ID, mId);
+//                    mContext.startActivity(intent);
+//                }
+//            });
         }
     }
 }

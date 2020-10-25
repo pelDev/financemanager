@@ -89,6 +89,7 @@ public final class FinanceManagerDatabaseContract {
         public static final String COLUMN_BUDGET_YEAR = "budget_year";
         public static final String COLUMN_BUDGET_CATEGORY = "budget_category";
         public static final String COLUMN_BUDGET_AMOUNT = "budget_amount";
+        public static final String COLUMN_BUDGET_AMOUNT_SPENT = "budget_amount_spent";
 
         // create table budget_info (columns)
         public static final String SQL_CREATE_TABLE =
@@ -98,7 +99,8 @@ public final class FinanceManagerDatabaseContract {
                         COLUMN_BUDGET_MONTH + " TEXT NOT NULL, " +
                         COLUMN_BUDGET_YEAR + " INTEGER, " +
                         COLUMN_BUDGET_CATEGORY + " TEXT NOT NULL, " +
-                        COLUMN_BUDGET_AMOUNT + " TEXT)";
+                        COLUMN_BUDGET_AMOUNT + " TEXT, " +
+                        COLUMN_BUDGET_AMOUNT_SPENT + " TEXT)";
     }
 
 }
