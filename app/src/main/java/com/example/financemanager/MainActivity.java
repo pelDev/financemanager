@@ -16,9 +16,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
-import com.example.financemanager.ExpenditureDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +33,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.widget.TextView;
 
+import androidx.core.view.GravityCompat;
 import androidx.loader.content.AsyncTaskLoader;
 //import androidx.loader.content.CursorLoader;
 //import androidx.loader.content.Loader;
@@ -50,7 +51,7 @@ NavigationView.OnNavigationItemSelectedListener{
 
     // home screen
 
-    private ExpenditureOpenHelper mDbOpenHelper;
+    private FinanceManagerOpenHelper mDbOpenHelper;
     private RecyclerView mRecyclerExpenditure;
     private static final int LOADER_INCOME = 0;
     private static final int LOADER_EXPENSE = 1;
@@ -63,7 +64,7 @@ NavigationView.OnNavigationItemSelectedListener{
     private Cursor mExpenditureCursorForTotal;
     private int mExpenditureAmountPos;
     private View mIncomeBar;
-    private int mTotalIncome = 0;
+    private double mTotalIncome;
     private View mExpenditureBar;
     private LinearLayout.LayoutParams mIncomeBarLp;
     private LinearLayout.LayoutParams mExpenditureBarLp;
@@ -71,7 +72,7 @@ NavigationView.OnNavigationItemSelectedListener{
     private AsyncTaskLoader mTaskLoader;
     private boolean mIncomeQueryFinished;
     private boolean mExpenseTotalQueryFinished;
-    private int mTotalExpenditure;
+    private double mTotalExpenditure;
     private TextView greetings;
     private Cursor mExpenditureCursor;
     private FirebaseAuth mAuth;
@@ -86,7 +87,7 @@ NavigationView.OnNavigationItemSelectedListener{
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        mDbOpenHelper = new ExpenditureOpenHelper(this);
+        mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mAuth = FirebaseAuth.getInstance();
         mExpenditureBar = findViewById(R.id.view2);
         mExpenditureBarLp = (LinearLayout.LayoutParams) mExpenditureBar.getLayoutParams();
@@ -119,6 +120,7 @@ NavigationView.OnNavigationItemSelectedListener{
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
+        // On Pressed Navigate To Add Expense or Add Income Screen
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +132,7 @@ NavigationView.OnNavigationItemSelectedListener{
 //        // Passing each menu ID as a set of Ids because each
 //        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_budget, R.id.nav_slideshow)
                 .setDrawerLayout(mDrawer)
                 .build();
         initializeDisplayContent();
@@ -180,14 +182,14 @@ NavigationView.OnNavigationItemSelectedListener{
         mTotalExpenditure = 0;
         mExpenditureCursorForTotal.moveToFirst();
         while (!mExpenditureCursorForTotal.isAfterLast()) {
-            int amount = mExpenditureCursorForTotal.getInt(mExpenditureAmountPos);
-            mTotalExpenditure = mTotalExpenditure + amount;
+            String amount = mExpenditureCursorForTotal.getString(mExpenditureAmountPos);
+            mTotalExpenditure = mTotalExpenditure + Double.parseDouble(amount);
             mExpenditureCursorForTotal.moveToNext();
         }
     }
 
     private void setExpenditureBar() {
-        float barHeight = ((mTotalExpenditure / (float) mTotalIncome) * 100f);
+        float barHeight = (float) ((mTotalExpenditure / mTotalIncome) * 100f);
         Log.i("Income", "Bar Height In dp " + Math.round(barHeight) );
         if (barHeight > 0 && barHeight <= 100) {
             Log.i("Income", "Total Income for calculating Expenditure " + (float) mTotalIncome );
@@ -248,8 +250,8 @@ NavigationView.OnNavigationItemSelectedListener{
 
         //check if the cursor has passed the last row of the table
         while (mIncomeCursor.isAfterLast() == false) {
-            int amount = mIncomeCursor.getInt(mIncomeAmountPos);
-            mTotalIncome = mTotalIncome + amount;
+            String amount = mIncomeCursor.getString(mIncomeAmountPos);
+            mTotalIncome = mTotalIncome + Double.parseDouble(amount);
             mIncomeCursor.moveToNext();
         }
     }
@@ -412,7 +414,7 @@ NavigationView.OnNavigationItemSelectedListener{
     private void setBalance(Cursor cursor) {
         cursor.moveToFirst();
         int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
-        int amountFromSql =cursor.getInt(amountPos);
+        int amountFromSql = cursor.getInt(amountPos);
         Long amountLong = new Long(amountFromSql);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
@@ -451,9 +453,19 @@ NavigationView.OnNavigationItemSelectedListener{
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nave_logout) {
+            // Sign user out and redirect to start screen.
             mAuth.signOut();
             startActivity(new Intent(this, StartActivity.class));
+            // close the drawer
+            mDrawer.closeDrawer(GravityCompat.START);
+            // User should not be able to access this activity with a back press
+            // so kill this activity
             finish();
+        } else if (id == R.id.nav_budget) {
+            // close the drawer
+            mDrawer.closeDrawer(GravityCompat.START);
+            // Navigate to the Budget activity
+            startActivity(new Intent(this, BudgetActivity.class));
         }
         return false;
     }

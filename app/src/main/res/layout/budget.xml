@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,6 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
+                android:onClick="gotToAddBudget"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_add" />
 
@@ -40,8 +42,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toStartOf="@+id/button_more"
             app:layout_constraintStart_toEndOf="@+id/button_add"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/button_more"
@@ -54,6 +55,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/title_budget"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/budget_list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Budgets"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_margin="12dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@+id/title_budget"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_budgets"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/budget_list_title"
+            tools:listitem="@layout/item_budget" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

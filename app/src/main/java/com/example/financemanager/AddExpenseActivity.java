@@ -1,17 +1,13 @@
 package com.example.financemanager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.loader.content.AsyncTaskLoader;
 
 import android.content.Loader;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -32,10 +28,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.DateFormatSymbols;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -49,7 +44,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private final String TAG = getClass().getSimpleName();
     private int mExpenditureId;
     private boolean mIsNewExpense;
-    private ExpenditureOpenHelper mDbOpenHelper;
+    private FinanceManagerOpenHelper mDbOpenHelper;
     private TextView mHeader;
     private Cursor mExpenseCursor;
     private int mExpenseIdPosition;
@@ -67,7 +62,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
-        mDbOpenHelper = new ExpenditureOpenHelper(this);
+        mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mHeader = (TextView) findViewById(R.id.textView);
         mExpNameEditText = (EditText) findViewById(R.id.editTextTextPersonName);
         mExpAmountEditText = (EditText) findViewById(R.id.editTextTextNumber);
@@ -78,7 +73,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
-        final Button button = (Button) findViewById(R.id.button_add_expense);
+        final Button button = findViewById(R.id.button_add_expense);
         ConstraintLayout.LayoutParams buttonParams = (ConstraintLayout.LayoutParams) button.getLayoutParams();
         buttonParams.height = (int) Math.round(getScreenHeight() * 0.1);
         button.setLayoutParams(buttonParams);
@@ -91,7 +86,8 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        mSpinner = (Spinner) findViewById(R.id.spinner_category);
+        // Populate Spinner with List of Categories
+        mSpinner = findViewById(R.id.spinner_category);
         String[] Categories = new String[]{"Food", "Housing",
         "Fashion", "Education", "Entertainment", "Transportation",
         "Investment", "Technology", "Recreation", "Others"};
@@ -140,7 +136,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private void displayExpense() {
         String expenseId = mExpenseCursor.getString(mExpenseIdPosition);
         String expenseName = mExpenseCursor.getString(mExpenseNamePosition);
-        String expenseAmount = Integer.toString(mExpenseCursor.getInt(mExpenseAmountPosition));
+        String expenseAmount = mExpenseCursor.getString(mExpenseAmountPosition);
         String expenseDescription = mExpenseCursor.getString(mExpenditureDescriptionPosition);
         mExpNameEditText.setText(expenseName);
         mExpAmountEditText.setText(expenseAmount);
@@ -174,7 +170,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private void createNewExpense() {
         final ContentValues values = new ContentValues();
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT, 0);
+        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT, "0");
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DESCRIPTION, "");
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID, "");
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY, "");
@@ -206,7 +202,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
     public void saveExpense(View view) {
         String expenseName = mExpNameEditText.getText().toString();
-        int expenseAmount = Integer.parseInt(mExpAmountEditText.getText().toString());
+        String expenseAmount = mExpAmountEditText.getText().toString();
         String expenseDescription = mExpDescriptionEditText.getText().toString();
         String expenseId = deCapitalize(mSpinner.getSelectedItem().toString());
         Log.i("Expenditure", " New Expense Id " + expenseId);
@@ -222,7 +218,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         saveExpenseToDatabase(expenseName, expenseAmount, expenseDescription, expenseId, day, monthName, year);
     }
 
-    private void saveExpenseToDatabase(String expenseName, int expenseAmount, String expenseDescription,
+    private void saveExpenseToDatabase(String expenseName, String expenseAmount, String expenseDescription,
                                        String expenseId, int day, String monthName, int year) {
 
         final String selection = ExpenditureInfoEntry._ID + " = ?";

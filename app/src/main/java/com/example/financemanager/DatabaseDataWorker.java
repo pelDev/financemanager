@@ -1,14 +1,12 @@
 package com.example.financemanager;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import androidx.loader.content.CursorLoader;
-
-import com.example.financemanager.ExpenditureDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 
 
 public class DatabaseDataWorker {
@@ -80,4 +78,15 @@ public class DatabaseDataWorker {
         long newRowId = mDb.insert(IncomeInfoEntry.TABLE_NAME, null, values);
     }
 
+    public void insertBudget() {
+        ContentValues values = new ContentValues();
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY, "food");
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT, "20000");
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_DAY, 25);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_MONTH, "October");
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_YEAR, 2020);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "8000");
+
+        long newRowId = mDb.insert(BudgetInfoEntry.TABLE_NAME, null, values);
+    }
 }
