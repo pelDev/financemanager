@@ -85,7 +85,7 @@ public class DatabaseDataWorker {
         values.put(BudgetInfoEntry.COLUMN_BUDGET_DAY, 25);
         values.put(BudgetInfoEntry.COLUMN_BUDGET_MONTH, "October");
         values.put(BudgetInfoEntry.COLUMN_BUDGET_YEAR, 2020);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "8000");
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "0");
 
         long newRowId = mDb.insert(BudgetInfoEntry.TABLE_NAME, null, values);
     }

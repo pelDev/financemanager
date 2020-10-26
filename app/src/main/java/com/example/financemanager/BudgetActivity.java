@@ -26,6 +26,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     private FinanceManagerOpenHelper mDbHelper;
     private BudgetRecyclerAdapter mBudgetRecyclerAdapter;
     private static final int LOADER_BUDGETS = 0;
+    private static final int LOADER_EXPENDITURE = 1;
     private Cursor mBudgetCursor;
 
     @Override
@@ -73,6 +74,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
         }
         return loader;
     }
+
 
     private CursorLoader createLoaderBudgets() {
         return new CursorLoader(this) {
