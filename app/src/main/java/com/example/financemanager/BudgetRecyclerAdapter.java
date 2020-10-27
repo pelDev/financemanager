@@ -1,7 +1,12 @@
 package com.example.financemanager;
 
+import android.content.ContentValues;
+import android.content.Loader;
+import android.app.LoaderManager;
+
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,19 +20,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
+//import androidx.loader.app.LoaderManager;
+//import androidx.loader.content.Loader;
+import android.content.CursorLoader;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.NumberFormat;
 
-public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAdapter.ViewHolder>
- implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAdapter.ViewHolder> {
 
     private final Context mContext;
     //private final List<NoteInfo> mNotes;
+
     private Cursor mCursor;
     private final LayoutInflater mLayoutInflater;
     private int mIdPos;
@@ -49,8 +56,6 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
         if(mCursor == null) {
             return;
         } else {
-            // get column indexes from cursor
-
             // get the column position for budget category in the table
             mBudgetCategoryPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY);
             // get the column position for budget amount from table
@@ -78,6 +83,7 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
         return new ViewHolder(itemView);
     }
 
+//    @RequiresApi(api = Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -98,6 +104,7 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
             case "housing":
                 holder.mBudgetIcon.setImageResource(R.drawable.ic_housing);
                 holder.mBudgetIcon.setBackgroundColor(Color.parseColor("#393ab5"));
+                getAmountSpent("housing");
                 break;
             case "food":
                 holder.mBudgetIcon.setImageResource(R.drawable.ic_food);
@@ -144,6 +151,10 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
         holder.mId = id;
     }
 
+    private void getAmountSpent(String id) {
+
+    }
+
     private String getAmountLeft() {
         double amountLeft = mBudgetAmount - mAmountSpent;
         return "Left: " + amountLeft;
@@ -169,21 +180,7 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
         return mCursor == null ? 0 : mCursor.getCount();
     }
 
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        return null;
-    }
 
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

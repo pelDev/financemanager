@@ -28,6 +28,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.DateFormatSymbols;
@@ -41,6 +42,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     public static final String EXPENDITURE_ID = "com.example.financemanager.EXPENDITURE_ID";
     public static final int ID_NOT_SET = -1;
     public static final int LOADER_EXPENSE = 0;
+    public static final int LOADER_BUDGET = 1;
     private final String TAG = getClass().getSimpleName();
     private int mExpenditureId;
     private boolean mIsNewExpense;
@@ -56,6 +58,12 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private EditText mExpDescriptionEditText;
     private Spinner mSpinner;
     private ArrayAdapter<String> mArrayAdapter;
+    private double mOriginalAmount;
+    private String mOriginalId;
+    private double mBudgetAmountSpent;
+    private double mNewAmount;
+    private Cursor mCursor;
+    private String mNewExpenseAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +153,8 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         Log.i("Expense", "Expense id " + formattedExpenseId);
         int coursePosition = mArrayAdapter.getPosition(formattedExpenseId);
         mSpinner.setSelection(coursePosition);
+        mOriginalAmount = Double.parseDouble(expenseAmount);
+        mOriginalId = expenseId;
     }
 
     @Override
@@ -187,6 +197,9 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         };
         task.execute();
 
+        mOriginalId = "food";
+        mOriginalAmount = 0;
+
         mExpAmountEditText.setText("0");
         Log.i("Expenditure", "New Expense at position " + mExpenditureId);
     }
@@ -202,7 +215,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
     public void saveExpense(View view) {
         String expenseName = mExpNameEditText.getText().toString();
-        String expenseAmount = mExpAmountEditText.getText().toString();
+        mNewExpenseAmount = mExpAmountEditText.getText().toString();
         String expenseDescription = mExpDescriptionEditText.getText().toString();
         String expenseId = deCapitalize(mSpinner.getSelectedItem().toString());
         Log.i("Expenditure", " New Expense Id " + expenseId);
@@ -215,7 +228,88 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
         Log.i("Expenditure", "Today's Date " + day + " " +
                 monthName + " " + year);
-        saveExpenseToDatabase(expenseName, expenseAmount, expenseDescription, expenseId, day, monthName, year);
+        saveExpenseToDatabase(expenseName, mNewExpenseAmount, expenseDescription, expenseId, day, monthName, year);
+        updateAmountSpentInBudget(expenseId);
+        finish();
+    }
+
+    private void updateAmountSpentInBudget(String expenseId) {
+        if (mOriginalId.equals(expenseId)) {
+            getOriginalAmountSpentInBudget(mOriginalId);
+            if (mCursor.getCount() != 0) setNewAmountForSameId();
+        } else {
+            getOriginalAmountSpentInBudget(mOriginalId);
+            if (mCursor.getCount() != 0) {
+                removeOriginalAmountFromOriginalBudget();
+            }
+            setNewAmountForDifferentId(expenseId);
+        }
+    }
+
+    private void setNewAmountForDifferentId(String id) {
+        mNewAmount = Double.parseDouble(mNewExpenseAmount);
+        getOriginalAmountSpentInBudget(id);
+        if (mCursor.getCount() != 0) {
+            double newBudgetSpentAmount = mBudgetAmountSpent + mNewAmount;
+            update(newBudgetSpentAmount, id);
+        } else {
+            Toast.makeText(this, "Budget " + id + " not found!", Toast.LENGTH_LONG);
+        }
+
+    }
+
+    private void removeOriginalAmountFromOriginalBudget() {
+        // Since Expense id has been changed remove the original amount from the corresponding budget
+        double newAmount = mBudgetAmountSpent - mOriginalAmount;
+        if (newAmount < 0)
+            newAmount = 0;
+        update(newAmount, mOriginalId);
+    }
+
+    private void update(double amount, String id) {
+        final ContentValues values = new ContentValues();
+        final String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ?";
+        final String[] selectionArgs = {id};
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, Double.toString(amount));
+
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                db.update(BudgetInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                return null;
+            }
+        };
+        task.execute();
+
+    }
+
+    private void getOriginalAmountSpentInBudget(String id) {
+        String[] columns = {
+                BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT
+        };
+        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ?";
+        String[] selectionArgs = {id};
+
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        mCursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection,
+                selectionArgs, null, null, null);
+        if (mCursor.getCount() != 0) {
+            mCursor.moveToFirst();
+            int budgetAmountSpentPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT);
+            String amountSpentString = mCursor.getString(budgetAmountSpentPos);
+            mBudgetAmountSpent = Double.parseDouble(amountSpentString);
+        }
+    }
+
+    private void setNewAmountForSameId() {
+        mNewAmount = Double.parseDouble(mNewExpenseAmount);
+        if (mCursor.getCount() != 0) {
+            double amountToBeAdded = mBudgetAmountSpent + (mNewAmount - mOriginalAmount);
+            update(amountToBeAdded, mOriginalId);
+        } else {
+            Toast.makeText(this, "Budget " + mOriginalId + " not found!", Toast.LENGTH_LONG);
+        }
     }
 
     private void saveExpenseToDatabase(String expenseName, String expenseAmount, String expenseDescription,
@@ -242,8 +336,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             }
         };
         task.execute();
-
-        finish();
     }
 
     private String getMonthFromInt(int month) {
