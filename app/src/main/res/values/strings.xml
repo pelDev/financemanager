@@ -6,9 +6,17 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="income_view">Net Income</string>
+    <string name="expenditure_view">Expenditure</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_home">Report</string>
+    <string name="menu_budget">Budgets</string>
+    <string name="menu_todo">To-Do</string>
     <string name="home_heading">Report</string>
+    <string name="menu_logout">Logout</string>
+    <string name="label_budget_category">Budget Category</string>
+    <string name="label_budget_amount">Budgeted Amount</string>
+    <string name="budget_screen_title">Add Budget</string>
+    <string name="add_income_button">Add Income</string>
+    <string name="net_income_hint">10,000</string>
 </resources>
