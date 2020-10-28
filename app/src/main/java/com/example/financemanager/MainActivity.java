@@ -1,32 +1,42 @@
 package com.example.financemanager;
 
+import android.app.AlertDialog;
+import android.app.LoaderManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import android.widget.TextView;
+
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 //import androidx.loader.app.LoaderManager;
 import android.content.Loader;
 import android.app.LoaderManager;
@@ -35,21 +45,34 @@ import android.widget.TextView;
 
 import androidx.core.view.GravityCompat;
 import androidx.loader.content.AsyncTaskLoader;
-//import androidx.loader.content.CursorLoader;
-//import androidx.loader.content.Loader;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.financemanager.ExpenditureDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+
 import java.text.DateFormatSymbols;
+
 import java.text.NumberFormat;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-NavigationView.OnNavigationItemSelectedListener{
+        NavigationView.OnNavigationItemSelectedListener {
+
     public static final int LOADER_AMOUNT = 3;
+
+    private static final String TAG = "MainActivity";
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    private NotificationManager mNotifyManager;
+    private static final int BUDGET_NOTIFICATION_ID = 0;
 
     // home screen
 
@@ -81,6 +104,7 @@ NavigationView.OnNavigationItemSelectedListener{
     private FirebaseAuth mAuth;
     private int mBalance;
     private TextView mAmountLeft;
+    private ImageView ivSetNotification;
     private TextView mHomeDate;
     private String mCurrentMonthName;
     private Cursor mAmountCursor;
@@ -121,6 +145,16 @@ NavigationView.OnNavigationItemSelectedListener{
         mNetExpenseAmountView = findViewById(R.id.textView_netExpense);
         mExpInfoView = findViewById(R.id.textView_expInfo);
 
+        ivSetNotification = findViewById(R.id.iv_set_notification);
+        ivSetNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: notification icon clicked");
+//                sendNotification();
+                launchNotificationDialog();
+            }
+        });
+
         RSLp.width = (int) Math.round(getScreenWidth() * 0.1);
         rightSpacer.setLayoutParams(RSLp);
 
@@ -153,6 +187,8 @@ NavigationView.OnNavigationItemSelectedListener{
                 .setDrawerLayout(mDrawer)
                 .build();
         initializeDisplayContent();
+
+        createNotificationChannel();
     }
 
     private void selectNavigationMenuItem(int p) {
@@ -178,6 +214,25 @@ NavigationView.OnNavigationItemSelectedListener{
         mExpenditureRecyclerAdapter = new ExpenditureRecyclerAdapter(this, null);
         selectNavigationMenuItem(R.id.nav_home);
         displayExpenditures();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                /*
+                    The delete operation should be carried out here.
+
+                    first get the position of the item in the recycler view:
+                    You can use viewholder.getAdapterPosition()
+
+                    next perform the delete operation.
+                 */
+            }
+        }).attachToRecyclerView(mRecyclerExpenditure);
     }
 
     private String getMonthFromInt(int month) {
@@ -248,9 +303,9 @@ NavigationView.OnNavigationItemSelectedListener{
         float barHeight = (float) ((mTotalExpenditure / mTotalIncome) * 100f);
         Log.i("Income", "Bar Height In dp " + Math.round(barHeight) );
         if (barHeight > 0 && barHeight <= 100) {
-            Log.i("Income", "Total Income for calculating Expenditure " + (float) mTotalIncome );
+            Log.i("Income", "Total Income for calculating Expenditure " + (float) mTotalIncome);
             int height = dpToPx(Math.round(barHeight));
-            Log.i("Income", "Bar Height In px " + height );
+            Log.i("Income", "Bar Height In px " + height);
             setExpenditureBarHeight(height);
         } else if (barHeight > 100) {
             updateExpenditure();
@@ -259,7 +314,7 @@ NavigationView.OnNavigationItemSelectedListener{
     }
 
     private void updateExpenditure() {
-        mExpenditureBarLp.width = (int)  Math.round(getScreenWidth() * 0.35);
+        mExpenditureBarLp.width = (int) Math.round(getScreenWidth() * 0.35);
         mExpenditureBarLp.height = dpToPx(100);
         mExpenditureBar.setLayoutParams(mExpenditureBarLp);
         mExpenditureBar.setBackgroundColor(Color.rgb(255, 0, 0));
@@ -267,7 +322,7 @@ NavigationView.OnNavigationItemSelectedListener{
     }
 
     private void setExpenditureBarHeight(int height) {
-        mExpenditureBarLp.width = (int)  Math.round(getScreenWidth() * 0.35);
+        mExpenditureBarLp.width = (int) Math.round(getScreenWidth() * 0.35);
         mExpenditureBarLp.height = height;
         mExpenditureBar.setLayoutParams(mExpenditureBarLp);
         mExpenditureBar.setBackgroundColor(Color.parseColor("#62b7d5"));
@@ -350,8 +405,6 @@ NavigationView.OnNavigationItemSelectedListener{
         mIncomeBar.setLayoutParams(mIncomeBarLp);
         mIncomeBar.startAnimation(mAnimSlideUp);
     }
-
-
 
     // convert dp tp px
     public final int dpToPx(int dp) {
@@ -516,12 +569,12 @@ NavigationView.OnNavigationItemSelectedListener{
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
         String amount = myFormat.format(amountLong);
-        mAmountLeft.setText("N"  + amount);
+        mAmountLeft.setText("N" + amount);
 
     }
 
     private void setBarWhenQueriesFinished() {
-        if(mExpenseTotalQueryFinished && mIncomeQueryFinished) {
+        if (mExpenseTotalQueryFinished && mIncomeQueryFinished) {
             setExpenditureBar();
             setIncomeBar();
             double percent = (mTotalExpenditure / mTotalIncome) * 100;
@@ -574,7 +627,80 @@ NavigationView.OnNavigationItemSelectedListener{
         return false;
     }
 
+
+    public void launchNotificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Create or cancel a Notification")
+                .setMessage("You can cancel or set your notification here.\n" +
+                        "Click Set to set a Notification or Cancel to cancel an already set Notification")
+                .setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sendNotification();
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        cancelNotification();
+                        dialogInterface.dismiss();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void createNotificationChannel() {
+        mNotifyManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            // Create a NotificationChannel
+            NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL_ID,
+                    "Budget Notification", NotificationManager
+                    .IMPORTANCE_HIGH);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setDescription("Notification for budget");
+            mNotifyManager.createNotificationChannel(notificationChannel);
+        }
+    }
+
+    private NotificationCompat.Builder getNotificationBuilder() {
+        Intent notificationIntent = new Intent(this, BudgetActivity.class);
+        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this,
+                BUDGET_NOTIFICATION_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        String message = "It's that time of the month again where making a budget decision is very important";
+
+        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setSmallIcon(R.drawable.ic_budget)
+                .setContentTitle("Make a Budget")
+                .setColor(getResources().getColor(R.color.colorAccent))
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setTicker("Budget")
+                .setContentIntent(notificationPendingIntent)
+                .setAutoCancel(true);
+        return notifyBuilder;
+    }
+
+    public void sendNotification() {
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
+        mNotifyManager.notify(BUDGET_NOTIFICATION_ID, notifyBuilder.build());
+//            }
+//        }, 30000);
+    }
+
+    public void cancelNotification() {
+        mNotifyManager.cancel(BUDGET_NOTIFICATION_ID);
+    }
     public void moveToNetIncomeActivity(View view) {
         startActivity(new Intent(this, NetIncomeActivity.class));
     }
+      
 }
