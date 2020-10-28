@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.NumberFormat;
 
@@ -91,11 +91,14 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         mExpenditureDay = mCursor.getString(mExpenditureDayPos);
         mExpenditureMonth = mCursor.getString(mExpenditureMonthPos);
         mExpenditureYear = mCursor.getString(mExpenditureYearPos);
-        int expenditureAmount = mCursor.getInt(mExpenditureAmountPos);
-        Long amnt = new Long(expenditureAmount);
+        String expenditureAmount = mCursor.getString(mExpenditureAmountPos);
+        //long amnt = Long.parseLong(expenditureAmount);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
-        String n = myFormat.format(amnt);
+        String n = myFormat.format(Double.parseDouble(expenditureAmount));
+        if (n.length() > 6) {
+            n = n.substring(0, 4) + "..";
+        }
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
         Log.d("Expense", "Formatted Amount " + n);
