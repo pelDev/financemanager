@@ -17,4 +17,6 @@
     <string name="label_budget_category">Budget Category</string>
     <string name="label_budget_amount">Budgeted Amount</string>
     <string name="budget_screen_title">Add Budget</string>
+    <string name="add_income_button">Add Income</string>
+    <string name="net_income_hint">10,000</string>
 </resources>

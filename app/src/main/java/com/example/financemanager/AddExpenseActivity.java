@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Selection;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
@@ -230,7 +232,43 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
                 monthName + " " + year);
         saveExpenseToDatabase(expenseName, mNewExpenseAmount, expenseDescription, expenseId, day, monthName, year);
         updateAmountSpentInBudget(expenseId);
+        updateAmount();
         finish();
+    }
+
+    private void updateAmount() {
+        double originalAmountInDatabase = getOriginalAmount();
+        double newAmount = Double.parseDouble(mNewExpenseAmount);
+        double originalAmount = mOriginalAmount;
+        double amountToBeRemoved = newAmount - originalAmount;
+        double newAmountForDatabase = originalAmountInDatabase - amountToBeRemoved;
+        if (newAmountForDatabase < 0)
+            newAmountForDatabase = 0;
+        final String selection = AmountInfoEntry.COLUMN_AMOUNT + " = ?";
+        final String[] selectionArgs = {Double.toString(originalAmountInDatabase)};
+        final ContentValues values = new ContentValues();
+        values.put(AmountInfoEntry.COLUMN_AMOUNT, newAmountForDatabase);
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                return null;
+            }
+        };
+        task.execute();
+    }
+
+    private double getOriginalAmount() {
+        String[] columns = {AmountInfoEntry.COLUMN_AMOUNT};
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        Cursor cursor = db.query(AmountInfoEntry.TABLE_NAME, columns,null,null,
+                null,null,null);
+        cursor.moveToFirst();
+        int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
+        String amount = cursor.getString(amountPos);
+        double amountDouble = Double.parseDouble(amount);
+        return amountDouble;
     }
 
     private void updateAmountSpentInBudget(String expenseId) {
