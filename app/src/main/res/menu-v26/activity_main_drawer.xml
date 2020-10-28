@@ -7,6 +7,7 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
+            android:iconTint="@android:color/black"
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_budget"

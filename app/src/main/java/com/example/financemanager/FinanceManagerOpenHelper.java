@@ -31,8 +31,8 @@ public class FinanceManagerOpenHelper extends SQLiteOpenHelper {
 
         DatabaseDataWorker worker = new DatabaseDataWorker(db);
 //        worker.insertSampleExpenditures();
-        worker.insertSampleIncome();
-        worker.insertBudget();
+//        worker.insertSampleIncome();
+//        worker.insertBudget();
         worker.insertAmount();
     }
 

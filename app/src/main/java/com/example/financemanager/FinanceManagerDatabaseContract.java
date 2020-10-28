@@ -45,7 +45,6 @@ public final class FinanceManagerDatabaseContract {
     public static final class IncomeInfoEntry implements BaseColumns {
         public static final String TABLE_NAME = "income_info";
         public static final String COLUMN_INCOME_AMOUNT = "income_amount";
-        public static final String COLUMN_INCOME_SOURCE = "income_source";
         public static final String COLUMN_INCOME_DAY = "income_day";
         public static final String COLUMN_INCOME_MONTH = "income_month";
         public static final String COLUMN_INCOME_YEAR = "income_year";
@@ -63,7 +62,6 @@ public final class FinanceManagerDatabaseContract {
         public static final String SQL_CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
                         _ID + " INTEGER PRIMARY KEY, "  +
-                        COLUMN_INCOME_SOURCE + " TEXT NOT NULL, " +
                         COLUMN_INCOME_AMOUNT + " TEXT, " +
                         COLUMN_INCOME_DAY + " TEXT NOT NULL, " +
                         COLUMN_INCOME_MONTH + " TEXT NOT NULL, " +
@@ -77,7 +75,7 @@ public final class FinanceManagerDatabaseContract {
 
         public static final String SQL_CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        COLUMN_AMOUNT + " INTEGER)";
+                        COLUMN_AMOUNT + " TEXT)";
 
     }
 
