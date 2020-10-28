@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -170,6 +171,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mExpenditureRecyclerAdapter = new ExpenditureRecyclerAdapter(this, null);
         displayExpenditures();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                /*
+                    The delete operation should be carried out here.
+
+                    first get the position of the item in the recycler view:
+                    You can use viewholder.getAdapterPosition()
+
+                    next perform the delete operation.
+                 */
+            }
+        }).attachToRecyclerView(mRecyclerExpenditure);
     }
 
     @Override
