@@ -19,7 +19,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:onClick="openDrawer"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_set_notification"
         app:layout_constraintEnd_toStartOf="@+id/textView6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,12 +34,12 @@
         android:text="@string/home_heading"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toStartOf="@+id/imageView3"
+        app:layout_constraintEnd_toStartOf="@+id/iv_set_notification"
         app:layout_constraintStart_toEndOf="@+id/imageView2"
         app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/iv_set_notification"
         android:layout_width="0dp"
         android:layout_height="50dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,6 +51,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 <ScrollView
+    android:id="@+id/scrollViewA"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:layout_constraintStart_toStartOf="parent"
@@ -79,7 +80,7 @@
         android:id="@+id/text_amount_left"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="N3,000"
+        android:text="..."
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@android:color/black"
@@ -90,14 +91,15 @@
         app:layout_constraintTop_toTopOf="@+id/expenditure_bar" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/textView_expInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="You Spent 35% of your income"
+        android:layout_marginBottom="4dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/constraintLayout2"
         app:layout_constraintTop_toBottomOf="@+id/text_amount_left" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -116,6 +118,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            android:onClick="moveToNetIncomeActivity"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
@@ -158,13 +161,13 @@
                         android:layout_marginBottom="2dp"
                         android:text="@string/income_view"
                         android:textAlignment="center"
-                        app:layout_constraintBottom_toTopOf="@+id/textViewB"
+                        app:layout_constraintBottom_toTopOf="@+id/textView_netIncome"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textViewB"
+                        android:id="@+id/textView_netIncome"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="15dp"
@@ -229,13 +232,13 @@
                         android:layout_marginBottom="2dp"
                         android:text="@string/expenditure_view"
                         android:textAlignment="center"
-                        app:layout_constraintBottom_toTopOf="@+id/textViewD"
+                        app:layout_constraintBottom_toTopOf="@+id/textView_netExpense"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textViewD"
+                        android:id="@+id/textView_netExpense"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="15dp"
@@ -268,6 +271,15 @@
         app:layout_constraintTop_toBottomOf="@+id/chart_include" />
 
 
+    <TextView
+        android:id="@+id/home_screen_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/chart_include"/>
+
     <include
         layout="@layout/chart_report"
         android:id="@+id/chart_include"
@@ -276,7 +288,7 @@
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/home_screen_date"
         app:layout_constraintBottom_toTopOf="@+id/textViewE"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -300,6 +312,7 @@
         app:layout_constraintTop_toBottomOf="@+id/list_expenditure"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

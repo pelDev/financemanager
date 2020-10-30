@@ -1,17 +1,13 @@
 package com.example.financemanager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.loader.content.AsyncTaskLoader;
 
 import android.content.Loader;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -20,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Selection;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -32,10 +29,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 
 import java.text.DateFormatSymbols;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -46,10 +44,11 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     public static final String EXPENDITURE_ID = "com.example.financemanager.EXPENDITURE_ID";
     public static final int ID_NOT_SET = -1;
     public static final int LOADER_EXPENSE = 0;
+    public static final int LOADER_BUDGET = 1;
     private final String TAG = getClass().getSimpleName();
     private int mExpenditureId;
     private boolean mIsNewExpense;
-    private ExpenditureOpenHelper mDbOpenHelper;
+    private FinanceManagerOpenHelper mDbOpenHelper;
     private TextView mHeader;
     private Cursor mExpenseCursor;
     private int mExpenseIdPosition;
@@ -61,13 +60,19 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private EditText mExpDescriptionEditText;
     private Spinner mSpinner;
     private ArrayAdapter<String> mArrayAdapter;
+    private double mOriginalAmount;
+    private String mOriginalId;
+    private double mBudgetAmountSpent;
+    private double mNewAmount;
+    private Cursor mCursor;
+    private String mNewExpenseAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
 
-        mDbOpenHelper = new ExpenditureOpenHelper(this);
+        mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mHeader = (TextView) findViewById(R.id.textView);
         mExpNameEditText = (EditText) findViewById(R.id.editTextTextPersonName);
         mExpAmountEditText = (EditText) findViewById(R.id.editTextTextNumber);
@@ -78,7 +83,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
-        final Button button = (Button) findViewById(R.id.button_add_expense);
+        final Button button = findViewById(R.id.button_add_expense);
         ConstraintLayout.LayoutParams buttonParams = (ConstraintLayout.LayoutParams) button.getLayoutParams();
         buttonParams.height = (int) Math.round(getScreenHeight() * 0.1);
         button.setLayoutParams(buttonParams);
@@ -91,7 +96,8 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        mSpinner = (Spinner) findViewById(R.id.spinner_category);
+        // Populate Spinner with List of Categories
+        mSpinner = findViewById(R.id.spinner_category);
         String[] Categories = new String[]{"Food", "Housing",
         "Fashion", "Education", "Entertainment", "Transportation",
         "Investment", "Technology", "Recreation", "Others"};
@@ -140,7 +146,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private void displayExpense() {
         String expenseId = mExpenseCursor.getString(mExpenseIdPosition);
         String expenseName = mExpenseCursor.getString(mExpenseNamePosition);
-        String expenseAmount = Integer.toString(mExpenseCursor.getInt(mExpenseAmountPosition));
+        String expenseAmount = mExpenseCursor.getString(mExpenseAmountPosition);
         String expenseDescription = mExpenseCursor.getString(mExpenditureDescriptionPosition);
         mExpNameEditText.setText(expenseName);
         mExpAmountEditText.setText(expenseAmount);
@@ -149,6 +155,8 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         Log.i("Expense", "Expense id " + formattedExpenseId);
         int coursePosition = mArrayAdapter.getPosition(formattedExpenseId);
         mSpinner.setSelection(coursePosition);
+        mOriginalAmount = Double.parseDouble(expenseAmount);
+        mOriginalId = expenseId;
     }
 
     @Override
@@ -174,7 +182,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private void createNewExpense() {
         final ContentValues values = new ContentValues();
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT, 0);
+        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT, "0");
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DESCRIPTION, "");
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID, "");
         values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY, "");
@@ -191,6 +199,9 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         };
         task.execute();
 
+        mOriginalId = "food";
+        mOriginalAmount = 0;
+
         mExpAmountEditText.setText("0");
         Log.i("Expenditure", "New Expense at position " + mExpenditureId);
     }
@@ -206,7 +217,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
     public void saveExpense(View view) {
         String expenseName = mExpNameEditText.getText().toString();
-        int expenseAmount = Integer.parseInt(mExpAmountEditText.getText().toString());
+        mNewExpenseAmount = mExpAmountEditText.getText().toString();
         String expenseDescription = mExpDescriptionEditText.getText().toString();
         String expenseId = deCapitalize(mSpinner.getSelectedItem().toString());
         Log.i("Expenditure", " New Expense Id " + expenseId);
@@ -219,10 +230,127 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
         Log.i("Expenditure", "Today's Date " + day + " " +
                 monthName + " " + year);
-        saveExpenseToDatabase(expenseName, expenseAmount, expenseDescription, expenseId, day, monthName, year);
+        saveExpenseToDatabase(expenseName, mNewExpenseAmount, expenseDescription, expenseId, day, monthName, year);
+        updateAmountSpentInBudget(expenseId);
+        updateAmount();
+        finish();
     }
 
-    private void saveExpenseToDatabase(String expenseName, int expenseAmount, String expenseDescription,
+    private void updateAmount() {
+        double originalAmountInDatabase = getOriginalAmount();
+        double newAmount = Double.parseDouble(mNewExpenseAmount);
+        double originalAmount = mOriginalAmount;
+        double amountToBeRemoved = newAmount - originalAmount;
+        double newAmountForDatabase = originalAmountInDatabase - amountToBeRemoved;
+        if (newAmountForDatabase < 0)
+            newAmountForDatabase = 0;
+        final String selection = AmountInfoEntry.COLUMN_AMOUNT + " = ?";
+        final String[] selectionArgs = {Double.toString(originalAmountInDatabase)};
+        final ContentValues values = new ContentValues();
+        values.put(AmountInfoEntry.COLUMN_AMOUNT, newAmountForDatabase);
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                return null;
+            }
+        };
+        task.execute();
+    }
+
+    private double getOriginalAmount() {
+        String[] columns = {AmountInfoEntry.COLUMN_AMOUNT};
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        Cursor cursor = db.query(AmountInfoEntry.TABLE_NAME, columns,null,null,
+                null,null,null);
+        cursor.moveToFirst();
+        int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
+        String amount = cursor.getString(amountPos);
+        double amountDouble = Double.parseDouble(amount);
+        return amountDouble;
+    }
+
+    private void updateAmountSpentInBudget(String expenseId) {
+        if (mOriginalId.equals(expenseId)) {
+            getOriginalAmountSpentInBudget(mOriginalId);
+            if (mCursor.getCount() != 0) setNewAmountForSameId();
+        } else {
+            getOriginalAmountSpentInBudget(mOriginalId);
+            if (mCursor.getCount() != 0) {
+                removeOriginalAmountFromOriginalBudget();
+            }
+            setNewAmountForDifferentId(expenseId);
+        }
+    }
+
+    private void setNewAmountForDifferentId(String id) {
+        mNewAmount = Double.parseDouble(mNewExpenseAmount);
+        getOriginalAmountSpentInBudget(id);
+        if (mCursor.getCount() != 0) {
+            double newBudgetSpentAmount = mBudgetAmountSpent + mNewAmount;
+            update(newBudgetSpentAmount, id);
+        } else {
+            Toast.makeText(this, "Budget " + id + " not found!", Toast.LENGTH_LONG);
+        }
+
+    }
+
+    private void removeOriginalAmountFromOriginalBudget() {
+        // Since Expense id has been changed remove the original amount from the corresponding budget
+        double newAmount = mBudgetAmountSpent - mOriginalAmount;
+        if (newAmount < 0)
+            newAmount = 0;
+        update(newAmount, mOriginalId);
+    }
+
+    private void update(double amount, String id) {
+        final ContentValues values = new ContentValues();
+        final String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ?";
+        final String[] selectionArgs = {id};
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, Double.toString(amount));
+
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                db.update(BudgetInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                return null;
+            }
+        };
+        task.execute();
+
+    }
+
+    private void getOriginalAmountSpentInBudget(String id) {
+        String[] columns = {
+                BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT
+        };
+        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ?";
+        String[] selectionArgs = {id};
+
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        mCursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection,
+                selectionArgs, null, null, null);
+        if (mCursor.getCount() != 0) {
+            mCursor.moveToFirst();
+            int budgetAmountSpentPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT);
+            String amountSpentString = mCursor.getString(budgetAmountSpentPos);
+            mBudgetAmountSpent = Double.parseDouble(amountSpentString);
+        }
+    }
+
+    private void setNewAmountForSameId() {
+        mNewAmount = Double.parseDouble(mNewExpenseAmount);
+        if (mCursor.getCount() != 0) {
+            double amountToBeAdded = mBudgetAmountSpent + (mNewAmount - mOriginalAmount);
+            update(amountToBeAdded, mOriginalId);
+        } else {
+            Toast.makeText(this, "Budget " + mOriginalId + " not found!", Toast.LENGTH_LONG);
+        }
+    }
+
+    private void saveExpenseToDatabase(String expenseName, String expenseAmount, String expenseDescription,
                                        String expenseId, int day, String monthName, int year) {
 
         final String selection = ExpenditureInfoEntry._ID + " = ?";
@@ -246,8 +374,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             }
         };
         task.execute();
-
-        finish();
     }
 
     private String getMonthFromInt(int month) {
