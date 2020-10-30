@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -38,10 +40,6 @@ import androidx.core.content.ContextCompat;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 //import androidx.loader.app.LoaderManager;
-import android.content.Loader;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.widget.TextView;
 
 import androidx.core.view.GravityCompat;
 import androidx.loader.content.AsyncTaskLoader;
@@ -50,9 +48,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.financemanager.ExpenditureDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.ExpenditureInfoEntry;
-import com.example.financemanager.ExpenditureDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,6 +62,7 @@ import java.text.DateFormatSymbols;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         NavigationView.OnNavigationItemSelectedListener {
@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private LinearLayout.LayoutParams mIncomeBarLp;
     private LinearLayout.LayoutParams mExpenditureBarLp;
     private Animation mAnimSlideUp;
+    private Animation mAnimBlink;
     private AsyncTaskLoader mTaskLoader;
     private boolean mIncomeQueryFinished;
     private boolean mExpenseTotalQueryFinished;
@@ -141,10 +142,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         View leftSpacer = findViewById(R.id.view8);
         LinearLayout.LayoutParams LSLp = (LinearLayout.LayoutParams) leftSpacer.getLayoutParams();
         mAnimSlideUp = AnimationUtils.loadAnimation(this, R.anim.scale);
+        mAnimBlink = AnimationUtils.loadAnimation(this, R.anim.blink);
         mNetIncomeAmountView = findViewById(R.id.textView_netIncome);
         mNetExpenseAmountView = findViewById(R.id.textView_netExpense);
         mExpInfoView = findViewById(R.id.textView_expInfo);
-
         ivSetNotification = findViewById(R.id.iv_set_notification);
         ivSetNotification.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,8 +188,61 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .setDrawerLayout(mDrawer)
                 .build();
         initializeDisplayContent();
-
+        checkIfBudgetHasBeenCreated();
         createNotificationChannel();
+    }
+
+    private void checkIfBudgetHasBeenCreated() {
+        AsyncTask task = new AsyncTask() {
+
+            private Cursor mBudgetCursor;
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                String[] column = {BudgetInfoEntry.COLUMN_BUDGET_AMOUNT};
+                String selection = BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+                String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
+                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+                mBudgetCursor = db.query(BudgetInfoEntry.TABLE_NAME, column, selection, selectionArgs, null,
+                        null, null);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                if (mBudgetCursor.getCount() <= 0) {
+                    // setup alert Dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Alert");
+                    builder.setMessage("Creating a Budget is always the best first step. \n" +
+                            "You have'nt created any this month.");
+
+                    //add buttons
+                    builder.setPositiveButton("Create",
+                            // perform an action when user clicks
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(MainActivity.this, BudgetActivity.class));
+                                }
+                            });
+
+                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            startActivity(new Intent(MainActivity.this, BudgetActivity.class));
+                        }
+                    });
+
+                    // Create and show the AlertDialog
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                super.onPostExecute(o);
+            }
+        };
+        task.execute();
+
     }
 
     private void selectNavigationMenuItem(int p) {
@@ -203,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void initializeDisplayContent() {
         Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH);
         mCurrentMonthName = getMonthFromInt(month);
         mYear = calendar.get(Calendar.YEAR);
@@ -215,24 +270,167 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         selectNavigationMenuItem(R.id.nav_home);
         displayExpenditures();
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        if (day == 1)
+            sendNotification();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
+                ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
+
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                /*
-                    The delete operation should be carried out here.
+                final int id = (int) viewHolder.itemView.getTag();
+                // setup alert Dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Alert");
+                builder.setMessage("Are you sure you want to delete?!");
 
-                    first get the position of the item in the recycler view:
-                    You can use viewholder.getAdapterPosition()
+                //add buttons
+                builder.setPositiveButton("Delete",
+                        // perform an action when user clicks
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteAndRefresh(id);
+                            }
+                        });
+                builder.setNegativeButton("Cancel",
+                        // perform an action when user clicks
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
 
-                    next perform the delete operation.
-                 */
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        getLoaderManager().restartLoader(LOADER_EXPENSE, null, MainActivity.this);
+                    }
+                });
+
+                // Create and show the AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         }).attachToRecyclerView(mRecyclerExpenditure);
+    }
+
+    private void deleteAndRefresh(final int id) {
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                getIdAndAmountOfItem(id);
+                String selection = ExpenditureInfoEntry._ID + " = ?";
+                String[] selectionArgs = {Integer.toString(id)};
+                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                db.delete(ExpenditureInfoEntry.TABLE_NAME, selection, selectionArgs);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                mTotalIncome = 0;
+                mTotalExpenditure = 0;
+                getLoaderManager().restartLoader(LOADER_EXPENSE, null, MainActivity.this);
+                getLoaderManager().restartLoader(LOADER_INCOME_TOTAL, null, MainActivity.this);
+                getLoaderManager().restartLoader(LOADER_EXPENSE_TOTAL, null, MainActivity.this);
+                getLoaderManager().restartLoader(LOADER_AMOUNT, null, MainActivity.this);
+                getLoaderManager().restartLoader(LOADER_INCOME, null, MainActivity.this);
+                super.onPostExecute(o);
+            }
+        };
+        task.execute();
+    }
+
+    private void updateAmount(String amount) {
+        double originalAmountInDatabase = getOriginalAmount();
+        double amountToBeAdded = Double.parseDouble(amount);
+        double newAmountForDatabase = originalAmountInDatabase + amountToBeAdded;
+        if (newAmountForDatabase < 0)
+            newAmountForDatabase = 0;
+        ContentValues values = new ContentValues();
+        values.put(AmountInfoEntry.COLUMN_AMOUNT, newAmountForDatabase);
+        String selection = AmountInfoEntry.COLUMN_AMOUNT + " = ?";
+        String[] selectionArgs = {Double.toString(originalAmountInDatabase)};
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    private double getOriginalAmount() {
+        String[] columns = {AmountInfoEntry.COLUMN_AMOUNT};
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        Cursor cursor = db.query(AmountInfoEntry.TABLE_NAME, columns,null,null,
+                null,null,null);
+        cursor.moveToFirst();
+        int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
+        String amount = cursor.getString(amountPos);
+        double amountDouble = Double.parseDouble(amount);
+        cursor.close();
+        return amountDouble;
+    }
+
+    private void getIdAndAmountOfItem(int id) {
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        String[] columns = {
+                ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID,
+                ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT
+        };
+        String selection = ExpenditureInfoEntry._ID + " = ?";
+        String[] selectionArgs = {Integer.toString(id)};
+        Cursor cursor = db.query(ExpenditureInfoEntry.TABLE_NAME, columns, selection,
+                selectionArgs, null, null, null);
+        int count = cursor.getCount();
+        cursor.moveToFirst();
+        int expIdPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID);
+        int expAmountPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
+        String expId = cursor.getString(expIdPos);
+        String expAmount = cursor.getString(expAmountPos);
+
+        double originalAmountSpentInBudget = getOriginalAmountSpentInBudget(expId);
+        if (originalAmountSpentInBudget >= 0) {
+            double newAmount = originalAmountSpentInBudget - Double.parseDouble(expAmount);
+            if (newAmount < 0)
+                newAmount = 0;
+            updateAmountSpentInBudget(newAmount, expId);
+            updateAmount(expAmount);
+        }
+        cursor.close();
+    }
+
+    private double getOriginalAmountSpentInBudget(String expId) {
+        double budgetAmountSpent = -1;
+        String[] columns = {
+                BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT
+        };
+        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ?";
+        String[] selectionArgs = {expId, mCurrentMonthName};
+
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        Cursor cursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection,
+                selectionArgs, null, null, null);
+        if (cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            int budgetAmountSpentPos = cursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT);
+            String amountSpentString = cursor.getString(budgetAmountSpentPos);
+            budgetAmountSpent = Double.parseDouble(amountSpentString);
+        }
+        cursor.close();
+        return budgetAmountSpent;
+    }
+
+    private void updateAmountSpentInBudget(double amount, String id) {
+        ContentValues values = new ContentValues();
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, Double.toString(amount));
+        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ?";
+        String[] selectionArgs = {id, mCurrentMonthName};
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        db.update(BudgetInfoEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
     private String getMonthFromInt(int month) {
@@ -245,12 +443,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return monthString;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
     private void displayExpenditures() {
         mRecyclerExpenditure.setLayoutManager(mExpenditureLayoutManager);
         mRecyclerExpenditure.setAdapter(mExpenditureRecyclerAdapter);
@@ -261,6 +453,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onResume() {
         super.onResume();
         mTotalIncome = 0;
+        mTotalExpenditure = 0;
         // get all sets of data from database
         getLoaderManager().restartLoader(LOADER_INCOME_TOTAL, null, this);
         getLoaderManager().restartLoader(LOADER_EXPENSE, null, this);
@@ -309,6 +502,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             setExpenditureBarHeight(height);
         } else if (barHeight > 100) {
             updateExpenditure();
+        } else if (barHeight == 0) {
+            setExpenditureBarHeight(1);
         }
         Log.i("Income", "Total Expenditure " + mTotalExpenditure);
     }
@@ -552,7 +747,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 break;
             case LOADER_AMOUNT:
                 mAmountCursor = data;
-                setBalance(mAmountCursor);
+                    setBalance(mAmountCursor);
+
                 break;
             case LOADER_INCOME:
                 mIncomeCursor = data;
@@ -562,6 +758,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void setBalance(Cursor cursor) {
         cursor.moveToFirst();
+        mAmountLeft.startAnimation(mAnimBlink);
         int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
         String amountFromSql = cursor.getString(amountPos);
         double amountD = Double.parseDouble(amountFromSql);
@@ -570,7 +767,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         myFormat.setGroupingUsed(true);
         String amount = myFormat.format(amountLong);
         mAmountLeft.setText("N" + amount);
-
     }
 
     private void setBarWhenQueriesFinished() {
@@ -584,7 +780,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private String getInfo(double percent) {
-        return "You've spent " + percent + "% of your income.";
+        double roundOff = Math.round(percent * 100.0) / 100.0;
+        return "You've spent " + roundOff + "% of your income.";
     }
 
 
@@ -602,6 +799,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else if (loader.getId() == LOADER_AMOUNT) {
             if (mAmountCursor != null)
                 mAmountCursor.close();
+        } else if (loader.getId() == LOADER_INCOME) {
+            if (mIncomeCursor != null)
+                mIncomeCursor.close();
         }
     }
 

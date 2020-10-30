@@ -8,9 +8,11 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Selection;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -35,6 +38,10 @@ public class AddBudgetActivity extends AppCompatActivity {
     private EditText mBudgetAmount;
     private Spinner mSpinnerCategory;
     private FinanceManagerOpenHelper mDbOpenHelper;
+    private String mMonthName;
+    private int mYear;
+    private int mDay;
+    private ConstraintLayout mParent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,7 @@ public class AddBudgetActivity extends AppCompatActivity {
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         mDbOpenHelper = new FinanceManagerOpenHelper(this);
+        mParent = findViewById(R.id.add_budget_parent_layout);
 
         // Set the Height of the button to 10% of the devices height
         final Button button = findViewById(R.id.button_add_budget);
@@ -59,7 +67,12 @@ public class AddBudgetActivity extends AppCompatActivity {
         mSpinnerCategory = findViewById(R.id.spinner_budget_category);
         mBudgetAmount = findViewById(R.id.editTextBudgetAmount);
 
-
+        // get the current date
+        Calendar calendar = Calendar.getInstance();
+        mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        mMonthName = getMonthFromInt(month);
+        mYear = calendar.get(Calendar.YEAR);
 
         // Populate Spinner With Lists of available Categories
         String[] Categories = new String[]{"Food", "Housing",
@@ -104,8 +117,6 @@ public class AddBudgetActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 saveBudgetToDatabase();
-                // close add budget screen after saving to database
-                finish();
             }
         });
         builder.setNegativeButton("Cancel",
@@ -127,30 +138,56 @@ public class AddBudgetActivity extends AppCompatActivity {
         String budgetCategory = deCapitalize(mSpinnerCategory.getSelectedItem().toString());
         String budgetAmount = mBudgetAmount.getText().toString();
 
-        // get the current date
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        String monthName = getMonthFromInt(month);
-        int year = calendar.get(Calendar.YEAR);
+        checkIfBudgetForCurrentMonthExists(budgetCategory, budgetAmount);
 
-        final ContentValues values = new ContentValues();
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY, budgetCategory);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT, budgetAmount);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_DAY, day);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_MONTH, monthName);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_YEAR, year);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "0");
+    }
 
+    private void checkIfBudgetForCurrentMonthExists(final String category, final String amount) {
         AsyncTask task = new AsyncTask() {
+
+            private Cursor mCursor;
+
             @Override
             protected Object doInBackground(Object[] objects) {
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                db.insert(BudgetInfoEntry.TABLE_NAME, null, values);
+                String[] columns = {BudgetInfoEntry.COLUMN_BUDGET_CATEGORY};
+                String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " +
+                        BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " +
+                        BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+                String[] selectionArgs = {category, mMonthName, Integer.toString(mYear)};
+                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+                mCursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+                if (mCursor.getCount() <= 0) {
+                    insertBudget(category, amount);
+                    finish();
+                } else {
+                    Snackbar.make(mParent, "Budget Already exists for this month", Snackbar.LENGTH_LONG).show();
+                }
                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                if (mCursor != null)
+                    mCursor.close();
+
+                super.onPostExecute(o);
             }
         };
         task.execute();
+    }
+
+    private void insertBudget(String category, String amount) {
+        final ContentValues values = new ContentValues();
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY, category);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT, amount);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_DAY, mDay);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_MONTH, mMonthName);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_YEAR, mYear);
+        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "0");
+
+
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        db.insert(BudgetInfoEntry.TABLE_NAME, null, values);
     }
 
     private String getMonthFromInt(int month) {

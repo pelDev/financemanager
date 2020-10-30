@@ -137,6 +137,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#000000"));
         }
         holder.mId = id;
+        holder.itemView.setTag(id);
     }
 
     private String expenditureTimestamp() {

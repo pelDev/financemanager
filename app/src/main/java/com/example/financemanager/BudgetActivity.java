@@ -17,8 +17,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
 
 public class BudgetActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -28,6 +32,9 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     private static final int LOADER_BUDGETS = 0;
     private static final int LOADER_EXPENDITURE = 1;
     private Cursor mBudgetCursor;
+    private int mDay;
+    private String mMonthName;
+    private int mYear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +47,34 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.bckGround));
 
         mDbHelper = new FinanceManagerOpenHelper(this);
+        // get the current date
+        Calendar calendar = Calendar.getInstance();
+        mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        mMonthName = getMonthFromInt(month);
+        mYear = calendar.get(Calendar.YEAR);
+
+        TextView title = findViewById(R.id.budget_list_title);
+        title.setText(getTitleText());
+
         mRecyclerBudgets = findViewById(R.id.recycler_budgets);
 
         initializeDisplayContent();
 
+    }
+
+    private String getTitleText() {
+        return "Budget for " + mMonthName + ", " + mYear;
+    }
+
+    private String getMonthFromInt(int month) {
+        String monthString = "";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (month >= 0 && month <= 11) {
+            monthString = months[month];
+        }
+        return monthString;
     }
 
     private void initializeDisplayContent() {

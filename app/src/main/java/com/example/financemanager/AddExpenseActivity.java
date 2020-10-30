@@ -268,6 +268,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
         String amount = cursor.getString(amountPos);
         double amountDouble = Double.parseDouble(amount);
+        cursor.close();
         return amountDouble;
     }
 
