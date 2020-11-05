@@ -137,7 +137,7 @@
                     android:id="@+id/imageA"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:background="@color/colorPrimaryLight"
                     android:src="@drawable/ic_action_income"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -193,7 +193,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            app:cardCornerRadius="10sp"
+            app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cardA"
@@ -244,6 +244,7 @@
                         android:textAlignment="center"
                         android:textColor="@android:color/black"
                         android:textStyle="bold"
+                        android:layout_marginBottom="15dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -308,6 +309,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/list_expenditure"/>
+
+    <TextView
+        android:id="@+id/emptyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:text="@string/empty_recycler_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewE" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

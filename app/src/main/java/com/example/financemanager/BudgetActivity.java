@@ -35,6 +35,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     private int mDay;
     private String mMonthName;
     private int mYear;
+    private TextView mEmptyRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
         title.setText(getTitleText());
 
         mRecyclerBudgets = findViewById(R.id.recycler_budgets);
+        mEmptyRecycler = findViewById(R.id.empty_view_income);
 
         initializeDisplayContent();
 
@@ -118,7 +120,9 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
                         BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT,
                         BudgetInfoEntry._ID,
                 };
-                return db.query(BudgetInfoEntry.TABLE_NAME, columns, null, null,
+                String selection = BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+                String[] selectionArgs = {mMonthName, Integer.toString(mYear)};
+                return db.query(BudgetInfoEntry.TABLE_NAME, columns, selection, selectionArgs,
                         null, null, null);
             }
         };
@@ -128,6 +132,13 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         int id = loader.getId();
         if (id == LOADER_BUDGETS) {
+            if (data.getCount() != 0) {
+                mRecyclerBudgets.setVisibility(View.VISIBLE);
+                mEmptyRecycler.setVisibility(View.GONE);
+            } else {
+                mRecyclerBudgets.setVisibility(View.GONE);
+                mEmptyRecycler.setVisibility(View.VISIBLE);
+            }
             mBudgetCursor = data;
             mBudgetRecyclerAdapter.changeCursor(mBudgetCursor);
         }

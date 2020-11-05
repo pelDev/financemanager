@@ -62,7 +62,6 @@ import java.text.DateFormatSymbols;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         NavigationView.OnNavigationItemSelectedListener {
@@ -116,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private int mExpenditureAmountPos;
     private TextView mNetExpenseAmountView;
     private TextView mExpInfoView;
+    private boolean mExpenditureCursorCalled = false;
+    private boolean mIncomeCursorCalled = false;
+    private TextView mEmptyRecycler;
 
 
     @Override
@@ -223,7 +225,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    startActivity(new Intent(MainActivity.this, BudgetActivity.class));
+                                    dialog.dismiss();
+                                    //startActivity(new Intent(MainActivity.this, BudgetActivity.class));
                                 }
                             });
 
@@ -263,7 +266,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mYear = calendar.get(Calendar.YEAR);
         mHomeDate.setText(new StringBuilder().append(mCurrentMonthName).append(", ").append(mYear).toString());
         //DataManager.loadFromDatabase(mDbOpenHelper);
-        mRecyclerExpenditure = (RecyclerView) findViewById(R.id.list_expenditure);
+        mRecyclerExpenditure = findViewById(R.id.list_expenditure);
+        mEmptyRecycler = findViewById(R.id.emptyView);
         mExpenditureLayoutManager = new LinearLayoutManager(this);
 
         mExpenditureRecyclerAdapter = new ExpenditureRecyclerAdapter(this, null);
@@ -271,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         displayExpenditures();
 
         if (day == 1)
-            sendNotification();
+            //sendNotification();
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
                 ItemTouchHelper.RIGHT) {
@@ -468,6 +472,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         populateExpenditureColumnPosition(cursor);
 
         if (cursor == mExpenditureCursorForTotal) {
+            mExpenditureCursorCalled =  true;
             mTotalExpenditure = 0;
             mExpenditureCursorForTotal.moveToFirst();
             while (!mExpenditureCursorForTotal.isAfterLast()) {
@@ -495,6 +500,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void setExpenditureBar() {
         float barHeight = (float) ((mTotalExpenditure / mTotalIncome) * 100f);
         Log.i("Income", "Bar Height In dp " + Math.round(barHeight) );
+        if (!mExpenditureCursorCalled)
+            barHeight = 0;
         if (barHeight > 0 && barHeight <= 100) {
             Log.i("Income", "Total Income for calculating Expenditure " + (float) mTotalIncome);
             int height = dpToPx(Math.round(barHeight));
@@ -547,9 +554,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     // get total amount of income received in a particular month from the income table.
     public void getIncomeTotal(Cursor cursor) {
+
         populateIncomeColumnPosition(cursor);
 
         if (cursor == mIncomeCursorForTotal) {
+            mIncomeCursorCalled = true;
             // move cursor to the first row
             mIncomeCursorForTotal.moveToFirst();
 
@@ -595,8 +604,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void setIncomeBar() {
+        int height;
+        if (!mIncomeCursorCalled) {
+           height  = 1;
+        } else {
+            height = 100;
+        }
         mIncomeBarLp.width = (int) Math.round(getScreenWidth() * 0.35);
-        mIncomeBarLp.height = dpToPx(100);
+        mIncomeBarLp.height = dpToPx(height);
         mIncomeBar.setLayoutParams(mIncomeBarLp);
         mIncomeBar.startAnimation(mAnimSlideUp);
     }
@@ -670,8 +685,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT,
                 };
 
-                String selection = ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH + " = ?";
-                String[] selectionArgs = {mCurrentMonthName};
+                String selection = ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH + " = ? AND " + ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR + " = ?";
+                String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
                 return db.query(ExpenditureInfoEntry.TABLE_NAME, expenditureColumnsForTotal,
                         selection, selectionArgs, null, null, null);
             }
@@ -712,8 +727,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         IncomeInfoEntry.COLUMN_INCOME_AMOUNT,
                 };
 
-                String selection = IncomeInfoEntry.COLUMN_INCOME_MONTH + " = ?";
-                String[] selectionArgs = {mCurrentMonthName};
+                String selection = IncomeInfoEntry.COLUMN_INCOME_MONTH + " = ? AND " + IncomeInfoEntry.COLUMN_INCOME_YEAR + " = ?";
+                String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
 
                 return db.query(IncomeInfoEntry.TABLE_NAME, incomeColumns, selection, selectionArgs,
                         null, null, null);
@@ -728,22 +743,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mIncomeCursorForTotal = data;
                 if (mIncomeCursorForTotal.getCount() != 0) {
                     getIncomeTotal(mIncomeCursorForTotal);
-                    mIncomeQueryFinished = true;
-                    setBarWhenQueriesFinished();
                 }
+                mIncomeQueryFinished = true;
+                setBarWhenQueriesFinished();
                 break;
             case LOADER_EXPENSE:
                 mExpenditureCursor = data;
-                mExpenditureRecyclerAdapter.changeCursor(mExpenditureCursor);
-                getExpenditureTotal(mExpenditureCursor);
+                if (mExpenditureCursor.getCount() != 0) {
+                    mExpenditureRecyclerAdapter.changeCursor(mExpenditureCursor);
+                    getExpenditureTotal(mExpenditureCursor);
+                    mRecyclerExpenditure.setVisibility(View.VISIBLE);
+                    mEmptyRecycler.setVisibility(View.GONE);
+                } else {
+                    mRecyclerExpenditure.setVisibility(View.GONE);
+                    mEmptyRecycler.setVisibility(View.VISIBLE);
+                }
                 break;
             case LOADER_EXPENSE_TOTAL:
                 mExpenditureCursorForTotal = data;
-                if (mExpenditureCursorForTotal != null) {
+                if (mExpenditureCursorForTotal.getCount() != 0) {
                     getExpenditureTotal(mExpenditureCursorForTotal);
-                    mExpenseTotalQueryFinished = true;
-                    setBarWhenQueriesFinished();
                 }
+                mExpenseTotalQueryFinished = true;
+                setBarWhenQueriesFinished();
                 break;
             case LOADER_AMOUNT:
                 mAmountCursor = data;
@@ -752,7 +774,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 break;
             case LOADER_INCOME:
                 mIncomeCursor = data;
-                getIncomeTotal(mIncomeCursor);
+                if (mIncomeCursor.getCount() != 0) {
+                    getIncomeTotal(mIncomeCursor);
+                }
         }
     }
 

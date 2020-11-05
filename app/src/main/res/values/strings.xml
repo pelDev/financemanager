@@ -19,4 +19,5 @@
     <string name="budget_screen_title">Add Budget</string>
     <string name="add_income_button">Add Income</string>
     <string name="net_income_hint">10,000</string>
+    <string name="empty_recycler_message">Data Set is Currently Empty</string>
 </resources>
