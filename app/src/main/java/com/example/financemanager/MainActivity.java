@@ -99,14 +99,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private LinearLayout.LayoutParams mExpenditureBarLp;
     private Animation mAnimSlideUp;
     private Animation mAnimBlink;
-    private AsyncTaskLoader mTaskLoader;
     private boolean mIncomeQueryFinished;
     private boolean mExpenseTotalQueryFinished;
     private double mTotalExpenditure;
-    private TextView greetings;
     private Cursor mExpenditureCursor;
     private FirebaseAuth mAuth;
-    private int mBalance;
     private TextView mAmountLeft;
     private ImageView ivSetNotification;
     private TextView mHomeDate;
@@ -278,17 +275,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         selectNavigationMenuItem(R.id.nav_home);
         displayExpenditures();
 
-        if (day == 1)
-            //sendNotification();
+        // if (day == 1)
+        sendNotification();
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
-                ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
-
-
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 final int id = (int) viewHolder.itemView.getTag();
@@ -652,18 +646,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private CursorLoader createLoaderIncome() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] columns = {
-                        IncomeInfoEntry.COLUMN_INCOME_AMOUNT,
-                };
-                String selection = IncomeInfoEntry.COLUMN_INCOME_YEAR + " = ?";
-                String[] selectionArgs = {Integer.toString(mYear)};
-                return db.query(IncomeInfoEntry.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
-            }
+        Uri uri = Incomes.CONTENT_URI;
+        String[] columns = {
+                Incomes.COLUMN_INCOME_AMOUNT,
         };
+        String selection = Incomes.COLUMN_INCOME_YEAR + " = ?";
+        String[] selectionArgs = {Integer.toString(mYear)};
+        return new CursorLoader(this, uri, columns, selection, selectionArgs, null);
     }
 
     private CursorLoader createLoaderAmount() {
@@ -834,6 +823,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
+    // Notification
     public void launchNotificationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Create or cancel a Notification")

@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Selection;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Expenses;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -44,7 +46,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     public static final String EXPENDITURE_ID = "com.example.financemanager.EXPENDITURE_ID";
     public static final int ID_NOT_SET = -1;
     public static final int LOADER_EXPENSE = 0;
-    public static final int LOADER_BUDGET = 1;
     private final String TAG = getClass().getSimpleName();
     private int mExpenditureId;
     private boolean mIsNewExpense;
@@ -424,25 +425,18 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     }
 
     private CursorLoader createLoaderExpense() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        Uri uri = Expenses.CONTENT_URI;
+        String selection = Expenses._ID + " = ?";
+        String[] selectionArgs = {Integer.toString(mExpenditureId)};
 
-                String selection = ExpenditureInfoEntry._ID + " = ?";
-                String[] selectionArgs = {Integer.toString(mExpenditureId)};
-
-                String[] expenseColumns = {
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_DESCRIPTION
-                };
-
-                return db.query(ExpenditureInfoEntry.TABLE_NAME,
-                        expenseColumns, selection, selectionArgs, null, null, null);
-            }
+        String[] expenseColumns = {
+                Expenses.COLUMN_EXPENDITURE_NAME,
+                Expenses.COLUMN_EXPENDITURE_AMOUNT,
+                Expenses.COLUMN_EXPENDITURE_ID,
+                Expenses.COLUMN_EXPENDITURE_DESCRIPTION
         };
+        return new CursorLoader(this, uri, expenseColumns, selection,
+                selectionArgs, null);
     }
 
     @Override
