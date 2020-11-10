@@ -55,7 +55,7 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
     }
 
     private void initializeDisplayContent() {
-        mRecyclerIncome = (RecyclerView) findViewById(R.id.list_income);
+        mRecyclerIncome = findViewById(R.id.list_income);
         mIncomeLayoutManager = new LinearLayoutManager(this);
 
         mIncomeRecyclerAdapter = new IncomeRecyclerAdapter(this, null);
@@ -134,6 +134,13 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
                     db.insert(IncomeInfoEntry.TABLE_NAME, null, values);
                     Snackbar.make(mParent, "Saved Succesfully.", Snackbar.LENGTH_SHORT).show();
                     return null;
+                }
+
+                @Override
+                protected void onPostExecute(Object o) {
+                    getLoaderManager().restartLoader(LOADER_INCOMES, null, NetIncomeActivity.this);
+                    Snackbar.make(mParent, "Saved", Snackbar.LENGTH_SHORT).show();
+                    super.onPostExecute(o);
                 }
             };
             task.execute();

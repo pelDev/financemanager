@@ -66,6 +66,9 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private double mNewAmount;
     private Cursor mCursor;
     private String mNewExpenseAmount;
+    private int mDay;
+    private String mMonthName;
+    private int mYear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +104,12 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         String[] Categories = new String[]{"Food", "Housing",
         "Fashion", "Education", "Entertainment", "Transportation",
         "Investment", "Technology", "Recreation", "Others"};
+
+        Calendar calendar = Calendar.getInstance();
+        mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        mMonthName = getMonthFromInt(month);
+        mYear = calendar.get(Calendar.YEAR);
 
         final List<String> categoryList = new ArrayList<>(Arrays.asList(Categories));
         mArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryList);
@@ -222,15 +231,9 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         String expenseId = deCapitalize(mSpinner.getSelectedItem().toString());
         Log.i("Expenditure", " New Expense Id " + expenseId);
 
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH);
-        String monthName = getMonthFromInt(month);
-        int year = calendar.get(Calendar.YEAR);
-
-        Log.i("Expenditure", "Today's Date " + day + " " +
-                monthName + " " + year);
-        saveExpenseToDatabase(expenseName, mNewExpenseAmount, expenseDescription, expenseId, day, monthName, year);
+        Log.i("Expenditure", "Today's Date " + mDay + " " +
+                mMonthName + " " + mYear);
+        saveExpenseToDatabase(expenseName, mNewExpenseAmount, expenseDescription, expenseId, mDay, mMonthName, mYear);
         updateAmountSpentInBudget(expenseId);
         updateAmount();
         finish();
@@ -268,6 +271,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
         String amount = cursor.getString(amountPos);
         double amountDouble = Double.parseDouble(amount);
+        cursor.close();
         return amountDouble;
     }
 
@@ -291,7 +295,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             double newBudgetSpentAmount = mBudgetAmountSpent + mNewAmount;
             update(newBudgetSpentAmount, id);
         } else {
-            Toast.makeText(this, "Budget " + id + " not found!", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Budget " + id + " not found!", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -306,8 +310,10 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
     private void update(double amount, String id) {
         final ContentValues values = new ContentValues();
-        final String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ?";
-        final String[] selectionArgs = {id};
+        final String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " +
+                BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " +
+                BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+        final String[] selectionArgs = {id, mMonthName, Integer.toString(mYear)};
         values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, Double.toString(amount));
 
         AsyncTask task = new AsyncTask() {
@@ -326,8 +332,10 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         String[] columns = {
                 BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT
         };
-        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ?";
-        String[] selectionArgs = {id};
+        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " +
+                BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " +
+                BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+        String[] selectionArgs = {id, mMonthName, Integer.toString(mYear)};
 
         SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
         mCursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection,

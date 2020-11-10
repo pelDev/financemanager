@@ -60,7 +60,6 @@
             android:id="@+id/budget_list_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Budgets"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_margin="12dp"
             android:textColor="@android:color/black"
@@ -76,6 +75,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/budget_list_title"
             tools:listitem="@layout/item_budget" />
+
+        <TextView
+            android:id="@+id/empty_view_income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/empty_recycler_message"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/budget_list_title" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
