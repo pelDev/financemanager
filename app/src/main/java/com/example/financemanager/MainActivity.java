@@ -7,6 +7,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -190,9 +191,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 R.id.nav_home, R.id.nav_budget, R.id.nav_slideshow)
                 .setDrawerLayout(mDrawer)
                 .build();
+        createNotificationChannel();
         initializeDisplayContent();
         checkIfBudgetHasBeenCreated();
-        createNotificationChannel();
     }
 
     private void checkIfBudgetHasBeenCreated() {
@@ -275,8 +276,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         selectNavigationMenuItem(R.id.nav_home);
         displayExpenditures();
 
-        // if (day == 1)
-        sendNotification();
+        if (day == 1) {
+            sendNotification();
+        }
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
