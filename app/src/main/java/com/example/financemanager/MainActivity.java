@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,6 +53,9 @@ import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Amount;
+import com.example.financemanager.FinanceManagerProviderContract.Expenses;
+import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -663,77 +667,55 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private CursorLoader createLoaderAmount() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] columns = {AmountInfoEntry.COLUMN_AMOUNT};
-                return db.query(AmountInfoEntry.TABLE_NAME, columns, null, null,
-                        null, null, null);
-            }
-        };
+        Uri uri = Amount.CONTENT_URI;
+        String[] columns = {Amount.COLUMN_AMOUNT};
+        return new CursorLoader(this, uri, columns,
+                null, null, null);
     }
 
     private CursorLoader createLoaderExpenseTotal() {
         mExpenseTotalQueryFinished = false;
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] expenditureColumnsForTotal = {
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT,
-                };
-
-                String selection = ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH + " = ? AND " + ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR + " = ?";
-                String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
-                return db.query(ExpenditureInfoEntry.TABLE_NAME, expenditureColumnsForTotal,
-                        selection, selectionArgs, null, null, null);
-            }
+        Uri uri = Expenses.CONTENT_URI;
+        String[] expenditureColumnsForTotal = {
+                Expenses.COLUMN_EXPENDITURE_MONTH,
+                Expenses.COLUMN_EXPENDITURE_AMOUNT,
         };
+
+        String selection = Expenses.COLUMN_EXPENDITURE_MONTH + " = ? AND " +
+                Expenses.COLUMN_EXPENDITURE_YEAR + " = ?";
+        String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
+        return new CursorLoader(this, uri, expenditureColumnsForTotal, selection,
+                selectionArgs, null);
     }
 
     private CursorLoader createLoaderExpense() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] expenditureColumns = {
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT,
-                        ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID,
-                        ExpenditureInfoEntry._ID
-                };
-                String selection = ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR + " = ?";
-                String[] selectionArgs = {Integer.toString(mYear)};
-                //String noteOrderBy = CourseInfoEntry.COLUMN_COURSE_TITLE + ", " + NoteInfoEntry.COLUMN_NOTE_TITLE;
+        Uri uri = Expenses.CONTENT_URI;
 
-                return db.query(ExpenditureInfoEntry.TABLE_NAME, expenditureColumns, selection,
-                        selectionArgs, null, null, null);
-            }
+        String[] expenditureColumns = {
+                Expenses.COLUMN_EXPENDITURE_NAME,
+                Expenses.COLUMN_EXPENDITURE_DAY,
+                Expenses.COLUMN_EXPENDITURE_MONTH,
+                Expenses.COLUMN_EXPENDITURE_YEAR,
+                Expenses.COLUMN_EXPENDITURE_AMOUNT,
+                Expenses.COLUMN_EXPENDITURE_ID,
+                Expenses._ID
         };
+        String selection = Expenses.COLUMN_EXPENDITURE_YEAR + " = ?";
+        String[] selectionArgs = {Integer.toString(mYear)};
+        return new CursorLoader(this, uri, expenditureColumns, selection, selectionArgs, null);
     }
 
     private CursorLoader createLoaderIncomeTotal() {
         mIncomeQueryFinished = false;
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] incomeColumns = {
-                        IncomeInfoEntry.COLUMN_INCOME_AMOUNT,
-                };
-
-                String selection = IncomeInfoEntry.COLUMN_INCOME_MONTH + " = ? AND " + IncomeInfoEntry.COLUMN_INCOME_YEAR + " = ?";
-                String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
-
-                return db.query(IncomeInfoEntry.TABLE_NAME, incomeColumns, selection, selectionArgs,
-                        null, null, null);
-            }
+        Uri uri = Incomes.CONTENT_URI;
+        String[] incomeColumns = {
+                Incomes.COLUMN_INCOME_AMOUNT,
         };
+
+        String selection = Incomes.COLUMN_INCOME_MONTH + " = ? AND " + Incomes.COLUMN_INCOME_YEAR + " = ?";
+        String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
+        return new CursorLoader(this, uri, incomeColumns, selection,
+                selectionArgs, null);
     }
 
     @Override
@@ -790,7 +772,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
         String amount = myFormat.format(amountLong);
-        mAmountLeft.setText("N" + amount);
+        mAmountLeft.setText("NGN" + amount);
     }
 
     private void setBarWhenQueriesFinished() {
