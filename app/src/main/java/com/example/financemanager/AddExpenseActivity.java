@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import android.content.ContentUris;
 import android.content.Loader;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -70,6 +71,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private int mDay;
     private String mMonthName;
     private int mYear;
+    private Uri mExpenseUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,19 +193,19 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
     private void createNewExpense() {
         final ContentValues values = new ContentValues();
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_NAME, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT, "0");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DESCRIPTION, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_DAY, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH, "");
-        values.put(ExpenditureInfoEntry.COLUMN_EXPENDITURE_YEAR, "");
+        values.put(Expenses.COLUMN_EXPENDITURE_NAME, "");
+        values.put(Expenses.COLUMN_EXPENDITURE_AMOUNT, "0");
+        values.put(Expenses.COLUMN_EXPENDITURE_DESCRIPTION, "");
+        values.put(Expenses.COLUMN_EXPENDITURE_ID, "");
+        values.put(Expenses.COLUMN_EXPENDITURE_DAY, "");
+        values.put(Expenses.COLUMN_EXPENDITURE_MONTH, "");
+        values.put(Expenses.COLUMN_EXPENDITURE_YEAR, "");
 
         AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                mExpenditureId = (int) db.insert(ExpenditureInfoEntry.TABLE_NAME, null, values);
+                // insert expense through content provider
+                mExpenseUri = getContentResolver().insert(Expenses.CONTENT_URI, values);
                 return null;
             }
         };
@@ -211,8 +213,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
 
         mOriginalId = "food";
         mOriginalAmount = 0;
-
-        mExpAmountEditText.setText("0");
         Log.i("Expenditure", "New Expense at position " + mExpenditureId);
     }
 
@@ -425,18 +425,15 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     }
 
     private CursorLoader createLoaderExpense() {
-        Uri uri = Expenses.CONTENT_URI;
-        String selection = Expenses._ID + " = ?";
-        String[] selectionArgs = {Integer.toString(mExpenditureId)};
-
+        mExpenseUri = ContentUris.withAppendedId(Expenses.CONTENT_URI, mExpenditureId);
         String[] expenseColumns = {
                 Expenses.COLUMN_EXPENDITURE_NAME,
                 Expenses.COLUMN_EXPENDITURE_AMOUNT,
                 Expenses.COLUMN_EXPENDITURE_ID,
                 Expenses.COLUMN_EXPENDITURE_DESCRIPTION
         };
-        return new CursorLoader(this, uri, expenseColumns, selection,
-                selectionArgs, null);
+        return new CursorLoader(this, mExpenseUri, expenseColumns, null,
+                null, null);
     }
 
     @Override

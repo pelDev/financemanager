@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormatSymbols;
@@ -79,19 +81,14 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
     }
 
     private CursorLoader createLoaderIncome() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] columns = {
-                        IncomeInfoEntry.COLUMN_INCOME_AMOUNT,
-                        IncomeInfoEntry.COLUMN_INCOME_DAY,
-                        IncomeInfoEntry.COLUMN_INCOME_MONTH,
-                        IncomeInfoEntry.COLUMN_INCOME_YEAR
-                };
-                return db.query(IncomeInfoEntry.TABLE_NAME, columns, null, null, null, null, null);
-            }
+        Uri uri = Incomes.CONTENT_URI;
+        String[] columns = {
+                Incomes.COLUMN_INCOME_AMOUNT,
+                Incomes.COLUMN_INCOME_DAY,
+                Incomes.COLUMN_INCOME_MONTH,
+                Incomes.COLUMN_INCOME_YEAR
         };
+        return new CursorLoader(this, uri, columns, null, null, null);
     }
 
     @Override

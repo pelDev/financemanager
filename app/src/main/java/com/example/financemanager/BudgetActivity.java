@@ -13,6 +13,7 @@ import android.content.Loader;
 import android.app.LoaderManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -20,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
@@ -110,22 +112,16 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
 
 
     private CursorLoader createLoaderBudgets() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbHelper.getReadableDatabase();
+                Uri uri = Budgets.CONTENT_URI;
                 String[] columns = {
-                        BudgetInfoEntry.COLUMN_BUDGET_CATEGORY,
-                        BudgetInfoEntry.COLUMN_BUDGET_AMOUNT,
-                        BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT,
-                        BudgetInfoEntry._ID,
+                        Budgets.COLUMN_BUDGET_CATEGORY,
+                        Budgets.COLUMN_BUDGET_AMOUNT,
+                        Budgets.COLUMN_BUDGET_AMOUNT_SPENT,
+                        Budgets._ID,
                 };
-                String selection = BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+                String selection = Budgets.COLUMN_BUDGET_MONTH + " = ? AND " + Budgets.COLUMN_BUDGET_YEAR + " = ?";
                 String[] selectionArgs = {mMonthName, Integer.toString(mYear)};
-                return db.query(BudgetInfoEntry.TABLE_NAME, columns, selection, selectionArgs,
-                        null, null, null);
-            }
-        };
+                return new CursorLoader(this, uri, columns, selection, selectionArgs, null);
     }
 
     @Override

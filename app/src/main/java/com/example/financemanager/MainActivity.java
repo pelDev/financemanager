@@ -7,7 +7,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,7 +43,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 //import androidx.loader.app.LoaderManager;
 
 import androidx.core.view.GravityCompat;
-import androidx.loader.content.AsyncTaskLoader;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -160,9 +158,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
+        // set chart parameters
+
+        // set the width of the space on the right to 10% of the screen Width
         RSLp.width = (int) Math.round(getScreenWidth() * 0.1);
         rightSpacer.setLayoutParams(RSLp);
 
+        // set the width of the space in the middle of the bars to 10% of the device screen width.
         MSLp.width = (int) Math.round(getScreenWidth() * 0.1);
         middleSpacer.setLayoutParams(MSLp);
 
@@ -188,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //        // Passing each menu ID as a set of Ids because each
 //        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_budget, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_budget, R.id.nav_todo, R.id.nav_card)
                 .setDrawerLayout(mDrawer)
                 .build();
         createNotificationChannel();
@@ -727,6 +729,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     getExpenditureTotal(mExpenditureCursor);
                     mRecyclerExpenditure.setVisibility(View.VISIBLE);
                     mEmptyRecycler.setVisibility(View.GONE);
+                    Log.d("Expense", "Length " + mExpenditureCursor.getCount());
                 } else {
                     mRecyclerExpenditure.setVisibility(View.GONE);
                     mEmptyRecycler.setVisibility(View.VISIBLE);
@@ -805,7 +808,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.nave_logout) {
+        if (id == R.id.nav_logout) {
             // Sign user out and redirect to start screen.
             mAuth.signOut();
             startActivity(new Intent(this, StartActivity.class));
@@ -820,6 +823,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mDrawer.closeDrawer(GravityCompat.START);
             // Navigate to the Budget activity
             startActivity(new Intent(this, BudgetActivity.class));
+        } else if (id == R.id.nav_todo) {
+            mDrawer.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, ToDoActivity.class));
+        } else if (id == R.id.nav_card) {
+            mDrawer.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, AddCardActivity.class));
         }
         return false;
     }

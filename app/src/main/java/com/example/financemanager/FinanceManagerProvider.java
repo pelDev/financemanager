@@ -1,6 +1,7 @@
 package com.example.financemanager;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -30,12 +31,15 @@ public class FinanceManagerProvider extends ContentProvider {
 
     public static final int AMOUNT = 3;
 
+    public static final int EXPENSE_ROW = 4;
+
     // static initializer
     static {
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Expenses.PATH, EXPENSES);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Incomes.PATH, INCOMES);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Budgets.PATH, BUDGETS);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Amount.PATH, AMOUNT);
+        sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Expenses.PATH + "/#", EXPENSE_ROW);
     }
     public FinanceManagerProvider() {
 
@@ -58,8 +62,33 @@ public class FinanceManagerProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        // TODO: Implement this to handle requests to insert a new row.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        // this is the id of the newly inserted row
+        long rowId = -1;
+        // row uri indicates the newly inserted row
+        // row uri should look like this:
+        // content://com.example.financemanager.provider/{table_name}/{row_id}
+        Uri rowUri = null;
+
+        int uriMatch = sUriMatcher.match(uri);
+        switch (uriMatch) {
+            case INCOMES:
+                rowId = db.insert(IncomeInfoEntry.TABLE_NAME, null, values);
+                rowUri = ContentUris.withAppendedId(Incomes.CONTENT_URI, rowId);
+                break;
+            case EXPENSES:
+                rowId = db.insert(ExpenditureInfoEntry.TABLE_NAME, null, values);
+                rowUri = ContentUris.withAppendedId(Expenses.CONTENT_URI, rowId);
+                break;
+            case BUDGETS:
+                rowId = db.insert(BudgetInfoEntry.TABLE_NAME, null, values);
+                rowUri = ContentUris.withAppendedId(Budgets.CONTENT_URI, rowId);
+                break;
+            case AMOUNT:
+                // This is a read only table
+                break;
+        }
+        return rowUri;
     }
 
     @Override
@@ -95,6 +124,13 @@ public class FinanceManagerProvider extends ContentProvider {
             case AMOUNT:
                 cursor = db.query(AmountInfoEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
+                break;
+            case EXPENSE_ROW:
+                long rowId = ContentUris.parseId(uri);
+                String rowSelection = ExpenditureInfoEntry._ID + " = ?";
+                String[] rowSelectionArgs = {Long.toString(rowId)};
+                cursor = db.query(ExpenditureInfoEntry.TABLE_NAME, projection, rowSelection, rowSelectionArgs,
+                        null, null, null);
                 break;
         }
         // return Cursor
