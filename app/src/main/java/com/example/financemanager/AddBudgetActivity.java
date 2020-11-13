@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormatSymbols;
@@ -149,13 +150,14 @@ public class AddBudgetActivity extends AppCompatActivity {
 
             @Override
             protected Object doInBackground(Object[] objects) {
-                String[] columns = {BudgetInfoEntry.COLUMN_BUDGET_CATEGORY};
-                String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " +
-                        BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " +
-                        BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+                String[] columns = {Budgets.COLUMN_BUDGET_CATEGORY};
+                String selection = Budgets.COLUMN_BUDGET_CATEGORY + " = ? AND " +
+                        Budgets.COLUMN_BUDGET_MONTH + " = ? AND " +
+                        Budgets.COLUMN_BUDGET_YEAR + " = ?";
                 String[] selectionArgs = {category, mMonthName, Integer.toString(mYear)};
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                mCursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+                mCursor = getContentResolver().query(Budgets.CONTENT_URI, columns, selection, selectionArgs, null);
+                //SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+                //mCursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
                 if (mCursor.getCount() <= 0) {
                     insertBudget(category, amount);
                     finish();
@@ -178,16 +180,17 @@ public class AddBudgetActivity extends AppCompatActivity {
 
     private void insertBudget(String category, String amount) {
         final ContentValues values = new ContentValues();
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY, category);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT, amount);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_DAY, mDay);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_MONTH, mMonthName);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_YEAR, mYear);
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, "0");
+        values.put(Budgets.COLUMN_BUDGET_CATEGORY, category);
+        values.put(Budgets.COLUMN_BUDGET_AMOUNT, amount);
+        values.put(Budgets.COLUMN_BUDGET_DAY, mDay);
+        values.put(Budgets.COLUMN_BUDGET_MONTH, mMonthName);
+        values.put(Budgets.COLUMN_BUDGET_YEAR, mYear);
+        values.put(Budgets.COLUMN_BUDGET_AMOUNT_SPENT, "0");
 
 
-        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-        db.insert(BudgetInfoEntry.TABLE_NAME, null, values);
+        getContentResolver().insert(Budgets.CONTENT_URI, values);
+        //SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        //db.insert(BudgetInfoEntry.TABLE_NAME, null, values);
     }
 
     private String getMonthFromInt(int month) {

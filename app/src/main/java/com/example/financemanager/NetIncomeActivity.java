@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Amount;
+import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormatSymbols;
@@ -79,19 +82,14 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
     }
 
     private CursorLoader createLoaderIncome() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                String[] columns = {
-                        IncomeInfoEntry.COLUMN_INCOME_AMOUNT,
-                        IncomeInfoEntry.COLUMN_INCOME_DAY,
-                        IncomeInfoEntry.COLUMN_INCOME_MONTH,
-                        IncomeInfoEntry.COLUMN_INCOME_YEAR
-                };
-                return db.query(IncomeInfoEntry.TABLE_NAME, columns, null, null, null, null, null);
-            }
+        Uri uri = Incomes.CONTENT_URI;
+        String[] columns = {
+                Incomes.COLUMN_INCOME_AMOUNT,
+                Incomes.COLUMN_INCOME_DAY,
+                Incomes.COLUMN_INCOME_MONTH,
+                Incomes.COLUMN_INCOME_YEAR
         };
+        return new CursorLoader(this, uri, columns, null, null, null);
     }
 
     @Override
@@ -122,16 +120,17 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
             int year = calendar.get(Calendar.YEAR);
 
             final ContentValues values = new ContentValues();
-            values.put(IncomeInfoEntry.COLUMN_INCOME_AMOUNT, mAmount);
-            values.put(IncomeInfoEntry.COLUMN_INCOME_DAY, Integer.toString(day));
-            values.put(IncomeInfoEntry.COLUMN_INCOME_MONTH, monthName);
-            values.put(IncomeInfoEntry.COLUMN_INCOME_YEAR, Integer.toString(year));
+            values.put(Incomes.COLUMN_INCOME_AMOUNT, mAmount);
+            values.put(Incomes.COLUMN_INCOME_DAY, Integer.toString(day));
+            values.put(Incomes.COLUMN_INCOME_MONTH, monthName);
+            values.put(Incomes.COLUMN_INCOME_YEAR, Integer.toString(year));
 
             AsyncTask task = new AsyncTask() {
                 @Override
                 protected Object doInBackground(Object[] objects) {
-                    SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                    db.insert(IncomeInfoEntry.TABLE_NAME, null, values);
+                    //SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                    //db.insert(IncomeInfoEntry.TABLE_NAME, null, values);
+                    getContentResolver().insert(Incomes.CONTENT_URI, values);
                     Snackbar.make(mParent, "Saved Succesfully.", Snackbar.LENGTH_SHORT).show();
                     return null;
                 }
@@ -152,14 +151,16 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
     }
 
     private double getOriginalAmount() {
-        String[] columns = {FinanceManagerDatabaseContract.AmountInfoEntry.COLUMN_AMOUNT};
-        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(FinanceManagerDatabaseContract.AmountInfoEntry.TABLE_NAME, columns,null,null,
-                null,null,null);
+        String[] columns = {Amount.COLUMN_AMOUNT};
+        //SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        //Cursor cursor = db.query(FinanceManagerDatabaseContract.AmountInfoEntry.TABLE_NAME, columns,null,null,
+        //        null,null,null);
+        Cursor cursor = getContentResolver().query(Amount.CONTENT_URI, columns, null, null, null);
         cursor.moveToFirst();
-        int amountPos = cursor.getColumnIndex(FinanceManagerDatabaseContract.AmountInfoEntry.COLUMN_AMOUNT);
+        int amountPos = cursor.getColumnIndex(Amount.COLUMN_AMOUNT);
         String amount = cursor.getString(amountPos);
         double amountDouble = Double.parseDouble(amount);
+        cursor.close();
         return amountDouble;
     }
 
@@ -169,15 +170,16 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
         double newAmountForDatabase = originalAmountInDatabase + newAmountTobeAdded;
         if (newAmountForDatabase < 0)
             newAmountForDatabase = 0;
-        final String selection = FinanceManagerDatabaseContract.AmountInfoEntry.COLUMN_AMOUNT + " = ?";
+        final String selection = Amount.COLUMN_AMOUNT + " = ?";
         final String[] selectionArgs = {Double.toString(originalAmountInDatabase)};
         final ContentValues values = new ContentValues();
-        values.put(FinanceManagerDatabaseContract.AmountInfoEntry.COLUMN_AMOUNT, newAmountForDatabase);
+        values.put(Amount.COLUMN_AMOUNT, newAmountForDatabase);
         AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                db.update(FinanceManagerDatabaseContract.AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                //SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                //db.update(FinanceManagerDatabaseContract.AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                getContentResolver().update(Amount.CONTENT_URI, values, selection, selectionArgs);
                 return null;
             }
         };
