@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -53,6 +54,7 @@ import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 import com.example.financemanager.FinanceManagerProviderContract.Amount;
+import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 import com.example.financemanager.FinanceManagerProviderContract.Expenses;
 import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -205,12 +207,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             @Override
             protected Object doInBackground(Object[] objects) {
-                String[] column = {BudgetInfoEntry.COLUMN_BUDGET_AMOUNT};
-                String selection = BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_YEAR + " = ?";
+                String[] column = {Budgets.COLUMN_BUDGET_AMOUNT};
+                String selection = Budgets.COLUMN_BUDGET_MONTH + " = ? AND " + Budgets.COLUMN_BUDGET_YEAR + " = ?";
                 String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
-                SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-                mBudgetCursor = db.query(BudgetInfoEntry.TABLE_NAME, column, selection, selectionArgs, null,
-                        null, null);
+                //SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+                mBudgetCursor = getContentResolver().query(Budgets.CONTENT_URI, column,
+                        selection,selectionArgs, null);
                 return null;
             }
 
@@ -244,6 +246,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     // Create and show the AlertDialog
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                } else {
+                    return;
                 }
                 super.onPostExecute(o);
             }
@@ -253,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void selectNavigationMenuItem(int p) {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         menu.findItem(p).setChecked(true);
     }
@@ -331,11 +335,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         AsyncTask task = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
+                Uri uri = ContentUris.withAppendedId(Expenses.CONTENT_URI, id);
                 getIdAndAmountOfItem(id);
-                String selection = ExpenditureInfoEntry._ID + " = ?";
-                String[] selectionArgs = {Integer.toString(id)};
-                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-                db.delete(ExpenditureInfoEntry.TABLE_NAME, selection, selectionArgs);
+                getContentResolver().delete(uri, null, null);
                 return null;
             }
 
@@ -361,20 +363,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (newAmountForDatabase < 0)
             newAmountForDatabase = 0;
         ContentValues values = new ContentValues();
-        values.put(AmountInfoEntry.COLUMN_AMOUNT, newAmountForDatabase);
-        String selection = AmountInfoEntry.COLUMN_AMOUNT + " = ?";
+        values.put(Amount.COLUMN_AMOUNT, newAmountForDatabase);
+        String selection = Amount.COLUMN_AMOUNT + " = ?";
         String[] selectionArgs = {Double.toString(originalAmountInDatabase)};
-        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-        db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+//        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+//        db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+        getContentResolver().update(Amount.CONTENT_URI, values, selection, selectionArgs);
     }
 
     private double getOriginalAmount() {
-        String[] columns = {AmountInfoEntry.COLUMN_AMOUNT};
-        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(AmountInfoEntry.TABLE_NAME, columns,null,null,
-                null,null,null);
+        String[] columns = {Amount.COLUMN_AMOUNT};
+        //SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        Cursor cursor = getContentResolver().query(Amount.CONTENT_URI, columns, null,
+                null, null);
         cursor.moveToFirst();
-        int amountPos = cursor.getColumnIndex(AmountInfoEntry.COLUMN_AMOUNT);
+        int amountPos = cursor.getColumnIndex(Amount.COLUMN_AMOUNT);
         String amount = cursor.getString(amountPos);
         double amountDouble = Double.parseDouble(amount);
         cursor.close();
@@ -382,47 +385,48 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void getIdAndAmountOfItem(int id) {
-        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        //SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
         String[] columns = {
-                ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID,
-                ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT
+                Expenses.COLUMN_EXPENDITURE_ID,
+                Expenses.COLUMN_EXPENDITURE_AMOUNT
         };
-        String selection = ExpenditureInfoEntry._ID + " = ?";
+        String selection = Expenses._ID + " = ?";
         String[] selectionArgs = {Integer.toString(id)};
-        Cursor cursor = db.query(ExpenditureInfoEntry.TABLE_NAME, columns, selection,
-                selectionArgs, null, null, null);
-        int count = cursor.getCount();
-        cursor.moveToFirst();
-        int expIdPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_ID);
-        int expAmountPos = cursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
-        String expId = cursor.getString(expIdPos);
-        String expAmount = cursor.getString(expAmountPos);
+        //Cursor cursor = db.query(ExpenditureInfoEntry.TABLE_NAME, columns, selection,
+        //        selectionArgs, null, null, null);
+        Cursor cursor = getContentResolver().query(Expenses.CONTENT_URI, columns, selection,
+                selectionArgs, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int expIdPos = cursor.getColumnIndex(Expenses.COLUMN_EXPENDITURE_ID);
+            int expAmountPos = cursor.getColumnIndex(Expenses.COLUMN_EXPENDITURE_AMOUNT);
+            String expId = cursor.getString(expIdPos);
+            String expAmount = cursor.getString(expAmountPos);
 
-        double originalAmountSpentInBudget = getOriginalAmountSpentInBudget(expId);
-        if (originalAmountSpentInBudget >= 0) {
-            double newAmount = originalAmountSpentInBudget - Double.parseDouble(expAmount);
-            if (newAmount < 0)
-                newAmount = 0;
-            updateAmountSpentInBudget(newAmount, expId);
-            updateAmount(expAmount);
+            double originalAmountSpentInBudget = getOriginalAmountSpentInBudget(expId);
+            if (originalAmountSpentInBudget >= 0) {
+                double newAmount = originalAmountSpentInBudget - Double.parseDouble(expAmount);
+                if (newAmount < 0)
+                    newAmount = 0;
+                updateAmountSpentInBudget(newAmount, expId);
+                updateAmount(expAmount);
+            }
+            cursor.close();
         }
-        cursor.close();
     }
 
     private double getOriginalAmountSpentInBudget(String expId) {
         double budgetAmountSpent = -1;
         String[] columns = {
-                BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT
+                Budgets.COLUMN_BUDGET_AMOUNT_SPENT
         };
-        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ?";
+        String selection = Budgets.COLUMN_BUDGET_CATEGORY + " = ? AND " + Budgets.COLUMN_BUDGET_MONTH + " = ?";
         String[] selectionArgs = {expId, mCurrentMonthName};
 
-        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(BudgetInfoEntry.TABLE_NAME, columns, selection,
-                selectionArgs, null, null, null);
+        Cursor cursor = getContentResolver().query(Budgets.CONTENT_URI, columns, selection, selectionArgs, null);
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
-            int budgetAmountSpentPos = cursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT);
+            int budgetAmountSpentPos = cursor.getColumnIndex(Budgets.COLUMN_BUDGET_AMOUNT_SPENT);
             String amountSpentString = cursor.getString(budgetAmountSpentPos);
             budgetAmountSpent = Double.parseDouble(amountSpentString);
         }
@@ -432,11 +436,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void updateAmountSpentInBudget(double amount, String id) {
         ContentValues values = new ContentValues();
-        values.put(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT, Double.toString(amount));
-        String selection = BudgetInfoEntry.COLUMN_BUDGET_CATEGORY + " = ? AND " + BudgetInfoEntry.COLUMN_BUDGET_MONTH + " = ?";
-        String[] selectionArgs = {id, mCurrentMonthName};
-        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-        db.update(BudgetInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+        values.put(Budgets.COLUMN_BUDGET_AMOUNT_SPENT, Double.toString(amount));
+        String selection = Budgets.COLUMN_BUDGET_CATEGORY + " = ? AND " + Budgets.COLUMN_BUDGET_MONTH + " = ? AND " +
+                Budgets.COLUMN_BUDGET_YEAR + " = ?";
+        String[] selectionArgs = {id, mCurrentMonthName, Integer.toString(mYear)};
+        //SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+        //db.update(BudgetInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+        getContentResolver().update(Budgets.CONTENT_URI, values, selection, selectionArgs);
     }
 
     private String getMonthFromInt(int month) {
@@ -479,7 +485,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mExpenditureCursorForTotal.moveToFirst();
             while (!mExpenditureCursorForTotal.isAfterLast()) {
                 String amount = mExpenditureCursorForTotal.getString(mExpenditureForTotalAmountPos);
-                mTotalExpenditure = mTotalExpenditure + Double.parseDouble(amount);
+                if (amount.equals("")) {
+                    mTotalExpenditure = mTotalExpenditure + 0;
+                } else {
+                    mTotalExpenditure = mTotalExpenditure + Double.parseDouble(amount);
+                }
                 mExpenditureCursorForTotal.moveToNext();
             }
         }
@@ -489,10 +499,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mExpenditureCursor.moveToFirst();
             while (!mExpenditureCursor.isAfterLast()) {
                 String amount = mExpenditureCursor.getString(mExpenditureAmountPos);
-                total = total + Double.parseDouble(amount);
+                // if
+                if (amount.equals("")) {
+                    total = total + 0;
+                } else {
+                    total = total + Double.parseDouble(amount);
+                }
                 mExpenditureCursor.moveToNext();
             }
             String totalString = formatTotal(total);
+            Log.d("Expense", "Net expense " + total);
             mNetExpenseAmountView.setText(totalString);
         }
 
@@ -537,15 +553,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (cursor == mExpenditureCursorForTotal) {
             if (mExpenditureCursorForTotal != null) {
                 // get column position for expenditure_amount in the table
-                mExpenditureForTotalAmountPos = mExpenditureCursorForTotal.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
+                mExpenditureForTotalAmountPos = mExpenditureCursorForTotal.getColumnIndex(Expenses.COLUMN_EXPENDITURE_AMOUNT);
 
                 // get column position for expenditure_month in the table
-                int expenditureMonthPos = mExpenditureCursorForTotal.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_MONTH);
+                int expenditureMonthPos = mExpenditureCursorForTotal.getColumnIndex(Expenses.COLUMN_EXPENDITURE_MONTH);
 
             }
         }
         if (cursor == mExpenditureCursor) {
-            mExpenditureAmountPos = mExpenditureCursor.getColumnIndex(ExpenditureInfoEntry.COLUMN_EXPENDITURE_AMOUNT);
+            mExpenditureAmountPos = mExpenditureCursor.getColumnIndex(Expenses.COLUMN_EXPENDITURE_AMOUNT);
         }
 
     }
@@ -597,10 +613,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (cursor == mIncomeCursorForTotal) {
             if(mIncomeCursorForTotal != null) {
                 // get column position for income_amount in the table
-                mIncomeAmountPos = mIncomeCursorForTotal.getColumnIndex(IncomeInfoEntry.COLUMN_INCOME_AMOUNT);
+                mIncomeAmountPos = mIncomeCursorForTotal.getColumnIndex(Incomes.COLUMN_INCOME_AMOUNT);
             }
         } else if (cursor == mIncomeCursor) {
-            mNetIncomeAmountPos = mIncomeCursor.getColumnIndex(IncomeInfoEntry.COLUMN_INCOME_AMOUNT);
+            mNetIncomeAmountPos = mIncomeCursor.getColumnIndex(Incomes.COLUMN_INCOME_AMOUNT);
         }
 
     }
@@ -733,6 +749,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 } else {
                     mRecyclerExpenditure.setVisibility(View.GONE);
                     mEmptyRecycler.setVisibility(View.VISIBLE);
+                   // mNetExpenseAmountView.setText("NGN0");
                 }
                 break;
             case LOADER_EXPENSE_TOTAL:

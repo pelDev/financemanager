@@ -49,8 +49,20 @@ public class FinanceManagerProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Implement this to handle requests to delete one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        long rowId = -1;
+        String rowSelection = null;
+        String[] rowSelectionArgs = null;
+        int nRows = -1;
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+
+        int uriMatch = sUriMatcher.match(uri);
+        if (uriMatch == EXPENSE_ROW) {
+            rowId = ContentUris.parseId(uri);
+            rowSelection = ExpenditureInfoEntry._ID + " = ?";
+            rowSelectionArgs = new String[]{Long.toString(rowId)};
+            nRows = db.delete(ExpenditureInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs);
+        }
+        return nRows;
     }
 
     @Override
@@ -140,7 +152,27 @@ public class FinanceManagerProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        // TODO: Implement this to handle requests to update one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        String rowSelection = null;
+        String[] rowSelectionArgs = null;
+        long rowId = -1;
+        int nRows = -1;
+        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+
+        int uriMatch = sUriMatcher.match(uri);
+        switch (uriMatch) {
+            case EXPENSE_ROW:
+                rowId = ContentUris.parseId(uri);
+                rowSelection = ExpenditureInfoEntry._ID + " = ?";
+                rowSelectionArgs = new String[]{Long.toString(rowId)};
+                nRows = db.update(ExpenditureInfoEntry.TABLE_NAME, values, rowSelection, rowSelectionArgs);
+                break;
+            case BUDGETS:
+                nRows = db.update(BudgetInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case AMOUNT:
+                nRows = db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+        }
+        return nRows;
     }
 }

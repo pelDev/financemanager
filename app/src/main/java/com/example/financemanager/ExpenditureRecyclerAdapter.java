@@ -95,7 +95,12 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         //long amnt = Long.parseLong(expenditureAmount);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
-        String n = myFormat.format(Double.parseDouble(expenditureAmount));
+        String n;
+        if (expenditureAmount.equals("")) {
+            n = myFormat.format(0);
+        } else {
+            n = myFormat.format(Double.parseDouble(expenditureAmount));
+        }
         if (n.length() > 6) {
             n = n.substring(0, 4) + "..";
         }
