@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/add_expense_parent_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -128,18 +129,31 @@
         android:textColor="@android:color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
-    <Button
-        android:id="@+id/button_cancel"
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_cancel"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:onClick="cancel"
-        android:text="Cancel"
-        android:background="@color/bckGround"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+<!--    <Button-->
+<!--        android:id="@+id/button_cancel"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:layout_marginEnd="20dp"-->
+<!--        android:onClick="cancel"-->
+<!--        android:text="Cancel"-->
+<!--        android:background="@color/bckGround"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

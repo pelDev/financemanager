@@ -1,5 +1,6 @@
 package com.example.financemanager;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.app.Notification;
@@ -14,7 +15,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,30 +29,21 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import android.widget.TextView;
-
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-//import androidx.loader.app.LoaderManager;
-
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 import com.example.financemanager.FinanceManagerProviderContract.Amount;
 import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 import com.example.financemanager.FinanceManagerProviderContract.Expenses;
@@ -62,11 +53,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
 import java.text.DateFormatSymbols;
-
 import java.text.NumberFormat;
 import java.util.Calendar;
+
+//import androidx.loader.app.LoaderManager;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         NavigationView.OnNavigationItemSelectedListener {
@@ -175,10 +166,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Window window = MainActivity.this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+//        Window window = MainActivity.this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         // On Pressed Navigate To Add Expense or Add Income Screen
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -212,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String[] selectionArgs = {mCurrentMonthName, Integer.toString(mYear)};
                 //SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
                 mBudgetCursor = getContentResolver().query(Budgets.CONTENT_URI, column,
-                        selection,selectionArgs, null);
+                        selection, selectionArgs, null);
                 return null;
             }
 
@@ -278,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mEmptyRecycler = findViewById(R.id.emptyView);
         mExpenditureLayoutManager = new LinearLayoutManager(this);
 
-        mExpenditureRecyclerAdapter = new ExpenditureRecyclerAdapter(this, null);
+        mExpenditureRecyclerAdapter = new ExpenditureRecyclerAdapter(MainActivity.this, null);
         selectNavigationMenuItem(R.id.nav_home);
         displayExpenditures();
 
@@ -924,7 +915,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mNotifyManager.cancel(BUDGET_NOTIFICATION_ID);
     }
     public void moveToNetIncomeActivity(View view) {
-        startActivity(new Intent(this, NetIncomeActivity.class));
+        startActivity(new Intent(this, NetIncomeActivity.class), ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
+
       
 }

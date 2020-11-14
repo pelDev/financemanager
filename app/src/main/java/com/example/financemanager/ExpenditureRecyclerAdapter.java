@@ -1,5 +1,6 @@
 package com.example.financemanager;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
@@ -20,7 +23,7 @@ import java.text.NumberFormat;
 
 public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<ExpenditureRecyclerAdapter.ViewHolder> {
 
-    private final Context mContext;
+    private final AppCompatActivity mContext;
     //private final List<NoteInfo> mNotes;
     private Cursor mCursor;
     private final LayoutInflater mLayoutInflater;
@@ -35,7 +38,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
     private String mExpenditureMonth;
     private String mExpenditureYear;
 
-    public ExpenditureRecyclerAdapter(Context context, Cursor cursor) {
+    public ExpenditureRecyclerAdapter(AppCompatActivity context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
         //mNotes = notes;

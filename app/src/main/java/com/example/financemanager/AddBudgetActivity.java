@@ -50,10 +50,10 @@ public class AddBudgetActivity extends AppCompatActivity {
         setContentView(R.layout.add_budget);
 
         // Change the Color of the status manager
-        Window window = AddBudgetActivity.this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+//        Window window = AddBudgetActivity.this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mParent = findViewById(R.id.add_budget_parent_layout);
