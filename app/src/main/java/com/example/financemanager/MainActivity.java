@@ -845,6 +845,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else if (id == R.id.nav_card) {
             mDrawer.closeDrawer(GravityCompat.START);
             startActivity(new Intent(this, CardActivity.class));
+        } else if (id == R.id.nav_transactions) {
+            mDrawer.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(this, TransactionActivity.class));
         }
         return false;
     }

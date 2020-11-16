@@ -24,4 +24,8 @@
     <string name="card_activity_title">Cards</string>
     <string name="add_card_button">+ Add Card</string>
     <string name="addcard_activity_title">Add Card</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_transactions">Transactions</string>
+    <string name="title_tansaction_activity">Transactions</string>
 </resources>
