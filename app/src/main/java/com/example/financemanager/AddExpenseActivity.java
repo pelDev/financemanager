@@ -49,10 +49,8 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     public static final String EXPENDITURE_ID = "com.example.financemanager.EXPENDITURE_ID";
     public static final int ID_NOT_SET = -1;
     public static final int LOADER_EXPENSE = 0;
-    private final String TAG = getClass().getSimpleName();
     private int mExpenditureId;
     private boolean mIsNewExpense;
-    private FinanceManagerOpenHelper mDbOpenHelper;
     private TextView mHeader;
     private Cursor mExpenseCursor;
     private int mExpenseIdPosition;
@@ -80,7 +78,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
-        mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mHeader = findViewById(R.id.textView);
         mExpNameEditText = findViewById(R.id.editTextTextPersonName);
         mExpAmountEditText = findViewById(R.id.editTextTextNumber);
@@ -186,11 +183,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         mOriginalId = expenseId;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mDbOpenHelper.close();
-    }
 
     private String capitalize(String str) {
         if (str.isEmpty() || str == null) {
@@ -410,20 +402,17 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         return monthString;
     }
 
+
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        cancelChanges();
-    }
-
-    public void cancel(View view) {
-        cancelChanges();
-    }
-
-    private void cancelChanges() {
+    protected void onPause() {
+        super.onPause();
         if(mIsNewExpense) {
             getContentResolver().delete(mExpenseUri, null, null);
         }
+
+    }
+
+    public void cancel(View view) {
         finish();
     }
 

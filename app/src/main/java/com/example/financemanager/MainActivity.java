@@ -23,8 +23,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -35,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -278,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -349,7 +347,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void updateAmount(String amount) {
         double originalAmountInDatabase = getOriginalAmount();
-        double amountToBeAdded = Double.parseDouble(amount);
+        double amountToBeAdded;
+        if (amount.equals("")) {
+            amountToBeAdded = 0.0;
+        } else {
+            amountToBeAdded = Double.parseDouble(amount);
+        }
         double newAmountForDatabase = originalAmountInDatabase + amountToBeAdded;
         if (newAmountForDatabase < 0)
             newAmountForDatabase = 0;
@@ -396,7 +399,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             double originalAmountSpentInBudget = getOriginalAmountSpentInBudget(expId);
             if (originalAmountSpentInBudget >= 0) {
-                double newAmount = originalAmountSpentInBudget - Double.parseDouble(expAmount);
+                double newAmount;
+                if (expAmount.equals("")) {
+                    newAmount = originalAmountSpentInBudget - 0.0;
+                } else {
+                    newAmount = originalAmountSpentInBudget - Double.parseDouble(expAmount);
+                }
                 if (newAmount < 0)
                     newAmount = 0;
                 updateAmountSpentInBudget(newAmount, expId);
@@ -836,7 +844,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             startActivity(new Intent(this, ToDoActivity.class));
         } else if (id == R.id.nav_card) {
             mDrawer.closeDrawer(GravityCompat.START);
-            startActivity(new Intent(this, AddCardActivity.class));
+            startActivity(new Intent(this, CardActivity.class));
         }
         return false;
     }
@@ -891,7 +899,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSmallIcon(R.drawable.ic_budget)
                 .setContentTitle("Make a Budget")
-                .setColor(getResources().getColor(R.color.colorAccent))
+                .setColor(getResources().getColor(R.color.colorSecondary))
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setTicker("Budget")

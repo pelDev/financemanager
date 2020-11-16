@@ -1,26 +1,21 @@
 package com.example.financemanager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import android.app.LoaderManager;
 import android.content.CursorLoader;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.content.Loader;
-import android.app.LoaderManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 
 import java.text.DateFormatSymbols;
@@ -146,5 +141,8 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
             if (mBudgetCursor != null)
                 mBudgetCursor.close();
         }
+    }
+
+    public void doNothing(View view) {
     }
 }

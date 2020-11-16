@@ -44,7 +44,7 @@
                 android:text="Category"
                 android:textStyle="bold"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorSecondary" />
 
 
             <Spinner
@@ -61,7 +61,7 @@
                 android:textStyle="bold"
                 android:text="Expense Name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorSecondary" />
 
             <EditText
                 android:id="@+id/editTextTextPersonName"
@@ -79,7 +79,7 @@
                 android:layout_marginTop="20dp"
                 android:text="Amount"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorSecondary" />
 
             <EditText
                 android:id="@+id/editTextTextNumber"
@@ -97,7 +97,7 @@
                 android:text="Description"
                 android:textStyle="bold"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorSecondary" />
 
             <EditText
                 android:id="@+id/editTextTextMultiLine"
@@ -120,14 +120,14 @@
         android:onClick="saveExpense"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:text="ADD"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"/>
 
 
     <ImageView

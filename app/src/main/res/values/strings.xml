@@ -2,7 +2,7 @@
     <string name="app_name">Finance Manager</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">Finance Manager</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -20,5 +20,8 @@
     <string name="add_income_button">Add Income</string>
     <string name="net_income_hint">10,000</string>
     <string name="empty_recycler_message">Data Set is Currently Empty</string>
-    <string name="menu_card">Card</string>
+    <string name="menu_card">Cards</string>
+    <string name="card_activity_title">Cards</string>
+    <string name="add_card_button">+ Add Card</string>
+    <string name="addcard_activity_title">Add Card</string>
 </resources>

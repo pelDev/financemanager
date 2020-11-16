@@ -10,10 +10,12 @@ import android.net.Uri;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.CardInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 import com.example.financemanager.FinanceManagerProviderContract.Amount;
 import com.example.financemanager.FinanceManagerProviderContract.Budgets;
+import com.example.financemanager.FinanceManagerProviderContract.Cards;
 import com.example.financemanager.FinanceManagerProviderContract.Expenses;
 import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.firebase.FirebaseApiNotAvailableException;
@@ -33,6 +35,10 @@ public class FinanceManagerProvider extends ContentProvider {
 
     public static final int EXPENSE_ROW = 4;
 
+    public static final int CARDS = 5;
+
+    public static final int CARD_ROW = 6;
+
     // static initializer
     static {
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Expenses.PATH, EXPENSES);
@@ -40,6 +46,8 @@ public class FinanceManagerProvider extends ContentProvider {
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Budgets.PATH, BUDGETS);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Amount.PATH, AMOUNT);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Expenses.PATH + "/#", EXPENSE_ROW);
+        sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Cards.PATH, CARDS);
+        sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Cards.PATH + "/#", CARD_ROW);
     }
     public FinanceManagerProvider() {
 
@@ -56,11 +64,19 @@ public class FinanceManagerProvider extends ContentProvider {
         SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
 
         int uriMatch = sUriMatcher.match(uri);
-        if (uriMatch == EXPENSE_ROW) {
-            rowId = ContentUris.parseId(uri);
-            rowSelection = ExpenditureInfoEntry._ID + " = ?";
-            rowSelectionArgs = new String[]{Long.toString(rowId)};
-            nRows = db.delete(ExpenditureInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs);
+        switch (uriMatch) {
+            case EXPENSE_ROW:
+                rowId = ContentUris.parseId(uri);
+                rowSelection = ExpenditureInfoEntry._ID + " = ?";
+                rowSelectionArgs = new String[]{Long.toString(rowId)};
+                nRows = db.delete(ExpenditureInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs);
+                break;
+            case CARD_ROW:
+                rowId = ContentUris.parseId(uri);
+                rowSelection = CardInfoEntry._ID + " = ?";
+                rowSelectionArgs = new String[]{Long.toString(rowId)};
+                nRows = db.delete(CardInfoEntry.TABLE_NAME, rowSelection, rowSelectionArgs);
+                break;
         }
         return nRows;
     }
@@ -99,6 +115,10 @@ public class FinanceManagerProvider extends ContentProvider {
             case AMOUNT:
                 // This is a read only table
                 break;
+            case CARDS:
+                rowId = db.insert(CardInfoEntry.TABLE_NAME, null, values);
+                rowUri = ContentUris.withAppendedId(Cards.CONTENT_URI, rowId);
+                break;
         }
         return rowUri;
     }
@@ -116,6 +136,9 @@ public class FinanceManagerProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         // initialize a cursor to null
         Cursor cursor = null;
+        long rowId;
+        String rowSelection;
+        String[] rowSelectionArgs;
         // connect to database
         SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
         // match uri then perform uri specific action
@@ -138,10 +161,21 @@ public class FinanceManagerProvider extends ContentProvider {
                         null, null, sortOrder);
                 break;
             case EXPENSE_ROW:
-                long rowId = ContentUris.parseId(uri);
-                String rowSelection = ExpenditureInfoEntry._ID + " = ?";
-                String[] rowSelectionArgs = {Long.toString(rowId)};
+                rowId = ContentUris.parseId(uri);
+                rowSelection = ExpenditureInfoEntry._ID + " = ?";
+                rowSelectionArgs = new String[] {Long.toString(rowId)};
                 cursor = db.query(ExpenditureInfoEntry.TABLE_NAME, projection, rowSelection, rowSelectionArgs,
+                        null, null, null);
+                break;
+            case CARDS:
+                cursor = db.query(CardInfoEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            case CARD_ROW:
+                rowId = ContentUris.parseId(uri);
+                rowSelection = CardInfoEntry._ID + " = ?";
+                rowSelectionArgs = new String[] {Long.toString(rowId)};
+                cursor = db.query(CardInfoEntry.TABLE_NAME, projection, rowSelection, rowSelectionArgs,
                         null, null, null);
                 break;
         }
@@ -171,6 +205,15 @@ public class FinanceManagerProvider extends ContentProvider {
                 break;
             case AMOUNT:
                 nRows = db.update(AmountInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case CARDS:
+                nRows = db.update(CardInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case CARD_ROW:
+                rowId = ContentUris.parseId(uri);
+                rowSelection = CardInfoEntry._ID + " = ?";
+                rowSelectionArgs = new String[]{Long.toString(rowId)};
+                nRows = db.update(CardInfoEntry.TABLE_NAME, values, rowSelection, rowSelectionArgs);
                 break;
         }
         return nRows;

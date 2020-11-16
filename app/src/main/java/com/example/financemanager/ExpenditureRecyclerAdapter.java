@@ -167,10 +167,10 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mTextExpenditureName = (TextView) itemView.findViewById(R.id.textViewF);
-            mTextExpenditureAmount = (TextView) itemView.findViewById(R.id.textView_amount);
-            mTextExpenditureTimestamp = (TextView) itemView.findViewById(R.id.textViewG);
-            mExpenditureIcon = (ImageView) itemView.findViewById(R.id.expenditure_icon);
+            mTextExpenditureName = itemView.findViewById(R.id.textViewF);
+            mTextExpenditureAmount = itemView.findViewById(R.id.textView_amount);
+            mTextExpenditureTimestamp = itemView.findViewById(R.id.textViewG);
+            mExpenditureIcon = itemView.findViewById(R.id.expenditure_icon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
