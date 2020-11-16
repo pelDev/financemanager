@@ -1,7 +1,10 @@
 package com.example.financemanager;
 
 import android.net.Uri;
+import android.os.Parcel;
 import android.provider.BaseColumns;
+
+import javax.xml.transform.stream.StreamSource;
 
 public final class FinanceManagerProviderContract {
 
@@ -20,6 +23,12 @@ public final class FinanceManagerProviderContract {
         String COLUMN_EXPENDITURE_YEAR = "expenditure_year";
         String COLUMN_EXPENDITURE_AMOUNT = "expenditure_amount";
         String COLUMN_EXPENDITURE_DESCRIPTION = "expenditure_description";
+    }
+
+    protected interface CardColumns {
+        String COLUMN_CARD_NAME = "card_name";
+        String COLUMN_CARD_NUMBER = "card_number";
+        String COLUMN_CARD_EXPIRY = "card_expiry";
     }
 
     protected interface IncomeColumns {
@@ -45,6 +54,11 @@ public final class FinanceManagerProviderContract {
     // To create table specific uri content://com.example.financemanager.provider/{path}
     public static final class Expenses implements ExpenseColumns, BaseColumns {
         public static final String PATH = "expenses";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH);
+    }
+
+    public static final class Cards implements CardColumns, BaseColumns {
+        public static final String PATH = "cards";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH);
     }
 

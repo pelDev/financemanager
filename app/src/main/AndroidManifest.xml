@@ -9,7 +9,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddCardActivity"></activity>
+        <activity android:name=".AddCardActivity"
+            android:label="@string/addcard_activity_title"
+            android:theme="@style/AppTheme.ActionBar"
+            android:parentActivityName=".CardActivity"/>
+        <activity
+            android:name=".CardActivity"
+            android:label="@string/card_activity_title"
+            android:theme="@style/AppTheme.ActionBar" />
         <activity android:name=".ToDoActivity" />
 
         <provider

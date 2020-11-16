@@ -77,19 +77,20 @@
                 android:textColorHint="#000000" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/btn_login"
             android:text="Login"
             android:textColor="#FFFFFF"
             android:onClick="moveToMainActivity"
+            android:backgroundTint="@color/colorSecondary"
             android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/tv_password_reset"
             app:layout_constraintStart_toStartOf="@+id/et_password_layout"
-            app:layout_constraintTop_toBottomOf="@+id/et_password_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/et_password_layout"
+            app:cornerRadius="25dp"/>
 
         <TextView
             android:id="@+id/tv_password_reset"
@@ -98,7 +99,7 @@
             android:layout_marginStart="8dp"
             android:gravity="center"
             android:text="Forgot Password?"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/btn_login"
@@ -139,7 +140,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="Sign up now"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorSecondary"
         android:textSize="18sp"
         android:onClick="goToRegister"
         android:textStyle="bold"

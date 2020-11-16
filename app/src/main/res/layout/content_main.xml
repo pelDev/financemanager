@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layoutAnimation="@anim/layout_animation_down_to_up"
     android:layout_height="wrap_content"
     android:background="@color/bckGround"
     tools:showIn="@layout/app_bar_main">
@@ -19,6 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:onClick="openDrawer"
+        android:background="@drawable/custom_ripple_grey"
         app:layout_constraintBottom_toBottomOf="@+id/iv_set_notification"
         app:layout_constraintEnd_toStartOf="@+id/textView6"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +44,7 @@
         android:id="@+id/iv_set_notification"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:background="@drawable/custom_ripple_grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toTopOf="parent"
@@ -121,7 +124,6 @@
             android:onClick="moveToNetIncomeActivity"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/custom_ripple_net_income"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -131,7 +133,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@drawable/custom_ripple_grey">
 
                 <ImageView
                     android:id="@+id/imageA"
@@ -143,7 +146,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/colorPrimaryDark" />
+                    app:tint="@color/colorExpenditureBar" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="0dp"
@@ -297,6 +300,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewE"
