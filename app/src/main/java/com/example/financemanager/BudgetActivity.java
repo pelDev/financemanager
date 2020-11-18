@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,9 +19,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerProviderContract.Budgets;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class BudgetActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -33,6 +43,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     private String mMonthName;
     private int mYear;
     private TextView mEmptyRecycler;
+    private PieChart mPieChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +63,30 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
         mMonthName = getMonthFromInt(month);
         mYear = calendar.get(Calendar.YEAR);
 
+        ImageView buttonMore = findViewById(R.id.button_more);
+
+        buttonMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openBottomSheet();
+            }
+        });
         TextView title = findViewById(R.id.budget_list_title);
         title.setText(getTitleText());
 
         mRecyclerBudgets = findViewById(R.id.recycler_budgets);
         mEmptyRecycler = findViewById(R.id.empty_view_income);
 
+        mPieChart = findViewById(R.id.piechart);
+
         initializeDisplayContent();
 
+    }
+
+    private void openBottomSheet() {
+        BottomDialogFragmentBudget bottomDialogFragmentBudget =
+                BottomDialogFragmentBudget.newInstance(this);
+        bottomDialogFragmentBudget.show(getSupportFragmentManager(), BottomDialogFragmentBudget.TAG);
     }
 
     private String getTitleText() {
@@ -126,13 +153,66 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
             if (data.getCount() != 0) {
                 mRecyclerBudgets.setVisibility(View.VISIBLE);
                 mEmptyRecycler.setVisibility(View.GONE);
+                initializePieChart(data);
             } else {
                 mRecyclerBudgets.setVisibility(View.GONE);
                 mEmptyRecycler.setVisibility(View.VISIBLE);
+                mPieChart.setVisibility(View.GONE);
             }
             mBudgetCursor = data;
             mBudgetRecyclerAdapter.changeCursor(mBudgetCursor);
         }
+    }
+
+    public void setNewMonth(String month) {
+        if (!month.equals(mMonthName)) {
+            mMonthName = month;
+            getLoaderManager().restartLoader(LOADER_BUDGETS, null, this);
+        }
+    }
+
+    private void initializePieChart(final Cursor cursor) {
+        AsyncTask task = new AsyncTask() {
+
+            private List<PieEntry> mPieEntries;
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                mPieEntries = new ArrayList<>();
+                if (cursor != null && cursor.getCount() != 0) {
+                    cursor.moveToFirst();
+                    int budgetAmountPos = cursor.getColumnIndex(Budgets.COLUMN_BUDGET_AMOUNT);
+                    int budgetCategoryPos = cursor.getColumnIndex(Budgets.COLUMN_BUDGET_CATEGORY);
+                    while (!cursor.isAfterLast()) {
+                        double amount = Double.parseDouble(cursor.getString(budgetAmountPos));
+                        String label = cursor.getString(budgetCategoryPos);
+                        mPieEntries.add(new PieEntry((float) amount, label));
+                        cursor.moveToNext();
+                    }
+
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                mPieChart.setVisibility(View.VISIBLE);
+                mPieChart.animateXY(3000, 3000);
+
+                PieDataSet pieDataSet = new PieDataSet(mPieEntries, "Budget");
+                pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+
+                PieData pieData = new PieData(pieDataSet);
+                mPieChart.setData(pieData);
+                Description description = new Description();
+                description.setText("Budget");
+                mPieChart.invalidate();
+                super.onPostExecute(o);
+            }
+        };
+        task.execute();
+
     }
 
     @Override
