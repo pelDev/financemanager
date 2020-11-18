@@ -73,6 +73,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private int mYear;
     private ConstraintLayout mParentLayout;
     private Uri mExpenseUri;
+    private boolean mIsCanceling = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +145,12 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         if(!mIsNewExpense)
             getLoaderManager().initLoader(LOADER_EXPENSE, null, this);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mIsCanceling = true;
     }
 
     private void readDisplayStateValues() {
@@ -407,6 +414,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     protected void onPause() {
         super.onPause();
         if(mIsNewExpense) {
+            if (mIsCanceling)
             getContentResolver().delete(mExpenseUri, null, null);
         }
 

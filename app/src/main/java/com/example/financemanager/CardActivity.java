@@ -30,6 +30,11 @@ public class CardActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final int LOADER_CARDS = 0;
     private Cursor mCardCursor;
 
+    public void setBottomSheetResponse(String response) {
+        if (response.equals("refresh"))
+            refresh();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,10 @@ public class CardActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onResume() {
         super.onResume();
+        refresh();
+    }
+
+    public void refresh() {
         getLoaderManager().restartLoader(LOADER_CARDS, null, this);
     }
 

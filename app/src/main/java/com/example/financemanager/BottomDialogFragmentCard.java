@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 
-public class BottomDialogFragment extends BottomSheetDialogFragment {
+public class BottomDialogFragmentCard extends BottomSheetDialogFragment {
 
     public static Context sContext;
 
@@ -26,8 +26,8 @@ public class BottomDialogFragment extends BottomSheetDialogFragment {
     private int mId;
     private RecyclerView mRecyclerView;
 
-    public static BottomDialogFragment newInstance(Context context) {
-        return new BottomDialogFragment();
+    public static BottomDialogFragmentCard newInstance(Context context) {
+        return new BottomDialogFragmentCard();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BottomDialogFragment extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.bottom_sheet_dialog_layout, container, false);
+        View view = inflater.inflate(R.layout.bottom_sheet_dialog_card_layout, container, false);
         deleteButton = view.findViewById(R.id.button_delete_card);
         assert getArguments() != null;
         mId = getArguments().getInt("key");
@@ -63,6 +63,7 @@ public class BottomDialogFragment extends BottomSheetDialogFragment {
                 sContext.getContentResolver().delete(cardUri, null, null);
                 mRecyclerView =  getActivity().findViewById(R.id.recyclerView_cards);
                 Snackbar.make(mRecyclerView, "Card Deleted", Snackbar.LENGTH_SHORT).show();
+                ((CardActivity) getActivity()).setBottomSheetResponse("refresh");
                 dismiss();
             }
         });

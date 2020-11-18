@@ -1,7 +1,6 @@
 package com.example.financemanager;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
@@ -9,8 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -35,7 +32,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     private int mCardNumberPos;
     private int mCardExpiryPos;
     private FragmentManager mFragmentManager;
-    private BottomDialogFragment mBottomDialogFragment;
+    private BottomDialogFragmentCard mBottomDialogFragment;
 
     public CardRecyclerAdapter(Context context, Cursor cursor, FragmentManager fragmentManager) {
         mContext = context;
@@ -127,12 +124,12 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                 }
 
                 public void openBottomSheetDialog() {
-                    mBottomDialogFragment = BottomDialogFragment.newInstance(mContext);
+                    mBottomDialogFragment = BottomDialogFragmentCard.newInstance(mContext);
                     int id = (int) itemView.getTag();
                     Bundle bundle = new Bundle();
                     bundle.putInt("key", id);
                     mBottomDialogFragment.setArguments(bundle);
-                    mBottomDialogFragment.show(mFragmentManager, BottomDialogFragment.TAG);
+                    mBottomDialogFragment.show(mFragmentManager, BottomDialogFragmentCard.TAG);
                 }
             });
         }
