@@ -101,4 +101,20 @@ public final class FinanceManagerDatabaseContract {
                         COLUMN_BUDGET_AMOUNT_SPENT + " TEXT)";
     }
 
+    // Card Information Table
+    public static final class CardInfoEntry implements BaseColumns {
+        public static final String TABLE_NAME = "card_info";
+        public static final String COLUMN_CARD_NAME = "card_name";
+        public static final String COLUMN_CARD_NUMBER = "card_number";
+        public static final String COLUMN_CARD_EXPIRY = "card_expiry";
+
+        // create table card_info (columns)
+        public static final String SQL_CREATE_TABLE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        _ID + " INTEGER PRIMARY KEY, " +
+                        COLUMN_CARD_NAME + " TEXT NOT NULL, " +
+                        COLUMN_CARD_NUMBER + " TEXT NOT NULL, " +
+                        COLUMN_CARD_EXPIRY + " TEXT NOT NULL)";
+    }
+
 }

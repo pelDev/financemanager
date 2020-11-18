@@ -31,16 +31,17 @@
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_login"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
         android:text="login"
+        android:backgroundTint="@color/colorSecondary"
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:onClick="goToLogin"
         android:textStyle="bold"
+        app:cornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="Sign up now"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorSecondary"
         android:textSize="18sp"
         android:textStyle="bold"
         android:onClick="goToRegister"

@@ -1,36 +1,36 @@
 package com.example.financemanager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ContentValues;
-import android.content.Loader;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
-//import androidx.loader.app.LoaderManager;
-//import androidx.loader.content.Loader;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.transition.Explode;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.financemanager.FinanceManagerProviderContract.Amount;
 import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
+
+//import androidx.loader.app.LoaderManager;
+//import androidx.loader.content.Loader;
 
 public class NetIncomeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -48,6 +48,14 @@ public class NetIncomeActivity extends AppCompatActivity implements LoaderManage
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_net_income);
+
+        getWindow().setEnterTransition(new Explode());
+        getWindow().setExitTransition(new Explode());
+
+//        Window window = NetIncomeActivity.this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
         mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mIncomeAmountInputField = (EditText) findViewById(R.id.editTextNumber_income_amount);

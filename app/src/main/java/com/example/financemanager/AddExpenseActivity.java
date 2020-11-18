@@ -1,28 +1,26 @@
 package com.example.financemanager;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-
-import android.content.ContentUris;
-import android.content.Loader;
 import android.app.LoaderManager;
-import android.content.CursorLoader;
-
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Selection;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,9 +29,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
-import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerProviderContract.Amount;
 import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 import com.example.financemanager.FinanceManagerProviderContract.Expenses;
@@ -49,10 +49,8 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     public static final String EXPENDITURE_ID = "com.example.financemanager.EXPENDITURE_ID";
     public static final int ID_NOT_SET = -1;
     public static final int LOADER_EXPENSE = 0;
-    private final String TAG = getClass().getSimpleName();
     private int mExpenditureId;
     private boolean mIsNewExpense;
-    private FinanceManagerOpenHelper mDbOpenHelper;
     private TextView mHeader;
     private Cursor mExpenseCursor;
     private int mExpenseIdPosition;
@@ -73,23 +71,31 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
     private int mDay;
     private String mMonthName;
     private int mYear;
+    private ConstraintLayout mParentLayout;
     private Uri mExpenseUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
-
-        mDbOpenHelper = new FinanceManagerOpenHelper(this);
         mHeader = findViewById(R.id.textView);
         mExpNameEditText = findViewById(R.id.editTextTextPersonName);
         mExpAmountEditText = findViewById(R.id.editTextTextNumber);
         mExpDescriptionEditText = findViewById(R.id.editTextTextMultiLine);
+        mParentLayout =findViewById(R.id.add_expense_parent_layout);
 
-        Window window = AddExpenseActivity.this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
+        // set layout entry animation
+        int resId = R.anim.layout_animation_down_to_up;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(this, resId);
+        mParentLayout.setLayoutAnimation(animation);
+
+        getWindow().setEnterTransition(new Fade());
+        getWindow().setExitTransition(new Fade());
+
+//        Window window = AddExpenseActivity.this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent));
 
         final Button button = findViewById(R.id.button_add_expense);
         ConstraintLayout.LayoutParams buttonParams = (ConstraintLayout.LayoutParams) button.getLayoutParams();
@@ -100,7 +106,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             public void run() {
                 Drawable image = getApplicationContext().getResources().getDrawable(R.drawable.ic_forward);
                 image.setBounds(0, 0, getIconSize() * 2, getIconSize());
-                button.setCompoundDrawables(null, null, image, null);
+                //button.setCompoundDrawables(null, null, image, null);
             }
         });
 
@@ -124,7 +130,7 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String category = parent.getItemAtPosition(position).toString();
-                Toast.makeText(parent.getContext(), "Category " + category, Toast.LENGTH_LONG).show();
+                //Toast.makeText(parent.getContext(), "Category " + category, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -177,11 +183,6 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         mOriginalId = expenseId;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mDbOpenHelper.close();
-    }
 
     private String capitalize(String str) {
         if (str.isEmpty() || str == null) {
@@ -401,20 +402,17 @@ public class AddExpenseActivity extends AppCompatActivity implements LoaderManag
         return monthString;
     }
 
+
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        cancelChanges();
-    }
-
-    public void cancel(View view) {
-        cancelChanges();
-    }
-
-    private void cancelChanges() {
+    protected void onPause() {
+        super.onPause();
         if(mIsNewExpense) {
             getContentResolver().delete(mExpenseUri, null, null);
         }
+
+    }
+
+    public void cancel(View view) {
         finish();
     }
 

@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
+import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 
 import java.text.NumberFormat;
 
@@ -57,11 +58,11 @@ public class BudgetRecyclerAdapter extends RecyclerView.Adapter<BudgetRecyclerAd
             return;
         } else {
             // get the column position for budget category in the table
-            mBudgetCategoryPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_CATEGORY);
+            mBudgetCategoryPos = mCursor.getColumnIndex(Budgets.COLUMN_BUDGET_CATEGORY);
             // get the column position for budget amount from table
-            mBudgetAmountPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT);
+            mBudgetAmountPos = mCursor.getColumnIndex(Budgets.COLUMN_BUDGET_AMOUNT);
             // get column position for budget amount left
-            mBudgetAmountLeftPos = mCursor.getColumnIndex(BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT);
+            mBudgetAmountLeftPos = mCursor.getColumnIndex(Budgets.COLUMN_BUDGET_AMOUNT_SPENT);
             // get column position for the unique id from table
             mIdPos = mCursor.getColumnIndex(BudgetInfoEntry._ID);
         }

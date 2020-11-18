@@ -16,8 +16,10 @@
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="fM"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:text="@string/nav_header_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textStyle="bold"
+
         android:textColor="#FFFFFF" />
 
     <TextView
