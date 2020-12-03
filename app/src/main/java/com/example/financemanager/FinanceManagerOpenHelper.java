@@ -9,13 +9,14 @@ import androidx.annotation.Nullable;
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.CardInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.DepositInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 
 public class FinanceManagerOpenHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "FinanceManager.db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     public FinanceManagerOpenHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,6 +31,8 @@ public class FinanceManagerOpenHelper extends SQLiteOpenHelper {
         db.execSQL(AmountInfoEntry.SQL_CREATE_TABLE);
         db.execSQL(BudgetInfoEntry.SQL_CREATE_TABLE);
         db.execSQL(CardInfoEntry.SQL_CREATE_TABLE);
+        db.execSQL(DepositInfoEntry.SQL_CREATE_TABLE);
+        db.execSQL(DepositInfoEntry.SQL_CREATE_INDEX1);
 
         DatabaseDataWorker worker = new DatabaseDataWorker(db);
 //        worker.insertSampleExpenditures();
@@ -37,15 +40,11 @@ public class FinanceManagerOpenHelper extends SQLiteOpenHelper {
 //        worker.insertBudget();
         worker.insertCard();
         worker.insertAmount();
+        worker.insertDeposit();
+        worker.insertDeposit();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            db.execSQL(CardInfoEntry.SQL_CREATE_TABLE);
-            DatabaseDataWorker worker = new DatabaseDataWorker(db);
-            worker.insertCard();
-            worker.insertCard();
-        }
     }
 }

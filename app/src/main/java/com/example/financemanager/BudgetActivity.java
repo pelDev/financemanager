@@ -44,6 +44,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     private int mYear;
     private TextView mEmptyRecycler;
     private PieChart mPieChart;
+    private TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +72,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
                 openBottomSheet();
             }
         });
-        TextView title = findViewById(R.id.budget_list_title);
-        title.setText(getTitleText());
+        mTitle = findViewById(R.id.budget_list_title);
 
         mRecyclerBudgets = findViewById(R.id.recycler_budgets);
         mEmptyRecycler = findViewById(R.id.empty_view_income);
@@ -161,6 +161,7 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
             }
             mBudgetCursor = data;
             mBudgetRecyclerAdapter.changeCursor(mBudgetCursor);
+            mTitle.setText(getTitleText());
         }
     }
 

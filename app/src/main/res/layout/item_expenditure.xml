@@ -64,7 +64,7 @@
         android:id="@+id/constraintLayout3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -83,13 +83,17 @@
 
         <TextView
             android:id="@+id/textView_amount"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:text="N1,230"
+            android:ellipsize="end"
+            android:maxLength="8"
+            android:maxLines="1"
+            android:text="N1,2300"
             android:textColor="@android:color/black"
             android:textSize="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageIA"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -6,6 +6,28 @@ public final class FinanceManagerDatabaseContract {
 
     private FinanceManagerDatabaseContract() {};
 
+    // Deposit Transaction Info Table
+    public static final class  DepositInfoEntry implements BaseColumns {
+        public static final String TABLE_NAME = "deposit_info";
+        public static final String COLUMN_DEPOSIT_DATE = "deposit_date";
+        public static final String COLUMN_DEPOSIT_STATUS = "deposit_status";
+        public static final String COLUMN_DEPOSIT_AMOUNT = "deposit_amount";
+
+        // create sql table command
+        public static final String SQL_CREATE_TABLE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        _ID + " INTEGER PRIMARY KEY, " +
+                        COLUMN_DEPOSIT_AMOUNT + " TEXT NOT NULL, " +
+                        COLUMN_DEPOSIT_DATE + " TEXT NOT NULL, " +
+                        COLUMN_DEPOSIT_STATUS + " TEXT NOT NULL)";
+
+        // create index command
+        public static final String INDEX1 = TABLE_NAME + "_index1";
+        public static final String SQL_CREATE_INDEX1 =
+                "CREATE INDEX " + INDEX1 + " ON " + TABLE_NAME + " (" + COLUMN_DEPOSIT_DATE + ")";
+
+    }
+
 
     // Expenditure Information Table
     public static final class ExpenditureInfoEntry implements BaseColumns {

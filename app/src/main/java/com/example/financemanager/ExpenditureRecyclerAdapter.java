@@ -104,9 +104,6 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         } else {
             n = myFormat.format(Double.parseDouble(expenditureAmount));
         }
-        if (n.length() > 6) {
-            n = n.substring(0, 4) + "..";
-        }
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
         Log.d("Expense", "Formatted Amount " + n);

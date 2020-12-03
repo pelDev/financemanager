@@ -11,11 +11,13 @@ import android.net.Uri;
 import com.example.financemanager.FinanceManagerDatabaseContract.AmountInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.CardInfoEntry;
+import com.example.financemanager.FinanceManagerDatabaseContract.DepositInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
 import com.example.financemanager.FinanceManagerDatabaseContract.IncomeInfoEntry;
 import com.example.financemanager.FinanceManagerProviderContract.Amount;
 import com.example.financemanager.FinanceManagerProviderContract.Budgets;
 import com.example.financemanager.FinanceManagerProviderContract.Cards;
+import com.example.financemanager.FinanceManagerProviderContract.Deposits;
 import com.example.financemanager.FinanceManagerProviderContract.Expenses;
 import com.example.financemanager.FinanceManagerProviderContract.Incomes;
 import com.google.firebase.FirebaseApiNotAvailableException;
@@ -39,6 +41,8 @@ public class FinanceManagerProvider extends ContentProvider {
 
     public static final int CARD_ROW = 6;
 
+    public static final int DEPOSITS = 7;
+
     // static initializer
     static {
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Expenses.PATH, EXPENSES);
@@ -48,6 +52,7 @@ public class FinanceManagerProvider extends ContentProvider {
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Expenses.PATH + "/#", EXPENSE_ROW);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Cards.PATH, CARDS);
         sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Cards.PATH + "/#", CARD_ROW);
+        sUriMatcher.addURI(FinanceManagerProviderContract.AUTHORITY, Deposits.PATH, DEPOSITS);
     }
     public FinanceManagerProvider() {
 
@@ -119,6 +124,10 @@ public class FinanceManagerProvider extends ContentProvider {
                 rowId = db.insert(CardInfoEntry.TABLE_NAME, null, values);
                 rowUri = ContentUris.withAppendedId(Cards.CONTENT_URI, rowId);
                 break;
+            case DEPOSITS:
+                rowId = db.insert(DepositInfoEntry.TABLE_NAME, null, values);
+                rowUri = ContentUris.withAppendedId(Deposits.CONTENT_URI, rowId);
+                break;
         }
         return rowUri;
     }
@@ -158,6 +167,10 @@ public class FinanceManagerProvider extends ContentProvider {
                 break;
             case AMOUNT:
                 cursor = db.query(AmountInfoEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            case DEPOSITS:
+                cursor = db.query(DepositInfoEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             case EXPENSE_ROW:
@@ -208,6 +221,9 @@ public class FinanceManagerProvider extends ContentProvider {
                 break;
             case CARDS:
                 nRows = db.update(CardInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case DEPOSITS:
+                nRows = db.update(DepositInfoEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case CARD_ROW:
                 rowId = ContentUris.parseId(uri);

@@ -28,4 +28,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="menu_transactions">Transactions</string>
     <string name="title_tansaction_activity">Transactions</string>
+    <string name="amount_to_deposit_title">Amount to Deposit</string>
+    <string name="amount_to_deposit_view">3,000</string>
+    <string name="name_of_currency">NGN</string>
+    <string name="fixed_deposit_amount_1">NGN5,000</string>
+    <string name="fixed_deposit_amount_2">NGN10,000</string>
+    <string name="fixed_deposit_amount_3">NGN20,000</string>
+    <string name="fixed_deposit_amount_4">NGN25,000</string>
+    <string name="fixed_deposit_amount_5">NGN50,000</string>
+    <string name="fixed_deposit_amount_6">NGN100,000</string>
+    <string name="custom_amount_text_view">Add Custom Amount</string>
 </resources>

@@ -25,6 +25,12 @@ public final class FinanceManagerProviderContract {
         String COLUMN_EXPENDITURE_DESCRIPTION = "expenditure_description";
     }
 
+    protected interface DepositColumns {
+        String COLUMN_DEPOSIT_DATE = "deposit_date";
+        String COLUMN_DEPOSIT_STATUS = "deposit_status";
+        String COLUMN_DEPOSIT_AMOUNT = "deposit_amount";
+    }
+
     protected interface CardColumns {
         String COLUMN_CARD_NAME = "card_name";
         String COLUMN_CARD_NUMBER = "card_number";
@@ -54,6 +60,11 @@ public final class FinanceManagerProviderContract {
     // To create table specific uri content://com.example.financemanager.provider/{path}
     public static final class Expenses implements ExpenseColumns, BaseColumns {
         public static final String PATH = "expenses";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH);
+    }
+
+    public static final class Deposits implements BaseColumns, DepositColumns {
+        public static final String PATH = "deposits";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, PATH);
     }
 

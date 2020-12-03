@@ -5,6 +5,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -48,4 +49,6 @@ public class TransactionActivity extends AppCompatActivity {
         });
     }
 
+    public void doNothing(View view) {
+    }
 }
