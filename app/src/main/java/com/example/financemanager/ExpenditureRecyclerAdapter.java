@@ -1,5 +1,6 @@
 package com.example.financemanager;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.FinanceManagerDatabaseContract.ExpenditureInfoEntry;
@@ -20,7 +23,7 @@ import java.text.NumberFormat;
 
 public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<ExpenditureRecyclerAdapter.ViewHolder> {
 
-    private final Context mContext;
+    private final AppCompatActivity mContext;
     //private final List<NoteInfo> mNotes;
     private Cursor mCursor;
     private final LayoutInflater mLayoutInflater;
@@ -35,7 +38,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
     private String mExpenditureMonth;
     private String mExpenditureYear;
 
-    public ExpenditureRecyclerAdapter(Context context, Cursor cursor) {
+    public ExpenditureRecyclerAdapter(AppCompatActivity context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
         //mNotes = notes;
@@ -95,9 +98,11 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
         //long amnt = Long.parseLong(expenditureAmount);
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setGroupingUsed(true);
-        String n = myFormat.format(Double.parseDouble(expenditureAmount));
-        if (n.length() > 6) {
-            n = n.substring(0, 4) + "..";
+        String n;
+        if (expenditureAmount.equals("")) {
+            n = myFormat.format(0);
+        } else {
+            n = myFormat.format(Double.parseDouble(expenditureAmount));
         }
         String expenditureId = mCursor.getString(mExpenditureIdPos);
         int id = mCursor.getInt(mIdPos);
@@ -137,6 +142,7 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
             holder.mExpenditureIcon.setBackgroundColor(Color.parseColor("#000000"));
         }
         holder.mId = id;
+        holder.itemView.setTag(id);
     }
 
     private String expenditureTimestamp() {
@@ -158,10 +164,10 @@ public class ExpenditureRecyclerAdapter extends RecyclerView.Adapter<Expenditure
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mTextExpenditureName = (TextView) itemView.findViewById(R.id.textViewF);
-            mTextExpenditureAmount = (TextView) itemView.findViewById(R.id.textView_amount);
-            mTextExpenditureTimestamp = (TextView) itemView.findViewById(R.id.textViewG);
-            mExpenditureIcon = (ImageView) itemView.findViewById(R.id.expenditure_icon);
+            mTextExpenditureName = itemView.findViewById(R.id.textViewF);
+            mTextExpenditureAmount = itemView.findViewById(R.id.textView_amount);
+            mTextExpenditureTimestamp = itemView.findViewById(R.id.textViewG);
+            mExpenditureIcon = itemView.findViewById(R.id.expenditure_icon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

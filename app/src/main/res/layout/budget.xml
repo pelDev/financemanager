@@ -2,20 +2,32 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/bckGround"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/piechart"
+            android:layout_width="0dp"
+            android:layout_height="350dp"
+            android:layout_margin="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/recycler_budgets"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/budget_list_title" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/button_add"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             app:cardElevation="0dp"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/title_budget">
@@ -23,7 +35,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorAccent"
+                android:background="@color/colorSecondary"
                 android:onClick="gotToAddBudget"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_add" />
@@ -49,7 +61,9 @@
             android:layout_width="50dp"
             android:layout_height="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/custom_ripple_grey"
+            android:onClick="doNothing"
             android:src="@drawable/ic_more"
             app:tint="#000000"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +74,6 @@
             android:id="@+id/budget_list_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Budgets"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_margin="12dp"
             android:textColor="@android:color/black"
@@ -72,10 +85,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="12dp"
+            android:layoutAnimation="@anim/layout_animation_up_to_down"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/budget_list_title"
+            app:layout_constraintTop_toBottomOf="@+id/piechart"
             tools:listitem="@layout/item_budget" />
+
+        <TextView
+            android:id="@+id/empty_view_income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/empty_recycler_message"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/budget_list_title" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

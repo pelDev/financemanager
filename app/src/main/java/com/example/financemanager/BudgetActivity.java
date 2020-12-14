@@ -1,24 +1,35 @@
 package com.example.financemanager;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import android.content.CursorLoader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.content.Loader;
-import android.app.LoaderManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import com.example.financemanager.FinanceManagerProviderContract.Budgets;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
-import com.example.financemanager.FinanceManagerDatabaseContract.BudgetInfoEntry;
+import java.text.DateFormatSymbols;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class BudgetActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -28,22 +39,68 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
     private static final int LOADER_BUDGETS = 0;
     private static final int LOADER_EXPENDITURE = 1;
     private Cursor mBudgetCursor;
+    private int mDay;
+    private String mMonthName;
+    private int mYear;
+    private TextView mEmptyRecycler;
+    private PieChart mPieChart;
+    private TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.budget);
 
-        Window window = BudgetActivity.this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.bckGround));
+//        Window window = BudgetActivity.this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        window.setStatusBarColor(ContextCompat.getColor(this, R.color.bckGround));
 
         mDbHelper = new FinanceManagerOpenHelper(this);
+        // get the current date
+        Calendar calendar = Calendar.getInstance();
+        mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        mMonthName = getMonthFromInt(month);
+        mYear = calendar.get(Calendar.YEAR);
+
+        ImageView buttonMore = findViewById(R.id.button_more);
+
+        buttonMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openBottomSheet();
+            }
+        });
+        mTitle = findViewById(R.id.budget_list_title);
+
         mRecyclerBudgets = findViewById(R.id.recycler_budgets);
+        mEmptyRecycler = findViewById(R.id.empty_view_income);
+
+        mPieChart = findViewById(R.id.piechart);
 
         initializeDisplayContent();
 
+    }
+
+    private void openBottomSheet() {
+        BottomDialogFragmentBudget bottomDialogFragmentBudget =
+                BottomDialogFragmentBudget.newInstance(this);
+        bottomDialogFragmentBudget.show(getSupportFragmentManager(), BottomDialogFragmentBudget.TAG);
+    }
+
+    private String getTitleText() {
+        return "Budget for " + mMonthName + ", " + mYear;
+    }
+
+    private String getMonthFromInt(int month) {
+        String monthString = "";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (month >= 0 && month <= 11) {
+            monthString = months[month];
+        }
+        return monthString;
     }
 
     private void initializeDisplayContent() {
@@ -77,29 +134,86 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
 
 
     private CursorLoader createLoaderBudgets() {
-        return new CursorLoader(this) {
-            @Override
-            public Cursor loadInBackground() {
-                SQLiteDatabase db = mDbHelper.getReadableDatabase();
+                Uri uri = Budgets.CONTENT_URI;
                 String[] columns = {
-                        BudgetInfoEntry.COLUMN_BUDGET_CATEGORY,
-                        BudgetInfoEntry.COLUMN_BUDGET_AMOUNT,
-                        BudgetInfoEntry.COLUMN_BUDGET_AMOUNT_SPENT,
-                        BudgetInfoEntry._ID,
+                        Budgets.COLUMN_BUDGET_CATEGORY,
+                        Budgets.COLUMN_BUDGET_AMOUNT,
+                        Budgets.COLUMN_BUDGET_AMOUNT_SPENT,
+                        Budgets._ID,
                 };
-                return db.query(BudgetInfoEntry.TABLE_NAME, columns, null, null,
-                        null, null, null);
-            }
-        };
+                String selection = Budgets.COLUMN_BUDGET_MONTH + " = ? AND " + Budgets.COLUMN_BUDGET_YEAR + " = ?";
+                String[] selectionArgs = {mMonthName, Integer.toString(mYear)};
+                return new CursorLoader(this, uri, columns, selection, selectionArgs, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         int id = loader.getId();
         if (id == LOADER_BUDGETS) {
+            if (data.getCount() != 0) {
+                mRecyclerBudgets.setVisibility(View.VISIBLE);
+                mEmptyRecycler.setVisibility(View.GONE);
+                initializePieChart(data);
+            } else {
+                mRecyclerBudgets.setVisibility(View.GONE);
+                mEmptyRecycler.setVisibility(View.VISIBLE);
+                mPieChart.setVisibility(View.GONE);
+            }
             mBudgetCursor = data;
             mBudgetRecyclerAdapter.changeCursor(mBudgetCursor);
+            mTitle.setText(getTitleText());
         }
+    }
+
+    public void setNewMonth(String month) {
+        if (!month.equals(mMonthName)) {
+            mMonthName = month;
+            getLoaderManager().restartLoader(LOADER_BUDGETS, null, this);
+        }
+    }
+
+    private void initializePieChart(final Cursor cursor) {
+        AsyncTask task = new AsyncTask() {
+
+            private List<PieEntry> mPieEntries;
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                mPieEntries = new ArrayList<>();
+                if (cursor != null && cursor.getCount() != 0) {
+                    cursor.moveToFirst();
+                    int budgetAmountPos = cursor.getColumnIndex(Budgets.COLUMN_BUDGET_AMOUNT);
+                    int budgetCategoryPos = cursor.getColumnIndex(Budgets.COLUMN_BUDGET_CATEGORY);
+                    while (!cursor.isAfterLast()) {
+                        double amount = Double.parseDouble(cursor.getString(budgetAmountPos));
+                        String label = cursor.getString(budgetCategoryPos);
+                        mPieEntries.add(new PieEntry((float) amount, label));
+                        cursor.moveToNext();
+                    }
+
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                mPieChart.setVisibility(View.VISIBLE);
+                mPieChart.animateXY(3000, 3000);
+
+                PieDataSet pieDataSet = new PieDataSet(mPieEntries, "Budget");
+                pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+
+                PieData pieData = new PieData(pieDataSet);
+                mPieChart.setData(pieData);
+                Description description = new Description();
+                description.setText("Budget");
+                mPieChart.invalidate();
+                super.onPostExecute(o);
+            }
+        };
+        task.execute();
+
     }
 
     @Override
@@ -108,5 +222,8 @@ public class BudgetActivity extends AppCompatActivity implements LoaderManager.L
             if (mBudgetCursor != null)
                 mBudgetCursor.close();
         }
+    }
+
+    public void doNothing(View view) {
     }
 }

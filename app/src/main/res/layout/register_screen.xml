@@ -3,7 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:clickable="true"
+    android:id="@+id/constraintLayout_register"
     android:layout_height="match_parent">
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
@@ -11,7 +17,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/textView4"
@@ -79,7 +86,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:background="@drawable/btn_login"
             android:text="Register"
             android:textColor="#FFFFFF"
             android:onClick="moveToMainActivity"
@@ -110,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="Login here"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             android:textSize="18sp"
             android:onClick="goToLogin"
             android:textStyle="bold"
