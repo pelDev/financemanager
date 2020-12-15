@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //        // Passing each menu ID as a set of Ids because each
 //        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_budget, R.id.nav_todo, R.id.nav_card)
+                R.id.nav_home, R.id.nav_budget, R.id.nav_todo)
                 .setDrawerLayout(mDrawer)
                 .build();
         createNotificationChannel();
@@ -842,13 +842,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else if (id == R.id.nav_todo) {
             mDrawer.closeDrawer(GravityCompat.START);
             startActivity(new Intent(this, ToDoActivity.class));
-        } else if (id == R.id.nav_card) {
-            mDrawer.closeDrawer(GravityCompat.START);
-            startActivity(new Intent(this, CardActivity.class));
-        } else if (id == R.id.nav_transactions) {
-            mDrawer.closeDrawer(GravityCompat.START);
-            startActivity(new Intent(this, TransactionActivity.class));
         }
+//        } else if (id == R.id.nav_card) {
+//            mDrawer.closeDrawer(GravityCompat.START);
+//            startActivity(new Intent(this, CardActivity.class));
+//        } else if (id == R.id.nav_transactions) {
+//            mDrawer.closeDrawer(GravityCompat.START);
+//            startActivity(new Intent(this, TransactionActivity.class));
+//        }
         return false;
     }
 
