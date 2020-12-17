@@ -19,22 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ToDoActivity" />
 
-        <provider
-            android:name=".FinanceManagerProvider"
-            android:authorities="com.example.financemanager.provider"
-            android:enabled="true"
-            android:exported="true" />
-
-        <activity android:name=".NetIncomeActivity" />
-        <activity
-            android:name=".AddBudgetActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".AddExpenseActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".BudgetActivity" />
         <activity
             android:name=".RegisterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
