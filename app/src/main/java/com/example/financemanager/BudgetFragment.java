@@ -1,7 +1,9 @@
 package com.example.financemanager;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,8 +31,12 @@ public class BudgetFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(BudgetViewModel.class);
-        // TODO: Use the ViewModel
+        mViewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
+
+
     }
 
+    public interface OnFragmentInteractionListener {
+        void onBudgetFragmentInteraction(Uri uri);
+    }
 }

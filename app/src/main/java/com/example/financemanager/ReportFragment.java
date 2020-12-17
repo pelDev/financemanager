@@ -35,6 +35,7 @@ public class ReportFragment extends Fragment {
 
         mReportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 
+        
         amount = getView().findViewById(R.id.text_amount_left);
         netIncome = getView().findViewById(R.id.textView_netIncome);
         netExpense = getView().findViewById(R.id.textView_netExpense);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/reportFragment">
+
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.example.financemanager.ReportFragment"
+        android:label="report_fragment"
+        tools:layout="@layout/report_fragment" >
+        <action
+            android:id="@+id/action_reportFragment_to_budgetFragment"
+            app:destination="@id/budgetFragment" />
+        <action
+            android:id="@+id/action_reportFragment_to_addIncomeActivity"
+            app:destination="@id/addIncomeActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.example.financemanager.BudgetFragment"
+        android:label="budget_fragment"
+        tools:layout="@layout/budget_fragment" />
+    <activity
+        android:id="@+id/addIncomeActivity"
+        android:name="com.example.financemanager.AddIncomeActivity"
+        android:label="activity_add_income"
+        tools:layout="@layout/activity_add_income" />
+</navigation>
