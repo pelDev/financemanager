@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_reportFragment_to_addIncomeActivity"
             app:destination="@id/addIncomeActivity" />
+        <action
+            android:id="@+id/action_reportFragment_to_addExpense"
+            app:destination="@id/addExpense" />
     </fragment>
     <fragment
         android:id="@+id/budgetFragment"
@@ -31,4 +34,9 @@
         android:name="com.example.financemanager.ui.netincome.AddIncomeActivity"
         android:label="activity_add_income"
         tools:layout="@layout/activity_add_income" />
+    <activity
+        android:id="@+id/addExpense"
+        android:name="com.example.financemanager.ui.expense.AddExpense"
+        android:label="activity_add_expense"
+        tools:layout="@layout/activity_add_expense" />
 </navigation>

@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.AddExpense"></activity>
+        <activity android:name=".ui.expense.AddExpense"></activity>
         <activity android:name=".ui.netincome.AddIncomeActivity" />
         <activity
             android:name=".SplashActivity"

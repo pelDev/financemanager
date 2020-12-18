@@ -38,18 +38,6 @@ public class ReportFragment extends Fragment {
 
         mReportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 
-        amount = getView().findViewById(R.id.text_amount_left);
-        netIncome = getView().findViewById(R.id.textView_netIncome);
-        netExpense = getView().findViewById(R.id.textView_netExpense);
-
-        if (count == 1) {
-            mReportViewModel.setNetIncome("20000");
-            mReportViewModel.setNetIncome("10000");
-            count++;
-        }
-
-        amount.setText(mReportViewModel.getAmount());
-
         // set up navigation to add income activity
         MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
         netIncomeCard.setOnClickListener(Navigation.createNavigateOnClickListener(
