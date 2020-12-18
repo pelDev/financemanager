@@ -1,5 +1,7 @@
 package com.example.financemanager;
 
+import com.example.financemanager.model.ExpenditureInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 

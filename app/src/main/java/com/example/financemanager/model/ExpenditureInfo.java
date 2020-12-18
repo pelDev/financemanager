@@ -1,4 +1,4 @@
-package com.example.financemanager;
+package com.example.financemanager.model;
 
 public final class ExpenditureInfo  {
 
