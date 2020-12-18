@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // On Pressed Navigate To Add Expense or Add Income Screen
-        FloatingActionButton fab = findViewById(R.id.fab);
-
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
@@ -58,9 +55,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
-        // set up navigation to add expense activity on fab clicked
-        fab.setOnClickListener(Navigation.createNavigateOnClickListener(
-                R.id.action_reportFragment_to_addExpense, null));
+
     }
 
     public static int getScreenWidth() {

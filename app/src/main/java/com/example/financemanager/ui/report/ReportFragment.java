@@ -9,17 +9,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.financemanager.R;
+import com.example.financemanager.database.expense.Expenditure;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
+
+import static androidx.lifecycle.ViewModelProvider.*;
 
 public class ReportFragment extends Fragment {
 
     private ReportViewModel mReportViewModel;
-    private TextView amount, netIncome, netExpense;
-    private int count = 1;
+    private ExpenditureListAdapter mAdapter;
+
 
     @Nullable
     @Override
@@ -36,12 +45,34 @@ public class ReportFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mReportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
+        mReportViewModel = new ViewModelProvider(this,
+                AndroidViewModelFactory.getInstance(getActivity().getApplication()))
+                .get(ReportViewModel.class);
 
         // set up navigation to add income activity
         MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
         netIncomeCard.setOnClickListener(Navigation.createNavigateOnClickListener(
                 R.id.action_reportFragment_to_addIncomeActivity, null));
+
+        // set up navigation to add expense activity on fab clicked
+        FloatingActionButton fab = getView().findViewById(R.id.fab);
+        fab.setOnClickListener(Navigation.createNavigateOnClickListener(
+                R.id.action_reportFragment_to_addExpense, null));
+
+        // set up recycler view
+        mAdapter = new ExpenditureListAdapter(R.layout.item_expenditure);
+        RecyclerView recyclerView = getView().findViewById(R.id.list_expenditure);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(mAdapter);
+
+        // set up expenditure list observer
+        mReportViewModel.getAllExpenditures().observe(getViewLifecycleOwner(),
+                new Observer<List<Expenditure>>() {
+                    @Override
+                    public void onChanged(List<Expenditure> expenditures) {
+                        mAdapter.setExpenditureList(expenditures);
+                    }
+                });
 
     }
 

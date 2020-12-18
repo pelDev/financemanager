@@ -4,11 +4,8 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
 
-public class NetIncomeViewModel extends AndroidViewModel {
-
-    public NetIncomeViewModel(@NonNull Application application) {
-        super(application);
-    }
+public class NetIncomeViewModel extends ViewModel {
 
 }

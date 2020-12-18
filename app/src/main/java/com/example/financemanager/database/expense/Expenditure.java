@@ -27,6 +27,17 @@ public class Expenditure {
     @ColumnInfo(name = "expenseAmount")
     private int amount;
 
+    public Expenditure(String category, String name, String description,
+                       int day, String month, int year, int amount) {
+        this.category = category;
+        this.name = name;
+        this.description = description;
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.amount = amount;
+    }
+
     public int getAmount() {
         return amount;
     }
