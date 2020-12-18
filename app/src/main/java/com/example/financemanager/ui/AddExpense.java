@@ -1,14 +1,16 @@
-package com.example.financemanager;
+package com.example.financemanager.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class AddIncomeActivity extends AppCompatActivity {
+import com.example.financemanager.R;
+
+public class AddExpense extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_income);
+        setContentView(R.layout.activity_add_expense);
     }
 }

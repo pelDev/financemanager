@@ -1,4 +1,4 @@
-package com.example.financemanager;
+package com.example.financemanager.ui.report;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,13 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
-import java.util.Locale;
+import com.example.financemanager.R;
+import com.google.android.material.card.MaterialCardView;
 
 public class ReportFragment extends Fragment {
 
     private ReportViewModel mReportViewModel;
     private TextView amount, netIncome, netExpense;
+    private int count = 1;
 
     @Nullable
     @Override
@@ -35,14 +38,22 @@ public class ReportFragment extends Fragment {
 
         mReportViewModel = new ViewModelProvider(this).get(ReportViewModel.class);
 
-        
         amount = getView().findViewById(R.id.text_amount_left);
         netIncome = getView().findViewById(R.id.textView_netIncome);
         netExpense = getView().findViewById(R.id.textView_netExpense);
 
-        mReportViewModel.setNetIncome("20000");
-        mReportViewModel.setNetIncome("10000");
+        if (count == 1) {
+            mReportViewModel.setNetIncome("20000");
+            mReportViewModel.setNetIncome("10000");
+            count++;
+        }
+
         amount.setText(mReportViewModel.getAmount());
+
+        // set up navigation to add income activity
+        MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
+        netIncomeCard.setOnClickListener(Navigation.createNavigateOnClickListener(
+                R.id.action_reportFragment_to_addIncomeActivity, null));
 
     }
 

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/reportFragment"
-        android:name="com.example.financemanager.ReportFragment"
+        android:name="com.example.financemanager.ui.report.ReportFragment"
         android:label="report_fragment"
         tools:layout="@layout/report_fragment" >
         <action
@@ -19,12 +19,16 @@
     </fragment>
     <fragment
         android:id="@+id/budgetFragment"
-        android:name="com.example.financemanager.BudgetFragment"
+        android:name="com.example.financemanager.ui.budget.BudgetFragment"
         android:label="budget_fragment"
-        tools:layout="@layout/budget_fragment" />
+        tools:layout="@layout/budget_fragment" >
+        <action
+            android:id="@+id/action_budgetFragment_to_reportFragment"
+            app:destination="@id/reportFragment" />
+    </fragment>
     <activity
         android:id="@+id/addIncomeActivity"
-        android:name="com.example.financemanager.AddIncomeActivity"
+        android:name="com.example.financemanager.ui.netincome.AddIncomeActivity"
         android:label="activity_add_income"
         tools:layout="@layout/activity_add_income" />
 </navigation>

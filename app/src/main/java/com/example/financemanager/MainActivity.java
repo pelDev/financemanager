@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -19,9 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import com.example.financemanager.ui.budget.BudgetFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,19 +38,13 @@ public class MainActivity extends AppCompatActivity implements
     private DrawerLayout mDrawer;
     private FirebaseAuth mAuth;
     private NavigationView mNavigationView;
+    private NavController mNavController;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .add(R.id.container, new ReportFragment())
-//                    .commit();
-//        }
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -66,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
         createNotificationChannel();
+
+        mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
     }
 
     public static int getScreenWidth() {
@@ -86,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-            navigateTo(new ReportFragment(), false);
+            mNavController.navigate(R.id.action_budgetFragment_to_reportFragment, null);
         } else if (id == R.id.nav_logout) {
             // Sign user out and redirect to start screen.
             mAuth.signOut();
@@ -96,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements
             finish();
         } else if (id == R.id.nav_budget) {
             // Navigate to the Budget activity
-            navigateTo(new BudgetFragment(), true);
+            mNavController.navigate(R.id.action_reportFragment_to_budgetFragment, null);
         }
         // close drawer
         mDrawer.closeDrawer(GravityCompat.START);
@@ -169,19 +165,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public void cancelNotification() {
         mNotifyManager.cancel(BUDGET_NOTIFICATION_ID);
-    }
-
-    public void navigateTo(Fragment fragment, boolean addToBackStack) {
-        FragmentTransaction transaction =
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, fragment);
-
-        if (addToBackStack) {
-            transaction.addToBackStack(null);
-        }
-
-        transaction.commit();
     }
 
     @Override

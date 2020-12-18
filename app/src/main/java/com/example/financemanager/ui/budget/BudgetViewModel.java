@@ -1,4 +1,4 @@
-package com.example.financemanager;
+package com.example.financemanager.ui.budget;
 
 import androidx.lifecycle.ViewModel;
 
