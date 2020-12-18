@@ -38,4 +38,6 @@
     <string name="fixed_deposit_amount_5">NGN50,000</string>
     <string name="fixed_deposit_amount_6">NGN100,000</string>
     <string name="custom_amount_text_view">Add Custom Amount</string>
+    <string name="add_income_action_text">Add Income</string>
+    <string name="add_expense_action_text">Add Expense</string>
 </resources>

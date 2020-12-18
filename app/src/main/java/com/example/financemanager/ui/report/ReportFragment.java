@@ -28,6 +28,8 @@ public class ReportFragment extends Fragment {
 
     private ReportViewModel mReportViewModel;
     private ExpenditureListAdapter mAdapter;
+    private boolean isAllFabVisible = false;
+    private FloatingActionButton mAddFab;
 
 
     @Nullable
@@ -49,15 +51,15 @@ public class ReportFragment extends Fragment {
                 AndroidViewModelFactory.getInstance(getActivity().getApplication()))
                 .get(ReportViewModel.class);
 
+        mAddFab = getView().findViewById(R.id.add_fab);
+
         // set up navigation to add income activity
         MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
         netIncomeCard.setOnClickListener(Navigation.createNavigateOnClickListener(
                 R.id.action_reportFragment_to_addIncomeActivity, null));
 
-        // set up navigation to add expense activity on fab clicked
-        FloatingActionButton fab = getView().findViewById(R.id.fab);
-        fab.setOnClickListener(Navigation.createNavigateOnClickListener(
-                R.id.action_reportFragment_to_addExpense, null));
+        // set up fabs
+        setUpFabs();
 
         // set up recycler view
         mAdapter = new ExpenditureListAdapter(R.layout.item_expenditure);
@@ -74,6 +76,12 @@ public class ReportFragment extends Fragment {
                     }
                 });
 
+    }
+
+
+    private void setUpFabs() {
+        mAddFab.setOnClickListener(Navigation.createNavigateOnClickListener(
+                R.id.action_reportFragment_to_addExpense, null));
     }
 
 }
