@@ -5,22 +5,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
 import com.example.financemanager.R;
-import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.databinding.ActivityAddExpenseBinding;
-import com.example.financemanager.ui.report.ReportViewModel;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
 
 import static androidx.databinding.library.baseAdapters.BR.myViewModel;
+
 
 public class AddExpense extends AppCompatActivity {
 

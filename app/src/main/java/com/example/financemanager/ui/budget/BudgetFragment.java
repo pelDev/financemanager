@@ -17,7 +17,7 @@ import com.example.financemanager.R;
 
 public class BudgetFragment extends Fragment {
 
-    private BudgetViewModel mViewModel;
+    private BudgetViewModel mBudgetViewModel;
 
     public static BudgetFragment newInstance() {
         return new BudgetFragment();
@@ -32,7 +32,11 @@ public class BudgetFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
+
+        mBudgetViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()))
+                .get(BudgetViewModel.class);
+
 
 
     }

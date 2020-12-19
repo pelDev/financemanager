@@ -12,7 +12,7 @@ public class Expenditure {
     @NonNull
     @ColumnInfo(name = "expenseId")
     private int id;
-    @ColumnInfo(name = "expenseCategory")
+    @ColumnInfo(name = "category")
     private String category;
     @ColumnInfo(name = "expenseName")
     private String name;
