@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -19,7 +20,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.financemanager.ui.budget.BudgetFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private NavigationView mNavigationView;
     private NavController mNavController;
+    private AppBarConfiguration mAppBarConfiguration;
 
 
     @Override
@@ -76,7 +80,12 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-            mNavController.navigate(R.id.action_budgetFragment_to_reportFragment, null);
+            String currentPosition = mNavController.getCurrentDestination().getLabel().toString();
+            switch (currentPosition) {
+                case "budget_fragment":
+                    mNavController.navigate(R.id.action_budgetFragment_to_reportFragment, null);
+                    break;
+            }
         } else if (id == R.id.nav_logout) {
             // Sign user out and redirect to start screen.
             mAuth.signOut();
@@ -86,7 +95,12 @@ public class MainActivity extends AppCompatActivity implements
             finish();
         } else if (id == R.id.nav_budget) {
             // Navigate to the Budget activity
-            mNavController.navigate(R.id.action_reportFragment_to_budgetFragment, null);
+            String currentPosition = mNavController.getCurrentDestination().getLabel().toString();
+            switch (currentPosition) {
+                case "report_fragment":
+                    mNavController.navigate(R.id.action_reportFragment_to_budgetFragment, null);
+                    break;
+            }
         }
         // close drawer
         mDrawer.closeDrawer(GravityCompat.START);
