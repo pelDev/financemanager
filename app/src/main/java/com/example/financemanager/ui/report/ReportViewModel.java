@@ -26,10 +26,6 @@ public class ReportViewModel extends AndroidViewModel {
         searchResults = mExpenditureRepository.getSearchResults();
     }
 
-    public void insertExpenditure(Expenditure expenditure) {
-        mExpenditureRepository.insertExpenditure(expenditure);
-    }
-
     public LiveData<List<Expenditure>> getAllExpenditures() {
         return allExpenditures;
     }

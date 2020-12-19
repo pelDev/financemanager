@@ -2,6 +2,7 @@ package com.example.financemanager.ui.report;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -30,6 +31,13 @@ public class ReportFragment extends Fragment {
     private ExpenditureListAdapter mAdapter;
     private boolean isAllFabVisible = false;
     private FloatingActionButton mAddFab;
+    private FloatingActionButton mAddIncomeFab;
+    private FloatingActionButton mAddExpenseFab;
+    private View mOverlay;
+    private TextView mFabExpense, mFabIncome;
+
+    public void doNothing(View view) {
+    }
 
 
     @Nullable
@@ -52,6 +60,19 @@ public class ReportFragment extends Fragment {
                 .get(ReportViewModel.class);
 
         mAddFab = getView().findViewById(R.id.add_fab);
+        mAddIncomeFab = getView().findViewById(R.id.add_income_fab);
+        mAddExpenseFab = getView().findViewById(R.id.add_expense_fab);
+        mOverlay = getView().findViewById(R.id.overlay);
+        mFabExpense = getView().findViewById(R.id.add_expense_action_text);
+        mFabIncome = getView().findViewById(R.id.add_income_action_text);
+
+        mOverlay.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideFabs();
+                return false;
+            }
+        });
 
         // set up navigation to add income activity
         MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
@@ -78,10 +99,42 @@ public class ReportFragment extends Fragment {
 
     }
 
+//    Navigation.createNavigateOnClickListener(
+//    R.id.action_reportFragment_to_addExpense, null)
 
     private void setUpFabs() {
-        mAddFab.setOnClickListener(Navigation.createNavigateOnClickListener(
-                R.id.action_reportFragment_to_addExpense, null));
+        mAddExpenseFab.hide();
+        mAddIncomeFab.hide();
+        mAddFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isAllFabVisible) {
+                    showFabs();
+                    isAllFabVisible = true;
+                } else {
+                    hideFabs();
+                    isAllFabVisible = false;
+                }
+            }
+        });
+    }
+
+    private void hideFabs() {
+        mOverlay.setVisibility(View.GONE);
+        mAddFab.setImageResource(R.drawable.ic_add);
+        mAddExpenseFab.hide();
+        mAddIncomeFab.hide();
+        mFabIncome.setVisibility(View.GONE);
+        mFabExpense.setVisibility(View.GONE);
+    }
+
+    private void showFabs() {
+        mOverlay.setVisibility(View.VISIBLE);
+        mAddFab.setImageResource(R.drawable.ic_cancel);
+        mAddExpenseFab.show();
+        mAddIncomeFab.show();
+        mFabIncome.setVisibility(View.VISIBLE);
+        mFabExpense.setVisibility(View.VISIBLE);
     }
 
 }

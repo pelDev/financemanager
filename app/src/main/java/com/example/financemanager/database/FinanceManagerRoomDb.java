@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.database.expense.ExpenditureDao;
 
-@Database(entities = {Expenditure.class}, version = 1)
+@Database(entities = {Expenditure.class}, version = 1, exportSchema = false)
 public abstract class FinanceManagerRoomDb extends RoomDatabase {
 
     public abstract ExpenditureDao expenditureDao();
