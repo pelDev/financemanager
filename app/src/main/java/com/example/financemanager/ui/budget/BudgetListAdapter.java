@@ -46,15 +46,15 @@ public class BudgetListAdapter extends
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.budgetCategoryTextView.setText(mBudgetList.get(position).getCategory());
-        int amount = mBudgetList.get(position).getAmount();
+        double amount = (double) mBudgetList.get(position).getAmount();
         holder.budgetAmountTextView.setText(String.valueOf(amount));
-        int amountSpent = mBudgetList.get(position).getAmountSpent();
-        int progress = (amountSpent / amount) * 100;
+        double amountSpent = mBudgetList.get(position).getAmountSpent();
+        double progress = (amountSpent / amount) * 100;
         if (progress > 100) {
             progress = 100;
         }
-        int amountLeft = amount - amountSpent;
-        holder.progressBar.setProgress(progress);
+        double amountLeft = amount - amountSpent;
+        holder.progressBar.setProgress((int) Math.round(progress));
         holder.amountLeftTextView.setText("Left: " + amountLeft);
     }
 

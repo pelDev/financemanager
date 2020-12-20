@@ -2,6 +2,7 @@ package com.example.financemanager.database.budget;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Insert;
 import androidx.room.Query;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface BudgetDao {
             "AS amountSpent FROM budgets b")
     LiveData<List<Budget>> getBudgetList();
 
+    @Insert
+    void insertBudget(Budget budget);
 }

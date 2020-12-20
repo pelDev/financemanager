@@ -107,6 +107,7 @@ public class ReportFragment extends Fragment {
     private void setUpFabs() {
         mAddExpenseFab.hide();
         mAddIncomeFab.hide();
+        mAddBudgetFab.hide();
         mAddFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +125,13 @@ public class ReportFragment extends Fragment {
             public void onClick(View v) {
                 hideFabs();
                 mController.navigate(R.id.action_reportFragment_to_addExpense);
+            }
+        });
+        mAddBudgetFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mController.navigate(R.id.action_reportFragment_to_addBudgetActivity);
+                hideFabs();
             }
         });
     }
