@@ -26,6 +26,10 @@ public class Budget {
     @ColumnInfo(name = "budgetId")
     private int id;
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Budget(String category, int amount, String month, int year) {
         this.category = category;
         this.amount = amount;

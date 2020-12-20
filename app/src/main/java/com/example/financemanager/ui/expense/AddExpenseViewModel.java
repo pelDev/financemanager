@@ -12,11 +12,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.repository.ExpenditureRepository;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
-import java.util.Observable;
 
 public class AddExpenseViewModel extends AndroidViewModel {
 

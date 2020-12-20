@@ -9,7 +9,7 @@ import java.util.List;
 @Dao
 public interface BudgetDao {
 
-    @Query("SELECT *,(SELECT expenseAmount(*) FROM expenses e WHERE b.category = e.category) " +
+    @Query("SELECT *,(SELECT COALESCE(SUM(e.expenseAmount), 0) FROM expenses e WHERE b.category = e.category) " +
             "AS amountSpent FROM budgets b")
     LiveData<List<Budget>> getBudgetList();
 

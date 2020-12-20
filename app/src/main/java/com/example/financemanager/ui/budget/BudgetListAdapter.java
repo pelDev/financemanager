@@ -25,7 +25,7 @@ public class BudgetListAdapter extends
         budgetItemLayout = layoutId;
     }
 
-    public void setExpenditureList(List<Budget> budgetList) {
+    public void setBudgetList(List<Budget> budgetList) {
         this.mBudgetList = budgetList;
         notifyDataSetChanged();
     }
