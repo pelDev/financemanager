@@ -62,6 +62,13 @@ public class ExpenditureListAdapter extends
             expenseNameTextView = itemView.findViewById(R.id.textView_expenseName);
             expenseDateTextView = itemView.findViewById(R.id.textView_expenseDate);
             expenseAmountTextView = itemView.findViewById(R.id.textView_amount);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
         }
 
     }

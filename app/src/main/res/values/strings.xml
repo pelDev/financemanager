@@ -40,4 +40,8 @@
     <string name="custom_amount_text_view">Add Custom Amount</string>
     <string name="add_income_action_text">Add Income</string>
     <string name="add_expense_action_text">Add Expense</string>
+    <string name="hint_expense_name">Rice</string>
+    <string name="hint_expense_amount">30000</string>
+    <string name="button_add_expense">ADD</string>
+    <string name="add_budget_action_text">Add Budget</string>
 </resources>

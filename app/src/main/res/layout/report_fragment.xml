@@ -1,67 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_height="match_parent"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     tools:context=".ui.report.ReportFragment"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/bckGround">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/home_screen_nav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@drawable/custom_ripple_grey"
-                app:layout_constraintBottom_toBottomOf="@+id/iv_set_notification"
-                app:layout_constraintEnd_toStartOf="@+id/textView6"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_action_menu"
-                app:tint="@android:color/black" />
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:text="@string/home_heading"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-                app:layout_constraintEnd_toStartOf="@+id/iv_set_notification"
-                app:layout_constraintStart_toEndOf="@+id/imageView2"
-                app:layout_constraintTop_toTopOf="@+id/imageView2" />
-
-            <ImageView
-                android:id="@+id/iv_set_notification"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:background="@drawable/custom_ripple_grey"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView6"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_action_notif"
-                app:tint="#BCBABA" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent">
 
         <ScrollView
             android:id="@+id/scrollViewA"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
             android:background="@color/bckGround"
-            app:layout_constraintTop_toBottomOf="@+id/home_screen_nav"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-
-            >
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
             <androidx.constraintlayout.widget.ConstraintLayout
 
                 android:layout_width="match_parent"
@@ -329,49 +287,19 @@
 
         </ScrollView>
 
-<!--    &lt;!&ndash;    Fab for add income&ndash;&gt;-->
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/add_income_fab"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:fabSize="mini"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/add_fab"-->
-<!--            app:layout_constraintEnd_toEndOf="@+id/add_fab"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/add_fab"-->
-<!--            app:srcCompat="@drawable/ic_action_income" />-->
-<!--    -->
-<!--    &lt;!&ndash;    Action Name Text for add income&ndash;&gt;-->
-<!--        <TextView-->
-<!--            style="@style/FabActionText"-->
-<!--            android:id="@+id/add_income_action_text"-->
-<!--            android:text="@string/add_income_action_text"-->
-<!--            app:layout_constraintBottom_toBottomOf="@+id/add_income_fab"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/add_income_fab"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/add_income_fab"/>-->
-<!--    -->
-<!--    &lt;!&ndash;    Fab for add expense&ndash;&gt;-->
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/add_expense_fab"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:fabSize="mini"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/add_income_fab"-->
-<!--            app:layout_constraintEnd_toEndOf="@+id/add_income_fab"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/add_income_fab"-->
-<!--            app:srcCompat="@drawable/ic_action_expenditure" />-->
-<!--    -->
-<!--    &lt;!&ndash;    Action Name Text For add expense fab&ndash;&gt;-->
-<!--        <TextView-->
-<!--            style="@style/FabActionText"-->
-<!--            android:id="@+id/add_expense_action_text"-->
-<!--            android:text="@string/add_expense_action_text"-->
-<!--            app:layout_constraintBottom_toBottomOf="@+id/add_expense_fab"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/add_expense_fab"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/add_expense_fab"/>-->
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:alpha="0.8"
+            android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="right"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
     <!--    This is the parent Fab-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_fab"
@@ -383,4 +311,77 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!--    Fab for add income-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_income_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/add_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_fab"
+        app:layout_constraintStart_toStartOf="@+id/add_fab"
+        app:srcCompat="@drawable/ic_action_income" />
+
+    <!--    Action Name Text for add income-->
+    <TextView
+        style="@style/FabActionText"
+        android:id="@+id/add_income_action_text"
+        android:text="@string/add_income_action_text"
+        android:visibility="gone"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/add_income_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_income_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_income_fab"/>
+
+    <!--    Fab for add expense-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_expense_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/add_income_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_income_fab"
+        app:layout_constraintStart_toStartOf="@+id/add_income_fab"
+        app:srcCompat="@drawable/ic_action_expenditure" />
+
+    <!--    Action Name Text For add expense fab-->
+    <TextView
+        style="@style/FabActionText"
+        android:id="@+id/add_expense_action_text"
+        android:text="@string/add_expense_action_text"
+        android:visibility="gone"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/add_expense_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_expense_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_expense_fab"/>
+
+    <!--    Fab for add budget-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_budget_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/add_expense_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_expense_fab"
+        app:layout_constraintStart_toStartOf="@+id/add_expense_fab"
+        app:srcCompat="@drawable/ic_budget" />
+
+    <!--    Action Name Text For add budget fab-->
+    <TextView
+        style="@style/FabActionText"
+        android:id="@+id/add_budget_action_text"
+        android:text="@string/add_budget_action_text"
+        android:visibility="gone"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/add_budget_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_budget_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_budget_fab"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.financemanager.ui.report;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -11,7 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,7 +32,13 @@ public class ReportFragment extends Fragment {
     private ReportViewModel mReportViewModel;
     private ExpenditureListAdapter mAdapter;
     private boolean isAllFabVisible = false;
-    private FloatingActionButton mAddFab;
+    private FloatingActionButton mAddFab, mAddIncomeFab, mAddExpenseFab, mAddBudgetFab;
+    private View mOverlay;
+    private TextView mFabExpense, mFabIncome, mFabBudget;
+    private NavController mController;
+
+    public void doNothing(View view) {
+    }
 
 
     @Nullable
@@ -52,6 +61,21 @@ public class ReportFragment extends Fragment {
                 .get(ReportViewModel.class);
 
         mAddFab = getView().findViewById(R.id.add_fab);
+        mAddIncomeFab = getView().findViewById(R.id.add_income_fab);
+        mAddExpenseFab = getView().findViewById(R.id.add_expense_fab);
+        mAddBudgetFab = getView().findViewById(R.id.add_budget_fab);
+        mOverlay = getView().findViewById(R.id.overlay);
+        mFabExpense = getView().findViewById(R.id.add_expense_action_text);
+        mFabIncome = getView().findViewById(R.id.add_income_action_text);
+        mFabBudget = getView().findViewById(R.id.add_budget_action_text);
+
+        mOverlay.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideFabs();
+                return false;
+            }
+        });
 
         // set up navigation to add income activity
         MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
@@ -76,12 +100,62 @@ public class ReportFragment extends Fragment {
                     }
                 });
 
+        mController = NavHostFragment.findNavController(this);
+
     }
 
-
     private void setUpFabs() {
-        mAddFab.setOnClickListener(Navigation.createNavigateOnClickListener(
-                R.id.action_reportFragment_to_addExpense, null));
+        mAddExpenseFab.hide();
+        mAddIncomeFab.hide();
+        mAddBudgetFab.hide();
+        mAddFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isAllFabVisible) {
+                    showFabs();
+                    isAllFabVisible = true;
+                } else {
+                    hideFabs();
+                    isAllFabVisible = false;
+                }
+            }
+        });
+        mAddExpenseFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideFabs();
+                mController.navigate(R.id.action_reportFragment_to_addExpense);
+            }
+        });
+        mAddBudgetFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mController.navigate(R.id.action_reportFragment_to_addBudgetActivity);
+                hideFabs();
+            }
+        });
+    }
+
+    private void hideFabs() {
+        mOverlay.setVisibility(View.GONE);
+        mAddFab.setImageResource(R.drawable.ic_add);
+        mAddExpenseFab.hide();
+        mAddIncomeFab.hide();
+        mAddBudgetFab.hide();
+        mFabIncome.setVisibility(View.GONE);
+        mFabExpense.setVisibility(View.GONE);
+        mFabBudget.setVisibility(View.GONE);
+    }
+
+    private void showFabs() {
+        mOverlay.setVisibility(View.VISIBLE);
+        mAddFab.setImageResource(R.drawable.ic_cancel);
+        mAddExpenseFab.show();
+        mAddBudgetFab.show();
+        mAddIncomeFab.show();
+        mFabIncome.setVisibility(View.VISIBLE);
+        mFabExpense.setVisibility(View.VISIBLE);
+        mFabBudget.setVisibility(View.VISIBLE);
     }
 
 }
