@@ -15,10 +15,10 @@ public class Budget {
     @ColumnInfo(name = "budgetAmount")
     private int amount;
 
-    @ColumnInfo(name = "month")
+    @ColumnInfo(name = "budgetMonth")
     private String month;
 
-    @ColumnInfo(name = "year")
+    @ColumnInfo(name = "budgetYear")
     private int year;
 
     @PrimaryKey(autoGenerate = true)

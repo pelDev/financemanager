@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -36,8 +37,12 @@ public class ReportFragment extends Fragment {
     private View mOverlay;
     private TextView mFabExpense, mFabIncome, mFabBudget;
     private NavController mController;
+    private TextView mAmountView;
+    private int totalIncome = 0;
+    private int totalExpense = 0;
 
-    public void doNothing(View view) {
+    public void doSetAmount() {
+        mAmountView.setText(Integer.toString(totalIncome - totalExpense));
     }
 
 
@@ -68,6 +73,7 @@ public class ReportFragment extends Fragment {
         mFabExpense = getView().findViewById(R.id.add_expense_action_text);
         mFabIncome = getView().findViewById(R.id.add_income_action_text);
         mFabBudget = getView().findViewById(R.id.add_budget_action_text);
+        mAmountView = getView().findViewById(R.id.text_amount_left);
 
         mOverlay.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -80,7 +86,7 @@ public class ReportFragment extends Fragment {
         // set up navigation to add income activity
         MaterialCardView netIncomeCard = getView().findViewById(R.id.cardA);
         netIncomeCard.setOnClickListener(Navigation.createNavigateOnClickListener(
-                R.id.action_reportFragment_to_addIncomeActivity, null));
+                R.id.action_reportFragment_to_incomeListFragment, null));
 
         // set up fabs
         setUpFabs();
@@ -100,6 +106,31 @@ public class ReportFragment extends Fragment {
                     }
                 });
 
+        mReportViewModel.getTotalIncome().observe(getViewLifecycleOwner(),
+                new Observer<Integer>() {
+                    @Override
+                    public void onChanged(Integer integer) {
+                        totalIncome = integer;
+                        doSetAmount();
+                    }
+                });
+
+        mReportViewModel.getTotalExpense().observe(getViewLifecycleOwner(),
+                new Observer<Integer>() {
+                    @Override
+                    public void onChanged(Integer integer) {
+                        totalExpense = integer;
+                        doSetAmount();
+                    }
+                });
+
+        LiveData<Integer> currentAmount = new LiveData<Integer>() {
+            @Override
+            protected void setValue(Integer value) {
+                super.setValue(value);
+            }
+        };
+
         mController = NavHostFragment.findNavController(this);
 
     }
@@ -113,30 +144,36 @@ public class ReportFragment extends Fragment {
             public void onClick(View v) {
                 if (!isAllFabVisible) {
                     showFabs();
-                    isAllFabVisible = true;
                 } else {
                     hideFabs();
-                    isAllFabVisible = false;
                 }
             }
         });
         mAddExpenseFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mController.navigate(R.id.action_reportFragment_to_addExpenseFragment);
                 hideFabs();
-                mController.navigate(R.id.action_reportFragment_to_addExpense);
             }
         });
         mAddBudgetFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.navigate(R.id.action_reportFragment_to_addBudgetActivity);
+                mController.navigate(R.id.action_reportFragment_to_addBudgetFragment);
+                hideFabs();
+            }
+        });
+        mAddIncomeFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mController.navigate(R.id.action_reportFragment_to_addIncomeFragment);
                 hideFabs();
             }
         });
     }
 
     private void hideFabs() {
+        isAllFabVisible = false;
         mOverlay.setVisibility(View.GONE);
         mAddFab.setImageResource(R.drawable.ic_add);
         mAddExpenseFab.hide();
@@ -148,6 +185,7 @@ public class ReportFragment extends Fragment {
     }
 
     private void showFabs() {
+        isAllFabVisible = true;
         mOverlay.setVisibility(View.VISIBLE);
         mAddFab.setImageResource(R.drawable.ic_cancel);
         mAddExpenseFab.show();

@@ -5,6 +5,8 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import com.example.financemanager.database.budget.Budget;
+
 import java.util.List;
 
 @Dao

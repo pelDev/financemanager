@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,13 +26,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.financemanager.ui.budget.BudgetFragment;
+import com.example.financemanager.ui.report.ReportFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener, BudgetFragment.OnFragmentInteractionListener {
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     private NotificationManager mNotifyManager;
@@ -175,8 +177,4 @@ public class MainActivity extends AppCompatActivity implements
         mNotifyManager.cancel(BUDGET_NOTIFICATION_ID);
     }
 
-    @Override
-    public void onBudgetFragmentInteraction(Uri uri) {
-
-    }
 }

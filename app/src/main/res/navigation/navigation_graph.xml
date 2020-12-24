@@ -14,14 +14,17 @@
             android:id="@+id/action_reportFragment_to_budgetFragment"
             app:destination="@id/budgetFragment" />
         <action
-            android:id="@+id/action_reportFragment_to_addIncomeActivity"
-            app:destination="@id/addIncomeActivity" />
+            android:id="@+id/action_reportFragment_to_addIncomeFragment"
+            app:destination="@id/addIncomeFragment" />
         <action
-            android:id="@+id/action_reportFragment_to_addExpense"
-            app:destination="@id/addExpense" />
+            android:id="@+id/action_reportFragment_to_addExpenseFragment"
+            app:destination="@id/addExpenseFragment" />
         <action
-            android:id="@+id/action_reportFragment_to_addBudgetActivity"
-            app:destination="@id/addBudgetActivity" />
+            android:id="@+id/action_reportFragment_to_addBudgetFragment"
+            app:destination="@id/addBudgetFragment" />
+        <action
+            android:id="@+id/action_reportFragment_to_incomeListFragment"
+            app:destination="@id/incomeListFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetFragment"
@@ -32,18 +35,24 @@
             android:id="@+id/action_budgetFragment_to_reportFragment"
             app:destination="@id/reportFragment" />
     </fragment>
-    <activity
-        android:id="@+id/addIncomeActivity"
-        android:name="com.example.financemanager.ui.netincome.AddIncomeActivity"
-        android:label="activity_add_income"
-        tools:layout="@layout/activity_add_income" />
-    <activity
-        android:id="@+id/addExpense"
-        android:name="com.example.financemanager.ui.expense.AddExpense"
-        android:label="activity_add_expense"
-        tools:layout="@layout/activity_add_expense" />
-    <activity
-        android:id="@+id/addBudgetActivity"
-        android:name="com.example.financemanager.ui.budget.AddBudgetActivity"
-        android:label="AddBudgetActivity" />
+    <fragment
+        android:id="@+id/addIncomeFragment"
+        android:name="com.example.financemanager.ui.netincome.AddIncomeFragment"
+        android:label="add_income_fragment"
+        tools:layout="@layout/add_income_fragment" />
+    <fragment
+        android:id="@+id/addExpenseFragment"
+        android:name="com.example.financemanager.ui.expense.AddExpenseFragment"
+        android:label="add_expense_fragment"
+        tools:layout="@layout/add_expense_fragment" />
+    <fragment
+        android:id="@+id/addBudgetFragment"
+        android:name="com.example.financemanager.ui.budget.AddBudgetFragment"
+        android:label="AddBudgetFragment"
+        tools:layout="@layout/add_budget_fragment"/>
+    <fragment
+        android:id="@+id/incomeListFragment"
+        android:name="com.example.financemanager.ui.netincome.IncomeListFragment"
+        android:label="IncomeListFragment"
+        tools:layout="@layout/income_list_fragment"/>
 </navigation>

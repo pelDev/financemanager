@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.financemanager.database.FinanceManagerRoomDb;
+import com.example.financemanager.database.budget.Budget;
 import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.database.expense.ExpenditureDao;
 
@@ -30,7 +31,6 @@ public class ExpenditureRepository {
         mExpenditureDao = db.expenditureDao();
         allExpenditures = mExpenditureDao.getAllExpenditures();
     }
-
 
     public void insertExpenditure(Expenditure newExpenditure) {
         InsertAsyncTask task = new InsertAsyncTask(mExpenditureDao);

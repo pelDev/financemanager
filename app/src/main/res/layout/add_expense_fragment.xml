@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_expense_parent_layout"
-        tools:context=".ui.expense.AddExpense"
+        tools:context=".ui.expense.AddExpenseFragment"
         android:background="@color/bckGround"
         android:layout_height="match_parent"
         android:layout_width="match_parent">

@@ -11,8 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.expense.AddExpense"></activity>
-        <activity android:name=".ui.netincome.AddIncomeActivity" />
+        <activity android:name=".ui.expense.AddExpenseFragment"></activity>
+        <activity android:name=".ui.netincome.AddIncomeFragment" />
         <activity
             android:name=".SplashActivity"
             android:noHistory="true">
@@ -37,7 +37,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.budget.AddBudgetActivity"
+            android:name=".ui.budget.AddBudgetFragment"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
