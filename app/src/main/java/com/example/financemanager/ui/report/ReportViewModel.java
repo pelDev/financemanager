@@ -5,7 +5,6 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.repository.AmountRepository;
@@ -15,21 +14,21 @@ import java.util.List;
 
 public class ReportViewModel extends AndroidViewModel {
 
-    private ExpenditureRepository mExpenditureRepository;
     private LiveData<List<Expenditure>> allExpenditures;
-    private MutableLiveData<List<Expenditure>> searchResults;
+    private LiveData<Integer> totalExpenseForMonth;
+    private LiveData<Integer> totalIncomeForMonth;
     private LiveData<Integer> mTotalIncome;
     private LiveData<Integer> mTotalExpense;
-    private LiveData<Integer> mCurrentAmount;
 
     public ReportViewModel(@NonNull Application application) {
         super(application);
-        mExpenditureRepository = new ExpenditureRepository(application);
+        ExpenditureRepository expenditureRepository = new ExpenditureRepository(application);
         AmountRepository amountRepository = new AmountRepository(application);
-        allExpenditures = mExpenditureRepository.getAllExpenditures();
-        searchResults = mExpenditureRepository.getSearchResults();
+        allExpenditures = expenditureRepository.getAllExpenditures();
+        totalExpenseForMonth = amountRepository.getTotalExpenseMonth();
         mTotalIncome = amountRepository.getTotalIncome();
         mTotalExpense = amountRepository.getTotalExpense();
+        totalIncomeForMonth = amountRepository.getTotalIncomeMonth();
     }
 
     public LiveData<List<Expenditure>> getAllExpenditures() {
@@ -40,8 +39,12 @@ public class ReportViewModel extends AndroidViewModel {
         return mTotalIncome;
     }
 
+    public LiveData<Integer> getTotalExpenseForMonth() { return totalExpenseForMonth; }
+
     public LiveData<Integer> getTotalExpense() {
         return mTotalExpense;
     }
+
+    public LiveData<Integer> getTotalIncomeForMonth() { return totalIncomeForMonth; }
 }
 

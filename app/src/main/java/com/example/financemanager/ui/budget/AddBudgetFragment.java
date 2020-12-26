@@ -12,8 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.financemanager.BR;
+import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
 import com.example.financemanager.databinding.AddBudgetFragmentBinding;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 public class AddBudgetFragment extends Fragment {
 
@@ -26,6 +28,12 @@ public class AddBudgetFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.add_budget_fragment, container, false);
         binding.setLifecycleOwner(this);
+
+        final SpeedDialView floatingActionButton = ((MainActivity) getActivity()).getSpeedDialView();
+
+        if (floatingActionButton != null) {
+            ((MainActivity) getActivity()).hideSpeedDialView();
+        }
         return binding.getRoot();
     }
 

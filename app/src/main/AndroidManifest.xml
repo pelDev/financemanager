@@ -11,8 +11,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.expense.AddExpenseFragment"></activity>
-        <activity android:name=".ui.netincome.AddIncomeFragment" />
         <activity
             android:name=".SplashActivity"
             android:noHistory="true">
@@ -23,22 +21,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".RegisterActivity"/>
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".StartActivity"/>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.budget.AddBudgetFragment"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/app_name" />
     </application>
 
 </manifest>

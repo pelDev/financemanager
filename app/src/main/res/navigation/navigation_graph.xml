@@ -3,56 +3,70 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/reportFragment">
+    app:startDestination="@id/nav_home">
 
     <fragment
-        android:id="@+id/reportFragment"
+        android:id="@+id/nav_home"
         android:name="com.example.financemanager.ui.report.ReportFragment"
-        android:label="report_fragment"
+        android:label="Report"
         tools:layout="@layout/report_fragment" >
         <action
-            android:id="@+id/action_reportFragment_to_budgetFragment"
-            app:destination="@id/budgetFragment" />
+            android:id="@+id/actionAddIncomeFragment"
+            app:destination="@id/addIncomeFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down" />
         <action
-            android:id="@+id/action_reportFragment_to_addIncomeFragment"
-            app:destination="@id/addIncomeFragment" />
+            android:id="@+id/actionAddExpenseFragment"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down" />
         <action
-            android:id="@+id/action_reportFragment_to_addExpenseFragment"
-            app:destination="@id/addExpenseFragment" />
-        <action
-            android:id="@+id/action_reportFragment_to_addBudgetFragment"
-            app:destination="@id/addBudgetFragment" />
+            android:id="@+id/actionAddBudgetFragment"
+            app:destination="@id/addBudgetFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down" />
         <action
             android:id="@+id/action_reportFragment_to_incomeListFragment"
-            app:destination="@id/incomeListFragment" />
+            app:destination="@id/incomeListFragment"
+            app:enterAnim="@anim/right_to_left"
+            app:popEnterAnim="@anim/left_to_right" />
     </fragment>
     <fragment
-        android:id="@+id/budgetFragment"
+        android:id="@+id/nav_budget"
         android:name="com.example.financemanager.ui.budget.BudgetFragment"
-        android:label="budget_fragment"
+        android:label="Budgets"
         tools:layout="@layout/budget_fragment" >
         <action
-            android:id="@+id/action_budgetFragment_to_reportFragment"
-            app:destination="@id/reportFragment" />
+            android:id="@+id/actionAddIncomeFragment"
+            app:destination="@id/addIncomeFragment" />
+        <action
+            android:id="@+id/actionAddBudgetFragment"
+            app:destination="@id/addBudgetFragment" />
+        <action
+            android:id="@+id/actionAddExpenseFragment"
+            app:destination="@id/addExpenseFragment" />
     </fragment>
+
+<!--    not connected to navigation drawer -->
+
     <fragment
         android:id="@+id/addIncomeFragment"
         android:name="com.example.financemanager.ui.netincome.AddIncomeFragment"
-        android:label="add_income_fragment"
+        android:label="Add Income"
         tools:layout="@layout/add_income_fragment" />
     <fragment
         android:id="@+id/addExpenseFragment"
         android:name="com.example.financemanager.ui.expense.AddExpenseFragment"
-        android:label="add_expense_fragment"
+        android:label="Expenses"
         tools:layout="@layout/add_expense_fragment" />
     <fragment
         android:id="@+id/addBudgetFragment"
         android:name="com.example.financemanager.ui.budget.AddBudgetFragment"
-        android:label="AddBudgetFragment"
+        android:label="Add Budget"
         tools:layout="@layout/add_budget_fragment"/>
     <fragment
         android:id="@+id/incomeListFragment"
         android:name="com.example.financemanager.ui.netincome.IncomeListFragment"
-        android:label="IncomeListFragment"
+        android:label="Incomes"
         tools:layout="@layout/income_list_fragment"/>
 </navigation>

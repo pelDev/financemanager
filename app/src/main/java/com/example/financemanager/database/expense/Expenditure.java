@@ -18,11 +18,11 @@ public class Expenditure {
     private String name;
     @ColumnInfo(name = "expenseDescription")
     private String description;
-    @ColumnInfo(name = "day")
+    @ColumnInfo(name = "expenseDay")
     private int day;
-    @ColumnInfo(name = "month")
+    @ColumnInfo(name = "expenseMonth")
     private String month;
-    @ColumnInfo(name = "year")
+    @ColumnInfo(name = "expenseYear")
     private int year;
     @ColumnInfo(name = "expenseAmount")
     private int amount;

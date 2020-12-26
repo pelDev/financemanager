@@ -14,8 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
 import com.example.financemanager.databinding.AddIncomeFragmentBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import static com.example.financemanager.BR.myAddIncomeViewModel;
 
@@ -29,6 +32,11 @@ public class AddIncomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.add_income_fragment, container, false);
         binding.setLifecycleOwner(this);
+        final SpeedDialView floatingActionButton = ((MainActivity) getActivity()).getSpeedDialView();
+
+        if (floatingActionButton != null) {
+            ((MainActivity) getActivity()).hideSpeedDialView();
+        }
         return binding.getRoot();
     }
 
@@ -40,6 +48,7 @@ public class AddIncomeFragment extends Fragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()))
                 .get(NetIncomeViewModel.class);
         binding.setVariable(myAddIncomeViewModel, mViewModel);
+
     }
 
 }

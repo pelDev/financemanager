@@ -49,7 +49,6 @@ public class AddExpenseViewModel extends AndroidViewModel {
                     year,
                     Integer.parseInt(expenseAmount.getValue()));
             mExpenditureRepository.insertExpenditure(expenditure);
-            isSuccessful.set(true);
         }
     }
 
@@ -61,16 +60,6 @@ public class AddExpenseViewModel extends AndroidViewModel {
             monthString = months[month];
         }
         return monthString;
-    }
-
-    public final ObservableBoolean isSuccessful = new ObservableBoolean();
-
-    @BindingAdapter("android:onFinish")
-    public static void finishAddExpense(View v, boolean isFinished){
-
-        if (isFinished) {
-            ((Activity) (v.getContext())).finish();
-        }
     }
 
 }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -24,6 +25,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.financemanager.ui.budget.BudgetFragment;
 import com.example.financemanager.ui.report.ReportFragment;
@@ -31,20 +33,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 
-public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity
+//        implements
+//        NavigationView.OnNavigationItemSelectedListener
+{
 
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     private NotificationManager mNotifyManager;
     private static final int BUDGET_NOTIFICATION_ID = 0;
 
-    // home screen
-    private DrawerLayout mDrawer;
-    private FirebaseAuth mAuth;
-    private NavigationView mNavigationView;
-    private NavController mNavController;
     private AppBarConfiguration mAppBarConfiguration;
+    private NavController mNavController;
+    private SpeedDialView mSpeedDialView;
 
 
     @Override
@@ -52,63 +55,63 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        mNavigationView.setNavigationItemSelectedListener(this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        // home screen
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home, R.id.nav_budget, R.id.nav_todo)
+                .setDrawerLayout(drawer)
+                .build();
+
+        //mNavigationView.setNavigationItemSelectedListener(this);
         createNotificationChannel();
 
         mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, mNavController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, mNavController);
 
-
-    }
-
-    public static int getScreenWidth() {
-        return Resources.getSystem().getDisplayMetrics().widthPixels;
-    }
-
-    public void openDrawer(View view) {
-        mDrawer.open();
-    }
-
-    // convert dp tp px
-    public final int dpToPx(int dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round((float) dp * density);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_home) {
-            String currentPosition = mNavController.getCurrentDestination().getLabel().toString();
-            switch (currentPosition) {
-                case "budget_fragment":
-                    mNavController.navigate(R.id.action_budgetFragment_to_reportFragment, null);
-                    break;
+        mSpeedDialView = findViewById(R.id.speedDial);
+        mSpeedDialView.inflate(R.menu.fab_menu);
+        mSpeedDialView.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
+            @Override
+            public boolean onActionSelected(SpeedDialActionItem actionItem) {
+                switch (actionItem.getId()) {
+                    case R.id.fab_add_income:
+                        mNavController.navigate(R.id.actionAddIncomeFragment);
+                        mSpeedDialView.close();
+                        return true;
+                    case R.id.fab_add_budget:
+                        mNavController.navigate(R.id.actionAddBudgetFragment);
+                        mSpeedDialView.close();
+                        return true;
+                    case R.id.fab_add_expense:
+                        mNavController.navigate(R.id.actionAddExpenseFragment);
+                        mSpeedDialView.close();
+                        return true;
+                }
+                return false;
             }
-        } else if (id == R.id.nav_logout) {
-            // Sign user out and redirect to start screen.
-            mAuth.signOut();
-            startActivity(new Intent(this, StartActivity.class));
-            // User should not be able to access this activity with a back press
-            // so kill this activity
-            finish();
-        } else if (id == R.id.nav_budget) {
-            // Navigate to the Budget activity
-            String currentPosition = mNavController.getCurrentDestination().getLabel().toString();
-            switch (currentPosition) {
-                case "report_fragment":
-                    mNavController.navigate(R.id.action_reportFragment_to_budgetFragment, null);
-                    break;
-            }
-        }
-        // close drawer
-        mDrawer.closeDrawer(GravityCompat.START);
-        return true;
+        });
     }
 
+    public SpeedDialView getSpeedDialView() {
+        return mSpeedDialView;
+    }
+
+    public void showSpeedDialView() {
+        mSpeedDialView.show();
+    }
+
+    public void hideSpeedDialView() {
+        mSpeedDialView.hide();
+    }
 
     // Notification
     public void launchNotificationDialog(View view) {
@@ -175,6 +178,13 @@ public class MainActivity extends AppCompatActivity implements
 
     public void cancelNotification() {
         mNotifyManager.cancel(BUDGET_NOTIFICATION_ID);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
 }
