@@ -5,7 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -48,6 +50,22 @@ public class AddIncomeFragment extends Fragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()))
                 .get(NetIncomeViewModel.class);
         binding.setVariable(myAddIncomeViewModel, mViewModel);
+
+        mViewModel.getCompleted().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean)
+                    Navigation.findNavController(binding.buttonAddIncome).popBackStack();
+            }
+        });
+
+        mViewModel.getInvalidAmount().observe(getViewLifecycleOwner(), (invalid) -> {
+            if (invalid) {
+                binding.editTextNumberIncomeAmount.setError("Enter valid amount");
+            } else {
+                binding.editTextNumberIncomeAmount.setError(null);
+            }
+        });
 
     }
 

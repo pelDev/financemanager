@@ -1,8 +1,10 @@
 package com.example.financemanager.ui.report;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,17 +53,23 @@ public class ExpenditureListAdapter extends
         String month = mExpenditureList.get(position).getMonth();
         String year = String.valueOf(mExpenditureList.get(position).getYear());
         holder.expenseDateTextView.setText(day + ", " + month + " " + year);
+        if (mExpenditureList.get(position).getCategory().equals("food")) {
+            holder.image.setImageResource(R.drawable.ic_food);
+            holder.image.setBackgroundColor(Color.parseColor("#ec5b22"));
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView expenseNameTextView, expenseDateTextView, expenseAmountTextView;
+        ImageView image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             expenseNameTextView = itemView.findViewById(R.id.textView_expenseName);
             expenseDateTextView = itemView.findViewById(R.id.textView_expenseDate);
             expenseAmountTextView = itemView.findViewById(R.id.textView_amount);
+            image = itemView.findViewById(R.id.expenditure_icon);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

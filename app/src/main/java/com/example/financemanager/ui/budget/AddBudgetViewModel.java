@@ -20,10 +20,16 @@ public class AddBudgetViewModel extends AndroidViewModel {
 
     private final BudgetRepository mBudgetRepository;
     public MutableLiveData<String> budgetAmount = new MutableLiveData<>();
+    private MutableLiveData<Boolean> completed = new MutableLiveData<>();
 
     public AddBudgetViewModel(@NonNull Application application) {
         super(application);
         mBudgetRepository = new BudgetRepository(application);
+        completed.setValue(false);
+    }
+
+    public MutableLiveData<Boolean> getCompleted() {
+        return completed;
     }
 
     public void insertBudget() {
@@ -36,6 +42,7 @@ public class AddBudgetViewModel extends AndroidViewModel {
                 year);
         mBudgetRepository.insertBudget(budget);
         isSuccessful.set(true);
+        completed.setValue(true);
     }
     private String getMonthFromInt(int month) {
         String monthString = "";

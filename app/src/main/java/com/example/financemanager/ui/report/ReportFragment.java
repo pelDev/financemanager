@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,8 +36,8 @@ public class ReportFragment extends Fragment {
     private ExpenditureListAdapter mAdapter;
     private int totalIncome = 0;
     private int totalExpense = 0;
-    private double totalExpenseForMonth = 0.0;
-    private double totalIncomeForMonth = 0.0;
+    private double totalExpenseForMonth = 0;
+    private double totalIncomeForMonth = 0;
     private ReportFragmentBinding binding;
     private Animation animSlideUp;
     private Animation animBlink;
@@ -98,13 +99,35 @@ public class ReportFragment extends Fragment {
                     }
                 });
 
+        // set up listener for total income for month
+        reportViewModel.getnTotalIncomeForMonth().observe(owner,
+                new Observer<Integer>() {
+                    @Override
+                    public void onChanged(Integer integer) {
+                        if (integer > 0)
+                            setIncomeBar();
+                        totalIncomeForMonth = (double) integer;
+                        doSetPercent();
+                    }
+                });
+
+        // set up listener for total expense for month
+        reportViewModel.getTotalExpenseForMonth().observe(owner,
+                new Observer<Integer>() {
+                    @Override
+                    public void onChanged(Integer integer) {
+                        if (integer >= 0)
+                            setExpenseBar(integer);
+                        totalExpenseForMonth = (double) integer;
+                        doSetPercent();
+                    }
+                });
+
         // set up total income observer
         reportViewModel.getTotalIncome().observe(owner,
                 new Observer<Integer>() {
                     @Override
                     public void onChanged(Integer integer) {
-                        if (integer > 0 && integer != totalIncome)
-                            setIncomeBar();
                         totalIncome = integer;
                         doSetAmount();
                     }
@@ -119,31 +142,31 @@ public class ReportFragment extends Fragment {
                         doSetAmount();
                     }
                 });
+    }
 
-        // set up listener for total income for month
-        reportViewModel.getTotalExpenseForMonth().observe(owner,
-                new Observer<Integer>() {
-                    @Override
-                    public void onChanged(Integer integer) {
-                        totalExpenseForMonth = (double) integer;
-                        doSetPercent();
-                    }
-                });
-
-        // set up listener for total income for month
-        reportViewModel.getTotalIncomeForMonth().observe(owner,
-                new Observer<Integer>() {
-                    @Override
-                    public void onChanged(Integer integer) {
-                        totalIncomeForMonth = (double) integer;
-                        doSetPercent();
-                    }
-                });
+    private void setExpenseBar(int integer) {
+        double expensePercentOfIncome = (integer / totalIncomeForMonth) * 100;
+        int height = (int) Math.round(expensePercentOfIncome);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.view2.getLayoutParams();
+        if (height < 1)
+            height = 1;
+        params.height = dpToPx(height);
+        binding.view2.setLayoutParams(params);
+        binding.view2.startAnimation(animSlideUp);
     }
 
     private void setIncomeBar() {
-        
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.view.getLayoutParams();
+        params.height = dpToPx(100);
+        binding.view.setLayoutParams(params);
+        binding.view.startAnimation(animSlideUp);
     }
+
+    public final int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
+    }
+
 
     private void doSetPercent() {
         double percent = (totalExpenseForMonth / totalIncomeForMonth) * 100;
@@ -152,7 +175,8 @@ public class ReportFragment extends Fragment {
         } else if (percent > 100) {
             percent = 100;
         }
-        binding.textViewExpInfo.setText("You've spent " + percent + "% of your income");
+        double roundOff = Math.round(percent * 100.0) / 100.0;
+        binding.textViewExpInfo.setText("You've spent " + roundOff + "% of your income");
     }
 
 }

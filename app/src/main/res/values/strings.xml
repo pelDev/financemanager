@@ -44,4 +44,5 @@
     <string name="hint_expense_amount">30000</string>
     <string name="button_add_expense">ADD</string>
     <string name="add_budget_action_text">Add Budget</string>
+    <string name="hint_income_amount">Income Amount</string>
 </resources>

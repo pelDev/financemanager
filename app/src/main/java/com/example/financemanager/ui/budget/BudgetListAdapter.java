@@ -1,8 +1,10 @@
 package com.example.financemanager.ui.budget;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -56,12 +58,17 @@ public class BudgetListAdapter extends
         double amountLeft = amount - amountSpent;
         holder.progressBar.setProgress((int) Math.round(progress));
         holder.amountLeftTextView.setText("Left: " + amountLeft);
+        if (mBudgetList.get(position).getCategory().equals("food")) {
+            holder.image.setImageResource(R.drawable.ic_food);
+            holder.image.setBackgroundColor(Color.parseColor("#ec5b22"));
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView budgetCategoryTextView, amountLeftTextView, budgetAmountTextView;
         ProgressBar progressBar;
+        ImageView image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +76,7 @@ public class BudgetListAdapter extends
             amountLeftTextView = itemView.findViewById(R.id.budget_amount_left);
             budgetAmountTextView = itemView.findViewById(R.id.budget_amount);
             progressBar = itemView.findViewById(R.id.progressBarBudget);
+            image = itemView.findViewById(R.id.budget_icon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -9,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.financemanager.BR;
 import com.example.financemanager.MainActivity;
@@ -46,5 +48,13 @@ public class AddBudgetFragment extends Fragment {
         .get(AddBudgetViewModel.class);
 
         binding.setVariable(BR.myAddBudgetViewModel, mAddBudgetViewModel);
+
+        mAddBudgetViewModel.getCompleted().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean)
+                    Navigation.findNavController(binding.buttonAddBudget).popBackStack();
+            }
+        });
     }
 }

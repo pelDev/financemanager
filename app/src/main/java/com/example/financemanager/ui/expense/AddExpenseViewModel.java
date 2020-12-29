@@ -22,10 +22,12 @@ public class AddExpenseViewModel extends AndroidViewModel {
     public MutableLiveData<String> expenseName = new MutableLiveData<>();
     public MutableLiveData<String> expenseDescription = new MutableLiveData<>();
     public MutableLiveData<String> expenseAmount = new MutableLiveData<>();
+    private MutableLiveData<Boolean> completed = new MutableLiveData<>();
 
     public AddExpenseViewModel(@NonNull Application application) {
         super(application);
         mExpenditureRepository = new ExpenditureRepository(application);
+        completed.setValue(false);
     }
 
     public boolean validateForm() {
@@ -49,6 +51,7 @@ public class AddExpenseViewModel extends AndroidViewModel {
                     year,
                     Integer.parseInt(expenseAmount.getValue()));
             mExpenditureRepository.insertExpenditure(expenditure);
+            completed.setValue(true);
         }
     }
 
@@ -62,4 +65,7 @@ public class AddExpenseViewModel extends AndroidViewModel {
         return monthString;
     }
 
+    public MutableLiveData<Boolean> getCompleted() {
+        return completed;
+    }
 }
