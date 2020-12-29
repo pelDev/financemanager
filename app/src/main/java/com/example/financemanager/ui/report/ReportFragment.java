@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,8 +38,11 @@ public class ReportFragment extends Fragment {
     private double totalExpenseForMonth = 0.0;
     private double totalIncomeForMonth = 0.0;
     private ReportFragmentBinding binding;
+    private Animation animSlideUp;
+    private Animation animBlink;
 
     public void doSetAmount() {
+        binding.textAmountLeft.startAnimation(animBlink);
         binding.textAmountLeft.setText(Integer.toString(totalIncome - totalExpense));
     }
 
@@ -58,6 +63,8 @@ public class ReportFragment extends Fragment {
         if (floatingActionButton != null) {
             ((MainActivity) getActivity()).showSpeedDialView();
         }
+        animSlideUp = AnimationUtils.loadAnimation(getContext(), R.anim.scale);
+        animBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
     }
 
     @Override
@@ -96,6 +103,8 @@ public class ReportFragment extends Fragment {
                 new Observer<Integer>() {
                     @Override
                     public void onChanged(Integer integer) {
+                        if (integer > 0 && integer != totalIncome)
+                            setIncomeBar();
                         totalIncome = integer;
                         doSetAmount();
                     }
@@ -130,6 +139,10 @@ public class ReportFragment extends Fragment {
                         doSetPercent();
                     }
                 });
+    }
+
+    private void setIncomeBar() {
+        
     }
 
     private void doSetPercent() {
