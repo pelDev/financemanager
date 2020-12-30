@@ -13,57 +13,55 @@
         android:background="@color/bckGround"
         android:layout_width="match_parent"
         android:id="@+id/add_budget_parent_layout"
-        android:onFinish="@{myAddBudgetViewModel.isSuccessful}"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="24dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <Spinner
+            android:id="@+id/spinner_budget_category"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:focusableInTouchMode="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:entries="@{myAddBudgetViewModel.spinnerTexts}"
+            android:selectedItemPosition="@={myAddBudgetViewModel.spinnerItemPos}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@+id/editTextBudgetAmount"/>
 
-            <Spinner
-                android:id="@+id/spinner_budget_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextBudgetAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.FinanceManager.TextInputLayout"
+            app:boxBackgroundColor="@color/bckGround"
+            android:paddingBottom="8dp"
+            android:hint="@string/hint_budget_amount"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_budget_category"
+            app:layout_constraintBottom_toTopOf="@+id/button_add_budget">
 
-
-
-            <TextView
-                android:id="@+id/label_budget_amount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/colorPrimary"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:text="@string/label_budget_amount"/>
-            <EditText
-                android:id="@+id/editTextBudgetAmount"
+            <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:text="@={myAddBudgetViewModel.budgetAmount}"
-                android:theme="@style/AddBudgetEditTextTheme"
-                android:inputType="number" />
-        </LinearLayout>
+                android:inputType="number"
+                android:maxLines="1"
+                android:text="@={myAddBudgetViewModel.budgetAmount}"/>
 
-        <Button
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_add_budget"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Add"
+            android:layout_marginTop="16dp"
             android:onClick="@{() -> myAddBudgetViewModel.insertBudget()}"
-            android:textColor="@android:color/white"
+            android:padding="5dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             android:textStyle="bold"
-            android:background="@color/colorPrimary"
+            android:backgroundTint="@color/colorSecondary"
+            app:layout_constraintTop_toBottomOf="@+id/editTextBudgetAmount"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

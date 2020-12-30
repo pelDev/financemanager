@@ -1,12 +1,8 @@
 package com.example.financemanager.ui.budget;
 
-import android.app.Activity;
 import android.app.Application;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
@@ -21,11 +17,15 @@ public class AddBudgetViewModel extends AndroidViewModel {
     private final BudgetRepository mBudgetRepository;
     public MutableLiveData<String> budgetAmount = new MutableLiveData<>();
     private MutableLiveData<Boolean> completed = new MutableLiveData<>();
+    public final String[] spinnerTexts = {"Select", "Food", "Fashion", "Housing", "Investment", "Education", "Entertainment",
+            "Transportation", "Other"};
+    public MutableLiveData<Integer> spinnerItemPos = new MutableLiveData<>();
 
     public AddBudgetViewModel(@NonNull Application application) {
         super(application);
         mBudgetRepository = new BudgetRepository(application);
         completed.setValue(false);
+        spinnerItemPos.setValue(0);
     }
 
     public MutableLiveData<Boolean> getCompleted() {
@@ -36,14 +36,14 @@ public class AddBudgetViewModel extends AndroidViewModel {
         Calendar calendar = Calendar.getInstance();
         String month = getMonthFromInt(calendar.get(Calendar.MONTH));
         int year = calendar.get(Calendar.YEAR);
-        Budget budget = new Budget("food",
+        Budget budget = new Budget(spinnerTexts[spinnerItemPos.getValue()],
                 Integer.parseInt(budgetAmount.getValue()),
                 month,
                 year);
         mBudgetRepository.insertBudget(budget);
-        isSuccessful.set(true);
         completed.setValue(true);
     }
+
     private String getMonthFromInt(int month) {
         String monthString = "";
         DateFormatSymbols dfs = new DateFormatSymbols();
@@ -53,16 +53,4 @@ public class AddBudgetViewModel extends AndroidViewModel {
         }
         return monthString;
     }
-
-    public final ObservableBoolean isSuccessful = new ObservableBoolean();
-
-    @BindingAdapter("android:onFinish")
-    public static void finishAddExpense(View v, boolean isFinished){
-
-        if (isFinished) {
-            ((Activity) (v.getContext())).finish();
-        }
-    }
-
-
 }

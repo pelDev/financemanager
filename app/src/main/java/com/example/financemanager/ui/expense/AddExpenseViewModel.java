@@ -23,27 +23,34 @@ public class AddExpenseViewModel extends AndroidViewModel {
     public MutableLiveData<String> expenseDescription = new MutableLiveData<>();
     public MutableLiveData<String> expenseAmount = new MutableLiveData<>();
     private MutableLiveData<Boolean> completed = new MutableLiveData<>();
+    public final String[] spinnerTexts = {"Select", "Food", "Fashion", "Housing", "Investment", "Education", "Entertainment",
+    "Transportation", "Other"};
+    public MutableLiveData<Integer> spinnerItemPos = new MutableLiveData<>();
+    private Calendar mCalendar;
 
     public AddExpenseViewModel(@NonNull Application application) {
         super(application);
         mExpenditureRepository = new ExpenditureRepository(application);
         completed.setValue(false);
+        spinnerItemPos.setValue(0);
+        mCalendar = Calendar.getInstance();
     }
 
     public boolean validateForm() {
         return  expenseName.getValue() != null
                 && expenseAmount.getValue() != null
                 && !expenseAmount.getValue().equals("")
-                && !expenseName.getValue().equals("");
+                && !expenseName.getValue().equals("")
+                && spinnerItemPos.getValue() != null
+                && spinnerItemPos.getValue() > 0;
     }
 
     public void insertExpenditure() {
         if (validateForm()) {
-            Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            String month = getMonthFromInt(calendar.get(Calendar.MONTH));
-            int year = calendar.get(Calendar.YEAR);
-            Expenditure expenditure = new Expenditure("food",
+            int day = mCalendar.get(Calendar.DAY_OF_MONTH);
+            String month = getMonthFromInt(mCalendar.get(Calendar.MONTH));
+            int year = mCalendar.get(Calendar.YEAR);
+            Expenditure expenditure = new Expenditure(spinnerTexts[spinnerItemPos.getValue()],
                     expenseName.getValue(),
                     expenseDescription.getValue(),
                     day,

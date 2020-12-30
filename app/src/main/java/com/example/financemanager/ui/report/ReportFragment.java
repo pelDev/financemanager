@@ -150,6 +150,8 @@ public class ReportFragment extends Fragment {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.view2.getLayoutParams();
         if (height < 1)
             height = 1;
+        if (height > 100)
+            height = 100;
         params.height = dpToPx(height);
         binding.view2.setLayoutParams(params);
         binding.view2.startAnimation(animSlideUp);

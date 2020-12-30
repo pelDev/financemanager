@@ -2,9 +2,11 @@ package com.example.financemanager.database;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.financemanager.database.amount.AmountDao;
 import com.example.financemanager.database.budget.Budget;
@@ -14,8 +16,60 @@ import com.example.financemanager.database.expense.ExpenditureDao;
 import com.example.financemanager.database.income.Income;
 import com.example.financemanager.database.income.IncomeDao;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Database(entities = {Expenditure.class, Budget.class, Income.class}, version = 1, exportSchema = false)
 public abstract class FinanceManagerRoomDb extends RoomDatabase {
+
+    private static int NUMBER_OF_THREADS = 4;
+
+    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+
+    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+
+            Income income = new Income(12, "October", 2020, 40000);
+
+            Expenditure expenditure1 = new Expenditure("Food", "Akpu", "",
+                    10, "October", 2020, 2000);
+
+            Expenditure expenditure2 = new Expenditure("House", "Rent", "",
+                    10, "October", 2020, 6900);
+
+            Expenditure expenditure3 = new Expenditure("Education", "School Fees", "",
+                    20, "October", 2019, 2000);
+
+            Budget budget1 = new Budget("Food", 1000, "December", 2020);
+
+            Budget budget2 = new Budget("Food", 10000, "October", 2019);
+
+            databaseWriteExecutor.execute(() -> {
+
+                IncomeDao incomeDao = INSTANCE.incomeDao();
+                ExpenditureDao expenditureDao = INSTANCE.expenditureDao();
+                BudgetDao budgetDao = INSTANCE.budgetDao();
+
+                incomeDao.deleteAllIncomes();
+                incomeDao.insertIncome(income);
+                expenditureDao.insertExpenditure(expenditure1);
+                expenditureDao.insertExpenditure(expenditure2);
+                expenditureDao.insertExpenditure(expenditure3);
+
+                budgetDao.deleteAllBudgets();
+                budgetDao.insertBudget(budget1);
+                budgetDao.insertBudget(budget2);
+
+                expenditureDao.deleteAllExpenses();
+                expenditureDao.insertExpenditure(expenditure1);
+                expenditureDao.insertExpenditure(expenditure2);
+                expenditureDao.insertExpenditure(expenditure3);
+
+            });
+        }
+    };
 
     public abstract ExpenditureDao expenditureDao();
 
@@ -36,13 +90,12 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
                             Room.databaseBuilder(context.getApplicationContext(),
                                     FinanceManagerRoomDb.class,
                                     "finance_manager_database")
+                                    .addCallback(roomCallback)
                                     .build();
                 }
             }
         }
-
         return INSTANCE;
-
     }
 
 }

@@ -53,7 +53,7 @@ public class ExpenditureListAdapter extends
         String month = mExpenditureList.get(position).getMonth();
         String year = String.valueOf(mExpenditureList.get(position).getYear());
         holder.expenseDateTextView.setText(day + ", " + month + " " + year);
-        if (mExpenditureList.get(position).getCategory().equals("food")) {
+        if (mExpenditureList.get(position).getCategory().equals("Food")) {
             holder.image.setImageResource(R.drawable.ic_food);
             holder.image.setBackgroundColor(Color.parseColor("#ec5b22"));
         }

@@ -38,13 +38,19 @@
         tools:layout="@layout/budget_fragment" >
         <action
             android:id="@+id/actionAddIncomeFragment"
-            app:destination="@id/addIncomeFragment" />
+            app:destination="@id/addIncomeFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
         <action
             android:id="@+id/actionAddBudgetFragment"
-            app:destination="@id/addBudgetFragment" />
+            app:destination="@id/addBudgetFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
         <action
             android:id="@+id/actionAddExpenseFragment"
-            app:destination="@id/addExpenseFragment" />
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
     </fragment>
 
 <!--    not connected to navigation drawer -->
@@ -57,7 +63,7 @@
     <fragment
         android:id="@+id/addExpenseFragment"
         android:name="com.example.financemanager.ui.expense.AddExpenseFragment"
-        android:label="Expenses"
+        android:label="Add Expense"
         tools:layout="@layout/add_expense_fragment" />
     <fragment
         android:id="@+id/addBudgetFragment"
@@ -68,5 +74,21 @@
         android:id="@+id/incomeListFragment"
         android:name="com.example.financemanager.ui.netincome.IncomeListFragment"
         android:label="Incomes"
-        tools:layout="@layout/income_list_fragment"/>
+        tools:layout="@layout/income_list_fragment" >
+        <action
+            android:id="@+id/actionAddIncomeFragment"
+            app:destination="@id/addIncomeFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
+        <action
+            android:id="@+id/actionAddBudgetFragment"
+            app:destination="@id/addBudgetFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
+        <action
+            android:id="@+id/actionAddExpenseFragment"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_up"
+            app:popExitAnim="@anim/slide_down"/>
+    </fragment>
 </navigation>

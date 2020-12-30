@@ -2,6 +2,7 @@ package com.example.financemanager.database.expense;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -27,4 +28,6 @@ public interface ExpenditureDao {
     @Query("SELECT * FROM expenses WHERE expenseName = :name")
     List<Expenditure> findExpenditureByName(String name);
 
+    @Query("DELETE FROM expenses")
+    void deleteAllExpenses();
 }

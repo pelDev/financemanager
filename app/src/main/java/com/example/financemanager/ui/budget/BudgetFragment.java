@@ -19,20 +19,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
 import com.example.financemanager.database.budget.Budget;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.List;
 
 public class BudgetFragment extends Fragment {
 
-    private BudgetViewModel mBudgetViewModel;
     private BudgetListAdapter mAdapter;
-    private NavController mController;
-
-    public static BudgetFragment newInstance() {
-        return new BudgetFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -41,10 +37,20 @@ public class BudgetFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // floating action button
+        final SpeedDialView floatingActionButton = ((MainActivity) getActivity()).getSpeedDialView();
+        if (floatingActionButton != null) {
+            ((MainActivity) getActivity()).showSpeedDialView();
+        }
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mBudgetViewModel = new ViewModelProvider(this,
+        BudgetViewModel budgetViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()))
                 .get(BudgetViewModel.class);
 
@@ -54,18 +60,12 @@ public class BudgetFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
 
         // set up budget list observer
-        mBudgetViewModel.getAllBudgets().observe(getViewLifecycleOwner(),
+        budgetViewModel.getAllBudgets().observe(getViewLifecycleOwner(),
                 new Observer<List<Budget>>() {
                     @Override
                     public void onChanged(List<Budget> budgets) {
                         mAdapter.setBudgetList(budgets);
                     }
                 });
-
-        mController = NavHostFragment.findNavController(this);
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onBudgetFragmentInteraction(Uri uri);
     }
 }

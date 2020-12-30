@@ -11,9 +11,21 @@ import com.example.financemanager.database.budget.BudgetDao;
 import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.database.expense.ExpenditureDao;
 
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
 import java.util.List;
 
 public class BudgetRepository {
+
+    private String getMonthFromInt(int month) {
+        String monthString = "";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (month >= 0 && month <= 11) {
+            monthString = months[month];
+        }
+        return monthString;
+    }
 
     private BudgetDao mBudgetDao;
 
@@ -25,8 +37,11 @@ public class BudgetRepository {
 
     public BudgetRepository(Application application) {
         FinanceManagerRoomDb db = FinanceManagerRoomDb.getDatabase(application);
+        Calendar calendar = Calendar.getInstance();
+        String month = getMonthFromInt(calendar.get(Calendar.MONTH));
+        int year = calendar.get(Calendar.YEAR);
         mBudgetDao = db.budgetDao();
-        mAllBudgets = mBudgetDao.getBudgetList();
+        mAllBudgets = mBudgetDao.getBudgetList(month, year);
     }
 
     public void insertBudget(Budget budget) {

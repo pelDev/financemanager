@@ -21,12 +21,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editTextNumber_income_amount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
             style="@style/Widget.FinanceManager.TextInputLayout"
-            app:boxBackgroundColor="@color/bckGround"
-            android:paddingBottom="8dp"
             android:hint="@string/hint_income_amount"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintBottom_toTopOf="@+id/button_add_income"
@@ -47,7 +42,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_add_income"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorSecondary"
             android:padding="5dp"
