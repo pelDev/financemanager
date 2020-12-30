@@ -64,6 +64,19 @@ public class MainActivity extends AppCompatActivity
         // home screen
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        auth.signOut();
+                        drawer.closeDrawer(GravityCompat.START);
+                        Intent intent = new Intent(MainActivity.this, StartActivity.class);
+                        startActivity(intent);
+                        finish();
+                        return true;
+                    }
+                }
+        );
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.

@@ -55,4 +55,13 @@
         <item name="android:textColor">@color/colorSecondaryVariant</item>
     </style>
 
+    <style name="Widget.FinanceManager.TextInputLayout.Auth" parent="Widget.FinanceManager.TextInputLayout">
+        <item name="hintTextColor">@color/colorPrimaryVariant</item>
+        <item name="boxStrokeColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.FinanceManager.TextInputLayout.Auth.HintText" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textColor">@color/colorPrimaryVariant</item>
+    </style>
+
 </resources>

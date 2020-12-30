@@ -33,6 +33,8 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
 
             Income income = new Income(12, "October", 2020, 40000);
 
+            Income income1 = new Income(1, "December", 2020, 2900);
+
             Expenditure expenditure1 = new Expenditure("Food", "Akpu", "",
                     10, "October", 2020, 2000);
 
@@ -41,6 +43,9 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
 
             Expenditure expenditure3 = new Expenditure("Education", "School Fees", "",
                     20, "October", 2019, 2000);
+
+            Expenditure expenditure4 = new Expenditure("Food", "Okro", "",
+                    20, "December", 2020, 200);
 
             Budget budget1 = new Budget("Food", 1000, "December", 2020);
 
@@ -54,9 +59,7 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
 
                 incomeDao.deleteAllIncomes();
                 incomeDao.insertIncome(income);
-                expenditureDao.insertExpenditure(expenditure1);
-                expenditureDao.insertExpenditure(expenditure2);
-                expenditureDao.insertExpenditure(expenditure3);
+                incomeDao.insertIncome(income1);
 
                 budgetDao.deleteAllBudgets();
                 budgetDao.insertBudget(budget1);
@@ -66,6 +69,7 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
                 expenditureDao.insertExpenditure(expenditure1);
                 expenditureDao.insertExpenditure(expenditure2);
                 expenditureDao.insertExpenditure(expenditure3);
+                expenditureDao.insertExpenditure(expenditure4);
 
             });
         }
