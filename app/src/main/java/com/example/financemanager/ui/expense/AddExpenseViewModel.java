@@ -23,7 +23,7 @@ public class AddExpenseViewModel extends AndroidViewModel {
     public MutableLiveData<String> expenseDescription = new MutableLiveData<>();
     public MutableLiveData<String> expenseAmount = new MutableLiveData<>();
     private MutableLiveData<Boolean> completed = new MutableLiveData<>();
-    public final String[] spinnerTexts = {"Select", "Food", "Fashion", "Housing", "Investment", "Education", "Entertainment",
+    public final String[] spinnerTexts = {"Select", "Food", "Fashion", "Housing", "Recreation", "Investment", "Education", "Entertainment",
     "Transportation", "Other"};
     public MutableLiveData<Integer> spinnerItemPos = new MutableLiveData<>();
     private Calendar mCalendar;

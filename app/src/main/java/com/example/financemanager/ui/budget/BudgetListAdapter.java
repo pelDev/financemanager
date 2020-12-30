@@ -58,9 +58,48 @@ public class BudgetListAdapter extends
         double amountLeft = amount - amountSpent;
         holder.progressBar.setProgress((int) Math.round(progress));
         holder.amountLeftTextView.setText("Left: " + amountLeft);
-        if (mBudgetList.get(position).getCategory().equals("food")) {
-            holder.image.setImageResource(R.drawable.ic_food);
-            holder.image.setBackgroundColor(Color.parseColor("#ec5b22"));
+        String category = mBudgetList.get(position).getCategory();
+        switch (category) {
+            case "Housing":
+                holder.image.setImageResource(R.drawable.ic_housing);
+                holder.image.setBackgroundColor(Color.parseColor("#393ab5"));
+                break;
+            case "Food":
+                holder.image.setImageResource(R.drawable.ic_food);
+                holder.image.setBackgroundColor(Color.parseColor("#ec5b22"));
+                break;
+            case "Recreation":
+                holder.image.setImageResource(R.drawable.ic_recreation);
+                holder.image.setBackgroundColor(Color.parseColor("#62b7d5"));
+                break;
+            case "Education":
+                holder.image.setImageResource(R.drawable.ic_education);
+                holder.image.setBackgroundColor(Color.parseColor("#FF0000"));
+                break;
+            case "Entertainment":
+                holder.image.setImageResource(R.drawable.ic_entertainment);
+                holder.image.setBackgroundColor(Color.parseColor("#782D2D"));
+                break;
+            case "Transportation":
+                holder.image.setImageResource(R.drawable.ic_transport);
+                holder.image.setBackgroundColor(Color.parseColor("#62b7d5"));
+                break;
+            case "Investment":
+                holder.image.setImageResource(R.drawable.ic_investement);
+                holder.image.setBackgroundColor(Color.parseColor("#09094C"));
+                break;
+            case "Technology":
+                holder.image.setImageResource(R.drawable.ic_tech);
+                holder.image.setBackgroundColor(Color.parseColor("#ec5b22"));
+                break;
+            case "Fashion":
+                holder.image.setImageResource(R.drawable.ic_fashion);
+                holder.image.setBackgroundColor(Color.parseColor("#12536A"));
+                break;
+            case "Others":
+                holder.image.setImageResource(R.drawable.ic_others);
+                holder.image.setBackgroundColor(Color.parseColor("#000000"));
+                break;
         }
     }
 

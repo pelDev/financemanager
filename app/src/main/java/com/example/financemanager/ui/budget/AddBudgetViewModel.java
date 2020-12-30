@@ -17,7 +17,7 @@ public class AddBudgetViewModel extends AndroidViewModel {
     private final BudgetRepository mBudgetRepository;
     public MutableLiveData<String> budgetAmount = new MutableLiveData<>();
     private MutableLiveData<Boolean> completed = new MutableLiveData<>();
-    public final String[] spinnerTexts = {"Select", "Food", "Fashion", "Housing", "Investment", "Education", "Entertainment",
+    public final String[] spinnerTexts = {"Select", "Food", "Fashion", "Housing", "Recreation", "Investment", "Education", "Entertainment",
             "Transportation", "Other"};
     public MutableLiveData<Integer> spinnerItemPos = new MutableLiveData<>();
 
