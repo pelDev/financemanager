@@ -23,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
@@ -33,6 +34,7 @@ import com.example.financemanager.ui.budget.BudgetFragment;
 import com.example.financemanager.ui.report.ReportFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
@@ -206,5 +208,21 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+//    @Override
+//    public void onItemClick(String item) {
+//        //Snackbar.make(mRecyclerView, item, Snackbar.LENGTH_SHORT).show();
+//
+//        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);
+//        if (fragment instanceof BudgetFragment) {
+//            int q = 1;
+//        }
+////        ((BudgetFilterAction) getSupportFragmentManager().findFragmentById(R.id.))
+////                .budgetFilterAction(item);
+//    }
+
+    public interface BudgetFilterAction {
+        void budgetFilterAction(String item);
     }
 }

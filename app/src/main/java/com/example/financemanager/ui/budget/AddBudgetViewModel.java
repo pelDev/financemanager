@@ -34,11 +34,15 @@ public class AddBudgetViewModel extends AndroidViewModel {
 
     public void insertBudget() {
         Calendar calendar = Calendar.getInstance();
-        String month = getMonthFromInt(calendar.get(Calendar.MONTH));
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int monthInt = calendar.get(Calendar.MONTH);
+        String month = getMonthFromInt(monthInt);
         int year = calendar.get(Calendar.YEAR);
         Budget budget = new Budget(spinnerTexts[spinnerItemPos.getValue()],
                 Integer.parseInt(budgetAmount.getValue()),
+                day,
                 month,
+                monthInt,
                 year);
         mBudgetRepository.insertBudget(budget);
         completed.setValue(true);

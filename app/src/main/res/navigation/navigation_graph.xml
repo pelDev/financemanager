@@ -51,6 +51,9 @@
             app:destination="@id/addExpenseFragment"
             app:enterAnim="@anim/slide_up"
             app:popExitAnim="@anim/slide_down"/>
+        <action
+            android:id="@+id/actionMonthPicker"
+            app:destination="@id/monthPicker" />
     </fragment>
 
 <!--    not connected to navigation drawer -->
@@ -64,7 +67,13 @@
         android:id="@+id/addExpenseFragment"
         android:name="com.example.financemanager.ui.expense.AddExpenseFragment"
         android:label="Add Expense"
-        tools:layout="@layout/add_expense_fragment" />
+        tools:layout="@layout/add_expense_fragment" >
+        <action
+            android:id="@+id/actionAddBudgetFragment"
+            app:destination="@id/addBudgetFragment"
+            app:enterAnim="@anim/right_to_left"
+            app:popEnterAnim="@anim/left_to_right"/>
+    </fragment>
     <fragment
         android:id="@+id/addBudgetFragment"
         android:name="com.example.financemanager.ui.budget.AddBudgetFragment"
@@ -91,4 +100,9 @@
             app:enterAnim="@anim/slide_up"
             app:popExitAnim="@anim/slide_down"/>
     </fragment>
+    <dialog
+        android:id="@+id/monthPicker"
+        android:name="com.example.financemanager.MonthPicker"
+        android:label="MonthPicker"
+        tools:layout="@layout/bottomsheetlayout"/>
 </navigation>

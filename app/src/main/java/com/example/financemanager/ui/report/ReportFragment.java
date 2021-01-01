@@ -26,6 +26,8 @@ import com.example.financemanager.databinding.ReportFragmentBinding;
 import com.google.android.material.card.MaterialCardView;
 import com.leinardi.android.speeddial.SpeedDialView;
 
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
 import java.util.List;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory;
@@ -95,7 +97,14 @@ public class ReportFragment extends Fragment {
                 new Observer<List<Expenditure>>() {
                     @Override
                     public void onChanged(List<Expenditure> expenditures) {
-                        mAdapter.setExpenditureList(expenditures);
+                        if (expenditures.size() >= 1) {
+                            mAdapter.setExpenditureList(expenditures);
+                            binding.emptyView.setVisibility(View.GONE);
+                            binding.listExpenditure.setVisibility(View.VISIBLE);
+                        } else {
+                            binding.emptyView.setVisibility(View.VISIBLE);
+                            binding.listExpenditure.setVisibility(View.GONE);
+                        }
                     }
                 });
 
@@ -142,6 +151,22 @@ public class ReportFragment extends Fragment {
                         doSetAmount();
                     }
                 });
+
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String month = getMonthFromInt(calendar.get(Calendar.MONTH));
+        int year = calendar.get(Calendar.YEAR);
+        binding.homeScreenDate.setText(day + ", " + month + " " + year);
+    }
+
+    private String getMonthFromInt(int month) {
+        String monthString = "";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (month >= 0 && month <= 11) {
+            monthString = months[month];
+        }
+        return monthString;
     }
 
     private void setExpenseBar(int integer) {

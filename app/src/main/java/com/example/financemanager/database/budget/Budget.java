@@ -15,8 +15,14 @@ public class Budget {
     @ColumnInfo(name = "budgetAmount")
     private int amount;
 
+    @ColumnInfo(name = "budgetDay")
+    private int day;
+
     @ColumnInfo(name = "budgetMonth")
     private String month;
+
+    @ColumnInfo(name = "budgetMonthInt")
+    private int monthInt;
 
     @ColumnInfo(name = "budgetYear")
     private int year;
@@ -30,14 +36,32 @@ public class Budget {
         this.id = id;
     }
 
-    public Budget(String category, int amount, String month, int year) {
+    public Budget(String category, int amount, int day, String month, int monthInt, int year) {
         this.category = category;
         this.amount = amount;
+        this.day = day;
+        this.monthInt = monthInt;
         this.month = month;
         this.year = year;
     }
 
     private int amountSpent;
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getMonthInt() {
+        return monthInt;
+    }
+
+    public void setMonthInt(int monthInt) {
+        this.monthInt = monthInt;
+    }
 
     public String getCategory() {
         return category;

@@ -294,14 +294,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/textViewE"
                         tools:listitem="@layout/item_expenditure" />
 
-                    <View
-                        android:id="@+id/view5"
-                        android:layout_width="0dp"
-                        android:layout_height="200dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/list_expenditure"/>
-
                     <TextView
                         android:id="@+id/emptyView"
                         android:layout_width="wrap_content"

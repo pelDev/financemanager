@@ -22,20 +22,31 @@ public class Expenditure {
     private int day;
     @ColumnInfo(name = "expenseMonth")
     private String month;
+    @ColumnInfo(name = "expenseMonthInt")
+    private int monthInt;
     @ColumnInfo(name = "expenseYear")
     private int year;
     @ColumnInfo(name = "expenseAmount")
     private int amount;
 
     public Expenditure(String category, String name, String description,
-                       int day, String month, int year, int amount) {
+                       int day, String month, int monthInt, int year, int amount) {
         this.category = category;
         this.name = name;
         this.description = description;
         this.day = day;
         this.month = month;
+        this.monthInt = monthInt;
         this.year = year;
         this.amount = amount;
+    }
+
+    public int getMonthInt() {
+        return monthInt;
+    }
+
+    public void setMonthInt(int monthInt) {
+        this.monthInt = monthInt;
     }
 
     public int getAmount() {

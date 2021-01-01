@@ -36,20 +36,20 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
             Income income1 = new Income(1, "December", 2020, 2900);
 
             Expenditure expenditure1 = new Expenditure("Food", "Akpu", "",
-                    10, "October", 2020, 2000);
+                    10, "October", 9, 2020,  2000);
 
-            Expenditure expenditure2 = new Expenditure("House", "Rent", "",
-                    10, "October", 2020, 6900);
+            Expenditure expenditure2 = new Expenditure("Housing", "Rent", "",
+                    13, "September", 8, 2020, 6900);
 
             Expenditure expenditure3 = new Expenditure("Education", "School Fees", "",
-                    20, "October", 2019, 2000);
+                    20, "December", 11, 2019, 2000);
 
             Expenditure expenditure4 = new Expenditure("Food", "Okro", "",
-                    20, "December", 2020, 200);
+                    20, "December", 11, 2020, 200);
 
-            Budget budget1 = new Budget("Food", 1000, "December", 2020);
+            Budget budget1 = new Budget("Food", 1000, 10, "December", 11, 2020);
 
-            Budget budget2 = new Budget("Food", 10000, "October", 2019);
+            Budget budget2 = new Budget("Food", 10000, 2, "October", 9, 2019);
 
             databaseWriteExecutor.execute(() -> {
 
