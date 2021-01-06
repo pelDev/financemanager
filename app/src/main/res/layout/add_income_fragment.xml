@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="myAddIncomeViewModel"
+            type="com.example.financemanager.ui.netincome.NetIncomeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/bckGround"
+        android:layout_width="match_parent"
+        android:id="@+id/parent_net_income"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:padding="24dp"
+        tools:context=".ui.netincome.AddIncomeFragment">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextNumber_income_amount"
+            style="@style/Widget.FinanceManager.TextInputLayout"
+            android:hint="@string/hint_income_amount"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@+id/button_add_income"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:maxLines="1"
+                android:inputType="number"
+                android:text="@={myAddIncomeViewModel.incomeAmount}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_add_income"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorSecondary"
+            android:padding="5dp"
+            android:text="@string/add_income_button"
+            android:onClick="@{() -> myAddIncomeViewModel.insertIncome()}"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextNumber_income_amount"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

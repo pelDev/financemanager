@@ -38,25 +38,25 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewF"
+            android:id="@+id/textView_expenseName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
             android:text="dbhdcb"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textViewG"
+            app:layout_constraintBottom_toTopOf="@+id/textView_expenseDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textViewG"
+            android:id="@+id/textView_expenseDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="kdscl;dsaj"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewF" />
+            app:layout_constraintTop_toBottomOf="@+id/textView_expenseName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

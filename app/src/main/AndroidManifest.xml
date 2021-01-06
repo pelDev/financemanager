@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.financemanager">
+    package="com.example.financemanager" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -10,46 +10,30 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".SplashActivity"
-            android:noHistory="true">
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.ActionBar">
+        </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ToDoActivity" />
-
-        <provider
-            android:name=".FinanceManagerProvider"
-            android:authorities="com.example.financemanager.provider"
-            android:enabled="true"
-            android:exported="true" />
-
-        <activity android:name=".NetIncomeActivity" />
-        <activity
-            android:name=".AddBudgetActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".AddExpenseActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".BudgetActivity" />
-        <activity
-            android:name=".RegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".RegisterActivity" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+        <activity android:name=".StartActivity" />
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/app_name" />
     </application>
 
 </manifest>
