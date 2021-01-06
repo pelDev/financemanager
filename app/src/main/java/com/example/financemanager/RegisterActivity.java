@@ -41,11 +41,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_screen);
 
-//        Window window = RegisterActivity.this.getWindow();
-//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-
         etName = findViewById(R.id.et_name);
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);
@@ -118,6 +113,11 @@ public class RegisterActivity extends AppCompatActivity {
                             user.setName(etName.getText().toString().trim());
 
                             saveUserDetails(userRef, user);
+
+                            etName.setText("");
+                            etEmail.setText("");
+                            etPassword.setText("");
+                            etConfirmPassword.setText("");
                         } else {
 //                            Check if the email is already registered
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {

@@ -26,11 +26,13 @@ public class NetIncomeViewModel extends AndroidViewModel {
         if (validateForm()) {
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_MONTH);
-            String month = getMonthFromInt(calendar.get(Calendar.MONTH));
+            int monthInt = calendar.get(Calendar.MONTH);
+            String month = getMonthFromInt(monthInt);
             int year = calendar.get(Calendar.YEAR);
             Income income = new Income(
                     day,
                     month,
+                    monthInt,
                     year,
                     Integer.parseInt(incomeAmount.getValue()));
             mRepository.insertIncome(income);

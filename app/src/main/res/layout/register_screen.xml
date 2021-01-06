@@ -119,7 +119,7 @@
             app:layout_constraintTop_toBottomOf="@+id/name_input_layout">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_et_email"
+                android:id="@+id/et_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -149,7 +149,7 @@
                 android:layout_marginTop="8dp"
                 android:ems="10"
                 android:gravity="center_vertical"
-                android:hint="Email"
+                android:hint="Name"
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

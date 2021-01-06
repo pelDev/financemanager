@@ -31,9 +31,9 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
 
-            Income income = new Income(12, "October", 2020, 40000);
+            Income income = new Income(12, "October", 9, 2020, 40000);
 
-            Income income1 = new Income(1, "December", 2020, 2900);
+            Income income1 = new Income(1, "December", 11, 2020, 2900);
 
             Expenditure expenditure1 = new Expenditure("Food", "Akpu", "",
                     10, "October", 9, 2020,  2000);

@@ -8,9 +8,10 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "incomes")
 public class Income {
 
-    public Income(int day, String month, int year, int amount) {
+    public Income(int day, String month, int monthInt, int year, int amount) {
         this.day = day;
         this.month = month;
+        this.monthInt = monthInt;
         this.year = year;
         this.amount = amount;
     }
@@ -45,11 +46,22 @@ public class Income {
     @ColumnInfo(name = "incomeMonth")
     private String month;
 
+    @ColumnInfo(name = "incomeMonthInt")
+    private int monthInt;
+
     @ColumnInfo(name = "incomeYear")
     private int year;
 
     @ColumnInfo(name = "incomeAmount")
     private int amount;
+
+    public int getMonthInt() {
+        return monthInt;
+    }
+
+    public void setMonthInt(int monthInt) {
+        this.monthInt = monthInt;
+    }
 
     public int getAmount() {
         return amount;

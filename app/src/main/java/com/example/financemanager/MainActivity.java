@@ -30,6 +30,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.financemanager.settings.SettingsActivity;
 import com.example.financemanager.ui.budget.BudgetFragment;
 import com.example.financemanager.ui.report.ReportFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -210,7 +211,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    @Override
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //    @Override
 //    public void onItemClick(String item) {
 //        //Snackbar.make(mRecyclerView, item, Snackbar.LENGTH_SHORT).show();
 //

@@ -14,7 +14,7 @@ public interface IncomeDao {
     @Insert
     void insertIncome(Income income);
 
-    @Query("SELECT * FROM incomes")
+    @Query("SELECT * FROM incomes ORDER BY incomeYear DESC, incomeMonthInt DESC, incomeDay DESC")
     LiveData<List<Income>> getAllIncomes();
 
     @Query("DELETE FROM incomes")
