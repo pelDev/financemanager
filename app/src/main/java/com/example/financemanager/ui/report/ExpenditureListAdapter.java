@@ -92,7 +92,7 @@ public class ExpenditureListAdapter extends
                 holder.image.setImageResource(R.drawable.ic_fashion);
                 holder.image.setBackgroundColor(Color.parseColor("#12536A"));
                 break;
-            case "Others":
+            case "Other":
                 holder.image.setImageResource(R.drawable.ic_others);
                 holder.image.setBackgroundColor(Color.parseColor("#000000"));
                 break;

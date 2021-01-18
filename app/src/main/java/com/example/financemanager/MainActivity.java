@@ -29,7 +29,11 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
+import com.example.financemanager.notifiaction.BudgetNotificationReminder;
 import com.example.financemanager.settings.SettingsActivity;
 import com.example.financemanager.ui.budget.BudgetFragment;
 import com.example.financemanager.ui.report.ReportFragment;
@@ -41,14 +45,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
+import java.util.concurrent.TimeUnit;
+
+import static com.example.financemanager.Constants.BUDGET_WORKER_NAME;
+import static com.example.financemanager.Constants.NOTIF_BUDGET;
+import static com.example.financemanager.Constants.NOTIF_BUDGET_MESSAGE;
+
 public class MainActivity extends AppCompatActivity
 //        implements
 //        NavigationView.OnNavigationItemSelectedListener
 {
-
-    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
-    private NotificationManager mNotifyManager;
-    private static final int BUDGET_NOTIFICATION_ID = 0;
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavController mNavController;
@@ -68,16 +74,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        auth.signOut();
-                        drawer.closeDrawer(GravityCompat.START);
-                        Intent intent = new Intent(MainActivity.this, StartActivity.class);
-                        startActivity(intent);
-                        finish();
-                        return true;
-                    }
+                item -> {
+                    auth.signOut();
+                    drawer.closeDrawer(GravityCompat.START);
+                    Intent intent = new Intent(MainActivity.this, StartActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
                 }
         );
 
@@ -88,12 +91,12 @@ public class MainActivity extends AppCompatActivity
                 .setDrawerLayout(drawer)
                 .build();
 
-        //mNavigationView.setNavigationItemSelectedListener(this);
-        createNotificationChannel();
-
         mNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, mNavController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, mNavController);
+
+        checkIfIntentHasData();
+        registerRecurringWork();
 
         mSpeedDialView = findViewById(R.id.speedDial);
         mSpeedDialView.inflate(R.menu.fab_menu);
@@ -119,6 +122,28 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    // register work that will display notification on the first
+    // of every month.
+    private void registerRecurringWork() {
+        PeriodicWorkRequest.Builder myWorkerBuilder =
+                new PeriodicWorkRequest.Builder(BudgetNotificationReminder.class,
+                        1, TimeUnit.DAYS);
+        WorkManager.getInstance(getApplicationContext())
+                .enqueueUniquePeriodicWork(BUDGET_WORKER_NAME,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        myWorkerBuilder.build());
+    }
+
+    private void checkIfIntentHasData() {
+        String message = getIntent().getStringExtra(NOTIF_BUDGET);
+        if (message != null && message.equals(NOTIF_BUDGET_MESSAGE))
+            mNavController.navigate(R.id.action_nav_home_to_nav_budget);
+        else
+            Toast.makeText(this,
+                    "This message isn't understood.", Toast.LENGTH_SHORT)
+                    .show();
+    }
+
     public SpeedDialView getSpeedDialView() {
         return mSpeedDialView;
     }
@@ -140,62 +165,19 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        sendNotification();
+                        //sendNotification();
                         dialogInterface.dismiss();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        cancelNotification();
+                        //cancelNotification();
                         dialogInterface.dismiss();
                     }
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    public void createNotificationChannel() {
-        mNotifyManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            // Create a NotificationChannel
-            NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL_ID,
-                    "Budget Notification", NotificationManager
-                    .IMPORTANCE_HIGH);
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setDescription("Notification for budget");
-            mNotifyManager.createNotificationChannel(notificationChannel);
-        }
-    }
-
-    private NotificationCompat.Builder getNotificationBuilder() {
-//        Intent notificationIntent = new Intent(this, BudgetActivity.class);
-//        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this,
-//                BUDGET_NOTIFICATION_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        String message = "It's that time of the month again where making a budget decision is very important";
-
-        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setSmallIcon(R.drawable.ic_budget)
-                .setContentTitle("Make a Budget")
-                .setColor(getResources().getColor(R.color.colorSecondary))
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setTicker("Budget")
-//                .setContentIntent(notificationPendingIntent)
-                .setAutoCancel(true);
-        return notifyBuilder;
-    }
-
-    public void sendNotification() {
-        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
-        mNotifyManager.notify(BUDGET_NOTIFICATION_ID, notifyBuilder.build());
-    }
-
-    public void cancelNotification() {
-        mNotifyManager.cancel(BUDGET_NOTIFICATION_ID);
     }
 
     @Override
@@ -232,7 +214,4 @@ public class MainActivity extends AppCompatActivity
 ////                .budgetFilterAction(item);
 //    }
 
-    public interface BudgetFilterAction {
-        void budgetFilterAction(String item);
-    }
 }

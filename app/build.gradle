@@ -63,6 +63,9 @@ dependencies {
 
     // custom floating action button
     implementation "com.leinardi.android:speed-dial:3.1.1"
+
+    // worker manager
+    implementation 'androidx.work:work-runtime:2.4.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -25,6 +25,9 @@ public interface ExpenditureDao {
     @Query("SELECT * FROM expenses ORDER BY expenseYear DESC, expenseMonthInt DESC, expenseDay DESC")
     LiveData<List<Expenditure>> getAllExpenditures();
 
+    @Query("SELECT * FROM expenses ORDER BY expenseYear DESC, expenseMonthInt DESC, expenseDay DESC LIMIT 10")
+    LiveData<List<Expenditure>> get10Expenditures();
+
     @Query("SELECT * FROM expenses WHERE expenseName = :name")
     List<Expenditure> findExpenditureByName(String name);
 

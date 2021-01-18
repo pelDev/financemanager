@@ -15,13 +15,19 @@ import java.util.List;
 
 public class ExpenditureRepository {
 
-    private ExpenditureDao mExpenditureDao;
+    private final ExpenditureDao mExpenditureDao;
 
-    private LiveData<List<Expenditure>> allExpenditures;
+    private final LiveData<List<Expenditure>> allExpenditures;
+
+    private final LiveData<List<Expenditure>> latestTenExpenditure;
+
+    public LiveData<List<Expenditure>> getLatestTenExpenditure() {
+        return latestTenExpenditure;
+    }
 
     public LiveData<List<Expenditure>> getAllExpenditures() { return allExpenditures; }
 
-    private MutableLiveData<List<Expenditure>> expenseSearchResults = new MutableLiveData<>();
+    private final MutableLiveData<List<Expenditure>> expenseSearchResults = new MutableLiveData<>();
 
     public MutableLiveData<List<Expenditure>> getSearchResults() { return expenseSearchResults; }
 
@@ -30,6 +36,7 @@ public class ExpenditureRepository {
                 FinanceManagerRoomDb.getDatabase(application);
         mExpenditureDao = db.expenditureDao();
         allExpenditures = mExpenditureDao.getAllExpenditures();
+        latestTenExpenditure = mExpenditureDao.get10Expenditures();
     }
 
     public void insertExpenditure(Expenditure newExpenditure) {
@@ -72,7 +79,7 @@ public class ExpenditureRepository {
 
     // async task to input expenditure into the database
     private static class InsertAsyncTask extends AsyncTask<Expenditure, Void, Void> {
-        private ExpenditureDao asyncTaskDao;
+        private final ExpenditureDao asyncTaskDao;
         InsertAsyncTask(ExpenditureDao dao) {
             asyncTaskDao = dao;
         }

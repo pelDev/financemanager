@@ -14,18 +14,18 @@ import java.util.List;
 
 public class ReportViewModel extends AndroidViewModel {
 
-    private LiveData<List<Expenditure>> allExpenditures;
-    private LiveData<Integer> mTotalExpenseForMonth;
-    private LiveData<Integer> nTotalIncomeForMonth;
-    private LiveData<Integer> mTotalIncome;
-    private LiveData<Integer> mTotalExpense;
+    private final LiveData<List<Expenditure>> allTenExpenditures;
+    private final LiveData<Integer> mTotalExpenseForMonth;
+    private final LiveData<Integer> nTotalIncomeForMonth;
+    private final LiveData<Integer> mTotalIncome;
+    private final LiveData<Integer> mTotalExpense;
 
 
     public ReportViewModel(@NonNull Application application) {
         super(application);
         ExpenditureRepository expenditureRepository = new ExpenditureRepository(application);
         AmountRepository amountRepository = new AmountRepository(application);
-        allExpenditures = expenditureRepository.getAllExpenditures();
+        allTenExpenditures = expenditureRepository.getLatestTenExpenditure();
         mTotalExpenseForMonth = amountRepository.getTotalExpenseMonth();
         mTotalIncome = amountRepository.getTotalIncome();
         mTotalExpense = amountRepository.getTotalExpense();
@@ -33,7 +33,7 @@ public class ReportViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Expenditure>> getAllExpenditures() {
-        return allExpenditures;
+        return allTenExpenditures;
     }
 
     public LiveData<Integer> getTotalIncome() {
