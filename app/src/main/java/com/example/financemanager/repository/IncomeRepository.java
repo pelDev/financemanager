@@ -7,12 +7,12 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.example.financemanager.database.FinanceManagerRoomDb;
-import com.example.financemanager.database.expense.Expenditure;
-import com.example.financemanager.database.expense.ExpenditureDao;
 import com.example.financemanager.database.income.Income;
 import com.example.financemanager.database.income.IncomeDao;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class IncomeRepository {
 
@@ -22,6 +22,22 @@ public class IncomeRepository {
 
     public LiveData<List<Income>> getAllIncomes() {
         return allIncomes;
+    }
+
+    public static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    public Income getIncomeById(int id) {
+        try {
+            return executor.submit(() ->
+                    mIncomeDao.getIncomeById(id)).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void updateIncome(Income income) {
+        executor.execute(() -> mIncomeDao.updateIncome(income));
     }
 
     public IncomeRepository(Application application) {

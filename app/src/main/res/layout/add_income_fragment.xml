@@ -31,6 +31,7 @@
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editIncomeAmount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -64,13 +65,15 @@
                     android:id="@+id/radioButton_yes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Yes" />
+                    android:text="Yes"
+                    android:onClick="@{() -> myAddIncomeViewModel.yesToRecurrent()}"/>
 
                 <RadioButton
                     android:id="@+id/radioButton_no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No" />
+                    android:text="No"
+                    android:onClick="@{() -> myAddIncomeViewModel.noToRecurrent()}"/>
             </RadioGroup>
 
         </LinearLayout>
@@ -82,7 +85,7 @@
             android:backgroundTint="@color/colorSecondary"
             android:padding="5dp"
             android:text="@string/add_income_button"
-            android:onClick="@{() -> myAddIncomeViewModel.insertIncome()}"
+            android:onClick="@{() -> myAddIncomeViewModel.savePressed()}"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             android:textColor="@android:color/white"
             android:textStyle="bold"

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
 import com.example.financemanager.database.income.Income;
 
@@ -33,7 +34,7 @@ public class IncomeListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         RecyclerView recyclerView = getView().findViewById(R.id.list_incomes);
-        IncomeRecyclerAdapter adapter = new IncomeRecyclerAdapter();
+        IncomeRecyclerAdapter adapter = new IncomeRecyclerAdapter(getContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 

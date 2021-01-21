@@ -8,12 +8,14 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "incomes")
 public class Income {
 
-    public Income(int day, String month, int monthInt, int year, int amount) {
+    public Income(int day, String month, int monthInt,
+                  int year, int amount, boolean isRecurrent) {
         this.day = day;
         this.month = month;
         this.monthInt = monthInt;
         this.year = year;
         this.amount = amount;
+        this.isRecurrent = isRecurrent;
     }
 
     public int getDay() {
@@ -54,6 +56,16 @@ public class Income {
 
     @ColumnInfo(name = "incomeAmount")
     private int amount;
+
+    private boolean isRecurrent;
+
+    public boolean isRecurrent() {
+        return isRecurrent;
+    }
+
+    public void setRecurrent(boolean recurrent) {
+        isRecurrent = recurrent;
+    }
 
     public int getMonthInt() {
         return monthInt;

@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import androidx.work.WorkManager;
 import com.example.financemanager.notifiaction.BudgetNotificationReminder;
 import com.example.financemanager.settings.SettingsActivity;
 import com.example.financemanager.ui.budget.BudgetFragment;
+import com.example.financemanager.ui.netincome.AddIncomeFragment;
 import com.example.financemanager.ui.report.ReportFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -51,10 +53,7 @@ import static com.example.financemanager.Constants.BUDGET_WORKER_NAME;
 import static com.example.financemanager.Constants.NOTIF_BUDGET;
 import static com.example.financemanager.Constants.NOTIF_BUDGET_MESSAGE;
 
-public class MainActivity extends AppCompatActivity
-//        implements
-//        NavigationView.OnNavigationItemSelectedListener
-{
+public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavController mNavController;
@@ -200,6 +199,24 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void radioButtonClicked(View view) {
+        boolean isChecked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.radioButton_yes:
+                if (isChecked) {
+                    // if work queue does not already exist create it
+                }
+                break;
+            case R.id.radioButton_no:
+                if (isChecked) {
+                    // delete queue if it exists before
+                }
+                break;
+        }
+
     }
 
     //    @Override

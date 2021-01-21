@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -19,5 +20,11 @@ public interface IncomeDao {
 
     @Query("DELETE FROM incomes")
     void deleteAllIncomes();
+
+    @Query("SELECT * FROM incomes WHERE incomeId = :id LIMIT 1")
+    Income getIncomeById(int id);
+
+    @Update
+    void updateIncome(Income income);
 
 }
