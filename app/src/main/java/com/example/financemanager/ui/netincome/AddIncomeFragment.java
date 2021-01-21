@@ -5,9 +5,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
@@ -51,6 +59,28 @@ public class AddIncomeFragment extends Fragment {
                 .get(NetIncomeViewModel.class);
         binding.setVariable(myAddIncomeViewModel, mViewModel);
 
+
+
+        NavController controller = NavHostFragment.findNavController(this);
+        binding.radioButtonYes.setOnClickListener((v) -> controller.navigate(R.id.actionFrequencyPicker));
+        final NavBackStackEntry navBackStackEntry = controller.getBackStackEntry(R.id.addIncomeFragment);
+
+        final LifecycleEventObserver observer = (LifecycleEventObserver) (source, event) -> {
+            if (event.equals(Lifecycle.Event.ON_RESUME) &&
+                    navBackStackEntry.getSavedStateHandle().contains("frequency")) {
+                String result = navBackStackEntry.getSavedStateHandle().get("frequency");
+                if (result != null)
+                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        navBackStackEntry.getLifecycle().addObserver(observer);
+        getViewLifecycleOwner().getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            if (event.equals(Lifecycle.Event.ON_DESTROY)) {
+                navBackStackEntry.getLifecycle().removeObserver(observer);
+            }
+        });
+
         mViewModel.getCompleted().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -68,5 +98,4 @@ public class AddIncomeFragment extends Fragment {
         });
 
     }
-
 }

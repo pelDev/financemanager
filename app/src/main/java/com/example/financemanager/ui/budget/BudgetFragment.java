@@ -29,7 +29,6 @@ import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
 import com.example.financemanager.database.budget.Budget;
 import com.example.financemanager.databinding.BudgetFragmentBinding;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -38,11 +37,11 @@ import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BudgetFragment extends Fragment{
 
     private BudgetListAdapter mAdapter;
-    private RecyclerView mRecyclerView;
     private BudgetFragmentBinding binding;
     private BudgetViewModel mBudgetViewModel;
 
@@ -59,7 +58,7 @@ public class BudgetFragment extends Fragment{
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_filter) {
-            NavController controller = Navigation.findNavController(getView().findViewById(R.id.list_budgets));
+            NavController controller = Navigation.findNavController(requireView().findViewById(R.id.list_budgets));
             controller.navigate(R.id.monthPicker);
         }
         return true;
@@ -121,9 +120,9 @@ public class BudgetFragment extends Fragment{
                 .get(BudgetViewModel.class);
         binding.setVariable(BR.budgetViewModel, mBudgetViewModel);
         mAdapter = new BudgetListAdapter(R.layout.item_budget);
-        mRecyclerView = getView().findViewById(R.id.list_budgets);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(mAdapter);
+        RecyclerView recyclerView = getView().findViewById(R.id.list_budgets);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(mAdapter);
 
         // set up budget list observer
         mBudgetViewModel.getAllBudgets().observe(getViewLifecycleOwner(),

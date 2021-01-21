@@ -15,14 +15,15 @@ import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.database.expense.ExpenditureDao;
 import com.example.financemanager.database.income.Income;
 import com.example.financemanager.database.income.IncomeDao;
+import com.example.financemanager.database.recurrentIncome.RecurrentIncome;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Expenditure.class, Budget.class, Income.class}, version = 1, exportSchema = false)
+@Database(entities = {Expenditure.class, Budget.class, Income.class, RecurrentIncome.class}, version = 1, exportSchema = false)
 public abstract class FinanceManagerRoomDb extends RoomDatabase {
 
-    private static int NUMBER_OF_THREADS = 4;
+    private static final int NUMBER_OF_THREADS = 4;
 
     public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 

@@ -65,7 +65,11 @@
         android:id="@+id/addIncomeFragment"
         android:name="com.example.financemanager.ui.netincome.AddIncomeFragment"
         android:label="Add Income"
-        tools:layout="@layout/add_income_fragment" />
+        tools:layout="@layout/add_income_fragment" >
+        <action
+            android:id="@+id/actionFrequencyPicker"
+            app:destination="@id/frequencyPicker" />
+    </fragment>
     <fragment
         android:id="@+id/addExpenseFragment"
         android:name="com.example.financemanager.ui.expense.AddExpenseFragment"
@@ -105,7 +109,12 @@
     </fragment>
     <dialog
         android:id="@+id/monthPicker"
-        android:name="com.example.financemanager.MonthPicker"
+        android:name="com.example.financemanager.ui.budget.MonthPicker"
         android:label="MonthPicker"
         tools:layout="@layout/bottomsheetlayout"/>
+    <dialog
+        android:id="@+id/frequencyPicker"
+        android:name="com.example.financemanager.ui.netincome.FrequencyPicker"
+        android:label="FrequencyPicker"
+        tools:layout="@layout/frequency_picker"/>
 </navigation>

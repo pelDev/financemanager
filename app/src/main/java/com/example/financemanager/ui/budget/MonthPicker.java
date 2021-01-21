@@ -1,4 +1,4 @@
-package com.example.financemanager;
+package com.example.financemanager.ui.budget;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.financemanager.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class MonthPicker extends BottomSheetDialogFragment implements View.OnClickListener {
