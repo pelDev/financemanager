@@ -8,8 +8,9 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "incomes")
 public class Income {
 
-    public Income(int day, String month, int monthInt,
+    public Income(String name, int day, String month, int monthInt,
                   int year, int amount, boolean isRecurrent) {
+        this.name = name;
         this.day = day;
         this.month = month;
         this.monthInt = monthInt;
@@ -20,10 +21,6 @@ public class Income {
 
     public int getDay() {
         return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
     }
 
     public String getMonth() {
@@ -43,13 +40,24 @@ public class Income {
     }
 
     @ColumnInfo(name = "incomeDay")
-    private int day;
+    private final int day;
 
     @ColumnInfo(name = "incomeMonth")
     private String month;
 
     @ColumnInfo(name = "incomeMonthInt")
-    private int monthInt;
+    private final int monthInt;
+
+    @ColumnInfo(name = "incomeName")
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @ColumnInfo(name = "incomeYear")
     private int year;
@@ -69,10 +77,6 @@ public class Income {
 
     public int getMonthInt() {
         return monthInt;
-    }
-
-    public void setMonthInt(int monthInt) {
-        this.monthInt = monthInt;
     }
 
     public int getAmount() {

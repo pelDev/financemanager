@@ -2,6 +2,7 @@ package com.example.financemanager.repository;
 
 
 import android.app.Application;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
@@ -40,27 +41,22 @@ public class IncomeRepository {
         executor.execute(() -> mIncomeDao.updateIncome(income));
     }
 
-    public IncomeRepository(Application application) {
-        FinanceManagerRoomDb db = FinanceManagerRoomDb.getDatabase(application);
+    public IncomeRepository(Context context) {
+        FinanceManagerRoomDb db = FinanceManagerRoomDb.getDatabase(context);
         mIncomeDao = db.incomeDao();
         allIncomes = mIncomeDao.getAllIncomes();
     }
 
     public void insertIncome(Income income) {
-        InsertAsyncTask task = new InsertAsyncTask(mIncomeDao);
-        task.execute(income);
+        executor.execute(() -> mIncomeDao.insertIncome(income));
     }
 
-    // async task to input income into the database
-    private static class InsertAsyncTask extends AsyncTask<Income, Void, Void> {
-        private IncomeDao asyncTaskDao;
-        InsertAsyncTask(IncomeDao dao) {
-            asyncTaskDao = dao;
-        }
-        @Override
-        protected Void doInBackground(final Income... params) {
-            asyncTaskDao.insertIncome(params[0]);
-            return null;
+    public int getLastEntry() {
+        try {
+            return executor.submit(() -> mIncomeDao.getLastEntry()).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 

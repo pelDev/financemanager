@@ -51,7 +51,7 @@
             android:id="@+id/button_add_budget"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Add"
+            android:text="@string/button_add_budget"
             android:layout_marginTop="16dp"
             android:onClick="@{() -> myAddBudgetViewModel.insertBudget()}"
             android:padding="5dp"

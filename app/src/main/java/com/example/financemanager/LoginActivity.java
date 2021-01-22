@@ -65,14 +65,16 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-
-                if (!isEmpty(email) && !isEmpty(password)) {
-                    signInUser(email, password);
-                } else {
-                    Toast.makeText(LoginActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
-                }
+//                String email = etEmail.getText().toString();
+//                String password = etPassword.getText().toString();
+//
+//                if (!isEmpty(email) && !isEmpty(password)) {
+//                    signInUser(email, password);
+//                } else {
+//                    Toast.makeText(LoginActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
+//                }
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
             }
         });
     }

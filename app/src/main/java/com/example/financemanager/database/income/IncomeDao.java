@@ -27,4 +27,6 @@ public interface IncomeDao {
     @Update
     void updateIncome(Income income);
 
+    @Query("SELECT COUNT(*) FROM incomes")
+    int getLastEntry();
 }

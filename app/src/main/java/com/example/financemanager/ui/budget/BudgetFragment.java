@@ -37,7 +37,6 @@ import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class BudgetFragment extends Fragment{
 

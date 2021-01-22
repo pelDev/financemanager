@@ -42,7 +42,7 @@
     <string name="add_expense_action_text">Add Expense</string>
     <string name="hint_expense_name">Expense Name</string>
     <string name="hint_expense_amount">Amount</string>
-    <string name="button_add_expense">ADD</string>
+    <string name="button_add_expense">Save</string>
     <string name="add_budget_action_text">Add Budget</string>
     <string name="hint_income_amount">Income Amount</string>
     <string name="hint_budget_amount">Budget Amount</string>
@@ -64,4 +64,6 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="is_income_recurrent">Is income recurrent?</string>
+    <string name="button_add_budget">Save</string>
+    <string name="hint_income_name">Income Name</string>
 </resources>

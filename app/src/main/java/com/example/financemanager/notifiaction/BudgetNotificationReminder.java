@@ -18,8 +18,8 @@ import com.example.financemanager.R;
 
 import java.util.Calendar;
 
-import static com.example.financemanager.Constants.NOTIF_BUDGET;
-import static com.example.financemanager.Constants.NOTIF_BUDGET_MESSAGE;
+import static com.example.financemanager.Constants.DESTINATION_FRAGMENT;
+import static com.example.financemanager.Constants.MOVE_TO_BUDGET;
 
 public class BudgetNotificationReminder extends Worker {
     private static final int NOTIFICATION_ID = 1;
@@ -51,7 +51,7 @@ public class BudgetNotificationReminder extends Worker {
 
         // Create the notification
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra(NOTIF_BUDGET, NOTIF_BUDGET_MESSAGE);
+        intent.putExtra(DESTINATION_FRAGMENT, MOVE_TO_BUDGET);
 
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(getApplicationContext(),

@@ -15,6 +15,7 @@ import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.database.expense.ExpenditureDao;
 import com.example.financemanager.database.income.Income;
 import com.example.financemanager.database.income.IncomeDao;
+import com.example.financemanager.database.recurrentIncome.RIncomeDao;
 import com.example.financemanager.database.recurrentIncome.RecurrentIncome;
 
 import java.util.concurrent.ExecutorService;
@@ -32,10 +33,10 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
 
-            Income income = new Income(12, "October", 9, 2020,
+            Income income = new Income("Salary",12, "October", 9, 2020,
                     40000, false);
 
-            Income income1 = new Income(1, "December", 11, 2020,
+            Income income1 = new Income("Freelance Work", 1, "December", 11, 2020,
                     2900, false);
 
             Expenditure expenditure1 = new Expenditure("Food", "Akpu", "",
@@ -85,6 +86,8 @@ public abstract class FinanceManagerRoomDb extends RoomDatabase {
     public abstract IncomeDao incomeDao();
 
     public abstract AmountDao amountDao();
+
+    public abstract RIncomeDao rIncomeDao();
 
     private static FinanceManagerRoomDb INSTANCE;
 

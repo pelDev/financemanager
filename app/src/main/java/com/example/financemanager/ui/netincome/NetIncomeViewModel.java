@@ -1,27 +1,47 @@
 package com.example.financemanager.ui.netincome;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.example.financemanager.database.income.Income;
+import com.example.financemanager.database.recurrentIncome.RecurrentIncome;
+import com.example.financemanager.notifiaction.RecurrentIncomeWorker;
 import com.example.financemanager.repository.IncomeRepository;
+import com.example.financemanager.repository.RIncomeRepository;
+
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import static com.example.financemanager.Constants.INCOME_WORKER_NAME;
+import static com.example.financemanager.Constants.KEY_WORKER_NAME;
 
 public class NetIncomeViewModel extends AndroidViewModel {
 
     private final IncomeRepository mRepository;
+    private final RIncomeRepository mRIncomeRepository;
     public MutableLiveData<String> incomeAmount = new MutableLiveData<>();
+    public MutableLiveData<String> incomeName = new MutableLiveData<>();
     private final LiveData<List<Income>> mAllIncomes;
     private final MutableLiveData<Boolean> completed = new MutableLiveData<>();
     private final MutableLiveData<Boolean> invalidAmount = new MutableLiveData<>();
     public MutableLiveData<Boolean> isRecurrent = new MutableLiveData<>();
     public int incomePosition = -1;
     public Income income = null;
+    private int currentIncomeId;
+    private final String TAG = getClass().getSimpleName();
+    public String intervalString = "";
 
     public void savePressed() {
         if (incomePosition == -1)
@@ -37,8 +57,13 @@ public class NetIncomeViewModel extends AndroidViewModel {
                 income.setAmount(Integer.parseInt(incomeAmount.getValue()));
                 income.setRecurrent(isRecurrent.getValue());
                 mRepository.updateIncome(income);
+                currentIncomeId = income.getId();
+                setUpOrRemoveWork();
             }
+            invalidAmount.setValue(false);
             completed.setValue(true);
+        } else {
+            invalidAmount.setValue(true);
         }
     }
 
@@ -50,6 +75,7 @@ public class NetIncomeViewModel extends AndroidViewModel {
             String month = getMonthFromInt(monthInt);
             int year = calendar.get(Calendar.YEAR);
             Income income = new Income(
+                    Objects.requireNonNull(incomeName.getValue()),
                     day,
                     month,
                     monthInt,
@@ -57,28 +83,90 @@ public class NetIncomeViewModel extends AndroidViewModel {
                     Integer.parseInt(Objects.requireNonNull(incomeAmount.getValue())),
                     Objects.requireNonNull(isRecurrent.getValue()));
             mRepository.insertIncome(income);
-            completed.setValue(true);
             invalidAmount.setValue(false);
+            currentIncomeId = mRepository.getLastEntry();
+            setUpOrRemoveWork();
+            completed.setValue(true);
         } else {
             invalidAmount.setValue(true);
         }
     }
 
-    public void yesToRecurrent() {
-        isRecurrent.setValue(true);
-    }
-
-    public void noToRecurrent() {
-        isRecurrent.setValue(false);
+    private void setUpOrRemoveWork() {
+        if (isRecurrent.getValue())
+            setUpIncomeForRecurrentWork(currentIncomeId);
+        else
+            removeIncomeFromRecurrentWork(currentIncomeId);
     }
 
     private boolean validateForm() {
-        return incomeAmount.getValue() != null && !incomeAmount.getValue().equals("");
+        return incomeAmount.getValue() != null
+                && !incomeAmount.getValue().equals("")
+                && !incomeName.getValue().equals("");
+    }
+
+    private void setUpIncomeForRecurrentWork(int incomeId) {
+        logInfo("Setting up income " + incomeId + " for recurrent work!");
+        // check if recurrent work already exists
+        RecurrentIncome work = mRIncomeRepository.getRIncome("income-worker" + incomeId);
+        if (work != null) {
+            logInfo("Recurrent work for " + incomeId + " already exists.");
+            return;
+        }
+        int interval;
+        switch (intervalString) {
+            case "Daily":
+                interval = 1;
+                break;
+            case "Weekly":
+                interval = 7;
+                break;
+            case "Monthly":
+                interval = 30;
+                break;
+            default:
+                interval = -1;
+        }
+        // add recurrent work
+        PeriodicWorkRequest.Builder workRequest =
+                new PeriodicWorkRequest.Builder(
+                        RecurrentIncomeWorker.class,
+                        interval,
+                        TimeUnit.DAYS
+                );
+        workRequest.setInputData(createInputDataForWorkName(incomeId));
+        WorkManager.getInstance(getApplication().getApplicationContext())
+                .enqueueUniquePeriodicWork(INCOME_WORKER_NAME + incomeId,
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        workRequest.build());
+        // add reference to database
+        RecurrentIncome recurrentIncome =
+                new RecurrentIncome(INCOME_WORKER_NAME + incomeId,
+                        0, intervalString);
+        mRIncomeRepository.insertRIncome(recurrentIncome);
+
+        logInfo(recurrentIncome.getWorkerName() +
+                " has been queued for a " + intervalString + " interval.");
+    }
+
+    private Data createInputDataForWorkName(int id) {
+        Data.Builder builder = new Data.Builder();
+        builder.putString(KEY_WORKER_NAME, INCOME_WORKER_NAME + id);
+        return builder.build();
+    }
+
+    private void logInfo(String s) {
+        Log.i(TAG, s);
+    }
+
+    private void removeIncomeFromRecurrentWork(int incomeId) {
+        logInfo("Removing income " + incomeId + " from recurrent work!");
     }
 
     public NetIncomeViewModel(@NonNull Application application) {
         super(application);
         mRepository = new IncomeRepository(application);
+        mRIncomeRepository = new RIncomeRepository(application);
         mAllIncomes = mRepository.getAllIncomes();
         completed.setValue(false);
     }
@@ -86,10 +174,6 @@ public class NetIncomeViewModel extends AndroidViewModel {
     public Income getIncomeById(int id) {
 
         return mRepository.getIncomeById(id);
-    }
-
-    public MutableLiveData<Boolean> getIsRecurrent() {
-        return isRecurrent;
     }
 
     public void setIsRecurrent(boolean isRecurrent) {

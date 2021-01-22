@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.financemanager.MainActivity;
 import com.example.financemanager.R;
 import com.example.financemanager.database.income.Income;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.List;
 
@@ -27,6 +28,15 @@ public class IncomeListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.income_list_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final SpeedDialView floatingActionButton = ((MainActivity) getActivity()).getSpeedDialView();
+        if (floatingActionButton != null) {
+            ((MainActivity) getActivity()).showSpeedDialView();
+        }
     }
 
     @Override

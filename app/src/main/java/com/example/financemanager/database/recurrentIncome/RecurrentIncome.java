@@ -17,6 +17,16 @@ public class RecurrentIncome {
     @NonNull
     private int daysPassed;
 
+    private String frequency;
+
+    public String getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
+
     public int getDaysPassed() {
         return daysPassed;
     }
@@ -25,9 +35,10 @@ public class RecurrentIncome {
         this.daysPassed = daysPassed;
     }
 
-    public RecurrentIncome(@NonNull String workerName, int daysPassed) {
+    public RecurrentIncome(@NonNull String workerName, int daysPassed, String frequency) {
         this.workerName = workerName;
         this.daysPassed = daysPassed;
+        this.frequency = frequency;
     }
 
     public int getId() {

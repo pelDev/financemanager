@@ -1,18 +1,10 @@
 package com.example.financemanager;
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RadioButton;
@@ -21,12 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -36,12 +25,7 @@ import androidx.work.WorkManager;
 
 import com.example.financemanager.notifiaction.BudgetNotificationReminder;
 import com.example.financemanager.settings.SettingsActivity;
-import com.example.financemanager.ui.budget.BudgetFragment;
-import com.example.financemanager.ui.netincome.AddIncomeFragment;
-import com.example.financemanager.ui.report.ReportFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
@@ -50,8 +34,9 @@ import com.leinardi.android.speeddial.SpeedDialView;
 import java.util.concurrent.TimeUnit;
 
 import static com.example.financemanager.Constants.BUDGET_WORKER_NAME;
-import static com.example.financemanager.Constants.NOTIF_BUDGET;
-import static com.example.financemanager.Constants.NOTIF_BUDGET_MESSAGE;
+import static com.example.financemanager.Constants.DESTINATION_FRAGMENT;
+import static com.example.financemanager.Constants.MOVE_TO_ADD_INCOME;
+import static com.example.financemanager.Constants.MOVE_TO_BUDGET;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -134,9 +119,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkIfIntentHasData() {
-        String message = getIntent().getStringExtra(NOTIF_BUDGET);
-        if (message != null && message.equals(NOTIF_BUDGET_MESSAGE))
+        String message = getIntent().getStringExtra(DESTINATION_FRAGMENT);
+        if (message != null && message.equals(MOVE_TO_BUDGET))
             mNavController.navigate(R.id.action_nav_home_to_nav_budget);
+        else if (message != null && message.equals(MOVE_TO_ADD_INCOME))
+            mNavController.navigate(R.id.actionAddIncomeFragment);
         else
             Toast.makeText(this,
                     "This message isn't understood.", Toast.LENGTH_SHORT)
