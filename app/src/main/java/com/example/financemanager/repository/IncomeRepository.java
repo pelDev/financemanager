@@ -1,9 +1,7 @@
 package com.example.financemanager.repository;
 
 
-import android.app.Application;
 import android.content.Context;
-import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
@@ -17,9 +15,9 @@ import java.util.concurrent.Executors;
 
 public class IncomeRepository {
 
-    private IncomeDao mIncomeDao;
+    private final IncomeDao mIncomeDao;
 
-    private LiveData<List<Income>> allIncomes;
+    private final LiveData<List<Income>> allIncomes;
 
     public LiveData<List<Income>> getAllIncomes() {
         return allIncomes;
@@ -53,7 +51,7 @@ public class IncomeRepository {
 
     public int getLastEntry() {
         try {
-            return executor.submit(() -> mIncomeDao.getLastEntry()).get();
+            return executor.submit(mIncomeDao::getLastEntry).get();
         } catch (Exception e) {
             e.printStackTrace();
             return -1;

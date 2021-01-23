@@ -1,6 +1,5 @@
 package com.example.financemanager.repository;
 
-import android.app.Application;
 import android.content.Context;
 
 import com.example.financemanager.database.FinanceManagerRoomDb;

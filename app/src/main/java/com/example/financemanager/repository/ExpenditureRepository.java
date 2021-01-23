@@ -1,17 +1,17 @@
 package com.example.financemanager.repository;
 
-import android.app.Application;
-import android.os.AsyncTask;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.financemanager.database.FinanceManagerRoomDb;
-import com.example.financemanager.database.budget.Budget;
 import com.example.financemanager.database.expense.Expenditure;
 import com.example.financemanager.database.expense.ExpenditureDao;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExpenditureRepository {
 
@@ -31,76 +31,32 @@ public class ExpenditureRepository {
 
     public MutableLiveData<List<Expenditure>> getSearchResults() { return expenseSearchResults; }
 
-    public ExpenditureRepository(Application application) {
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    public ExpenditureRepository(Context context) {
         FinanceManagerRoomDb db =
-                FinanceManagerRoomDb.getDatabase(application);
+                FinanceManagerRoomDb.getDatabase(context);
         mExpenditureDao = db.expenditureDao();
         allExpenditures = mExpenditureDao.getAllExpenditures();
         latestTenExpenditure = mExpenditureDao.get10Expenditures();
     }
 
     public void insertExpenditure(Expenditure newExpenditure) {
-        InsertAsyncTask task = new InsertAsyncTask(mExpenditureDao);
-        task.execute(newExpenditure);
+        executor.execute(() -> mExpenditureDao.insertExpenditure(newExpenditure));
     }
 
     public void deleteExpenditure(int id) {
-        DeleteAsyncTask task = new DeleteAsyncTask(mExpenditureDao);
-        task.execute(id);
+        executor.execute(() -> mExpenditureDao.deleteExpenditure(id));
     }
 
     public void findExpenditure(String expenditureName) {
-        QueryAsyncTask task = new QueryAsyncTask(mExpenditureDao);
-        task.delegate = this;
-        task.execute(expenditureName);
-    }
-
-    private void asyncFinished(List<Expenditure> results) {
-        expenseSearchResults.setValue(results);
-    }
-
-    // async task to search for expenditure by name
-    private static class QueryAsyncTask extends
-            AsyncTask<String, Void, List<Expenditure>> {
-        private ExpenditureDao asyncTaskDao;
-        private ExpenditureRepository delegate = null;
-        QueryAsyncTask(ExpenditureDao dao) {
-            asyncTaskDao = dao;
-        }
-        @Override
-        protected List<Expenditure> doInBackground(final String... params) {
-            return asyncTaskDao.findExpenditureByName(params[0]);
-        }
-        @Override
-        protected void onPostExecute(List<Expenditure> result) {
-            delegate.asyncFinished(result);
+        try {
+            List<Expenditure> searchResults =
+                    executor.submit(() -> mExpenditureDao
+                            .findExpenditureByName(expenditureName)).get();
+            expenseSearchResults.setValue(searchResults);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-    // async task to input expenditure into the database
-    private static class InsertAsyncTask extends AsyncTask<Expenditure, Void, Void> {
-        private final ExpenditureDao asyncTaskDao;
-        InsertAsyncTask(ExpenditureDao dao) {
-            asyncTaskDao = dao;
-        }
-        @Override
-        protected Void doInBackground(final Expenditure... params) {
-            asyncTaskDao.insertExpenditure(params[0]);
-            return null;
-        }
-    }
-
-    // async task to delete expenditure from the database by id
-    private static class DeleteAsyncTask extends AsyncTask<Integer, Void, Void> {
-        private ExpenditureDao asyncTaskDao;
-        DeleteAsyncTask(ExpenditureDao dao) {
-            asyncTaskDao = dao;
-        }
-        @Override
-        protected Void doInBackground(final Integer... params) {
-            asyncTaskDao.deleteExpenditure(params[0]);
-            return null;
-        }
-    }
-
 }
