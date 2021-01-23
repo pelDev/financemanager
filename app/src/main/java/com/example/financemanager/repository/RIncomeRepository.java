@@ -18,7 +18,7 @@ public class RIncomeRepository {
         mRIncomeDao = db.rIncomeDao();
     }
 
-    private RIncomeDao mRIncomeDao;
+    private final RIncomeDao mRIncomeDao;
 
     public static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -30,6 +30,14 @@ public class RIncomeRepository {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void updateRIncome(RecurrentIncome rIncome) {
+        executor.execute(() -> mRIncomeDao.update(rIncome));
+    }
+
+    public void deleteRIncome(RecurrentIncome rIncome) {
+        executor.execute(() -> mRIncomeDao.delete(rIncome));
     }
 
     public void insertRIncome(RecurrentIncome recurrentIncome) {

@@ -20,10 +20,17 @@ import com.example.financemanager.database.recurrentIncome.RecurrentIncome;
 import com.example.financemanager.repository.IncomeRepository;
 import com.example.financemanager.repository.RIncomeRepository;
 
+import java.util.Calendar;
+
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static android.app.PendingIntent.getActivity;
+import static android.app.PendingIntent.getService;
 import static com.example.financemanager.Constants.DESTINATION_FRAGMENT;
 import static com.example.financemanager.Constants.INCOME_WORKER_NAME;
 import static com.example.financemanager.Constants.KEY_WORKER_NAME;
 import static com.example.financemanager.Constants.MOVE_TO_ADD_INCOME;
+import static com.example.financemanager.notifiaction.YesOrNoService.ACTION_NO;
+import static com.example.financemanager.notifiaction.YesOrNoService.ACTION_YES;
 
 public class RecurrentIncomeWorker extends Worker {
 
@@ -31,10 +38,10 @@ public class RecurrentIncomeWorker extends Worker {
         super(context, workerParams);
     }
 
-    private static final int NOTIFICATION_ID = 2;
+    public static final int NOTIFICATION_ID = 2;
     private static final String INCOME_HELPER = "income-helper";
 
-    public void makeIncomeNotification(String name) {
+    public void makeIncomeNotification(String name, String incomeWorkName) {
         // Make a channel if necessary
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create the NotificationChannel, but only on API 26+ because
@@ -59,13 +66,31 @@ public class RecurrentIncomeWorker extends Worker {
         intent.putExtra(DESTINATION_FRAGMENT, MOVE_TO_ADD_INCOME);
 
         PendingIntent pendingIntent =
-                PendingIntent.getActivity(getApplicationContext(),
-                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                getActivity(getApplicationContext(),
+                        0, intent, FLAG_UPDATE_CURRENT);
+
+        // create pending intent for actions
+        Intent yesIntent = new Intent(getApplicationContext(), YesOrNoService.class);
+        yesIntent.putExtra(KEY_WORKER_NAME, incomeWorkName);
+        yesIntent.setAction(ACTION_YES);
+        PendingIntent yesPendingIntent = getService(
+                getApplicationContext(), 1,yesIntent, FLAG_UPDATE_CURRENT
+        );
+
+        Intent noIntent = new Intent(getApplicationContext(), YesOrNoService.class);
+        noIntent.putExtra(KEY_WORKER_NAME, incomeWorkName);
+        noIntent.setAction(ACTION_NO);
+        PendingIntent noPendingIntent = getService(
+                getApplicationContext(), 2, noIntent, FLAG_UPDATE_CURRENT
+        );
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), INCOME_HELPER)
                 .setSmallIcon(R.drawable.ic_action_income)
                 .setContentTitle("Reminder")
                 .setContentText("Have you received your " + name + " income?")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .addAction(0, "Yes", yesPendingIntent)
+                .addAction(0, "No", noPendingIntent)
                 .setVibrate(new long[0])
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
@@ -97,8 +122,39 @@ public class RecurrentIncomeWorker extends Worker {
             RecurrentIncome recurrentIncome =
                     rIncomeRepository.getRIncome(incomeWorkName);
 
-            if (recurrentIncome.getFrequency().equals("Daily")) {
-                makeIncomeNotification(incomeName);
+            switch (recurrentIncome.getFrequency()) {
+                case "Daily":
+                    if (recurrentIncome.getStartDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+                        makeIncomeNotification(incomeName, incomeWorkName);
+                    break;
+                case "Weekly":
+                    if (recurrentIncome.getDaysPassed() == 6) {
+                        makeIncomeNotification(incomeName, incomeWorkName);
+                    } else {
+                        recurrentIncome.setDaysPassed(recurrentIncome.getDaysPassed() + 1);
+                        rIncomeRepository.updateRIncome(recurrentIncome);
+                    }
+                    break;
+                case "Monthly":
+                    int month = Calendar.getInstance().get(Calendar.MONTH);
+                    int startDay = recurrentIncome.getStartDay();
+                    int daysPassed = recurrentIncome.getDaysPassed();
+                    int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+                    if (startDay > 28 && daysPassed >= 27 && month == Calendar.FEBRUARY
+                            && today >= 28) {
+                        makeIncomeNotification(incomeName, incomeWorkName);
+                    } else if (startDay == 31 && daysPassed == 29) {
+                        if (month == Calendar.APRIL || month == Calendar.JUNE
+                                || month == Calendar.SEPTEMBER || month == Calendar.NOVEMBER) {
+                            makeIncomeNotification(incomeName, incomeWorkName);
+                        }
+                    } else if (daysPassed > 0 && today == startDay) {
+                        makeIncomeNotification(incomeName, incomeWorkName);
+                    } else {
+                        recurrentIncome.setDaysPassed(recurrentIncome.getDaysPassed() + 1);
+                        rIncomeRepository.updateRIncome(recurrentIncome);
+                    }
+                    break;
             }
             return Result.success();
         }

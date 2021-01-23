@@ -18,7 +18,6 @@ import com.example.financemanager.notifiaction.RecurrentIncomeWorker;
 import com.example.financemanager.repository.IncomeRepository;
 import com.example.financemanager.repository.RIncomeRepository;
 
-import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +25,9 @@ import java.util.concurrent.TimeUnit;
 
 import static com.example.financemanager.Constants.INCOME_WORKER_NAME;
 import static com.example.financemanager.Constants.KEY_WORKER_NAME;
+import static com.example.financemanager.Shared.createInputDataForWorkName;
+import static com.example.financemanager.Shared.getMonthFromInt;
+import static com.example.financemanager.Shared.logInfo;
 
 public class NetIncomeViewModel extends AndroidViewModel {
 
@@ -54,6 +56,7 @@ public class NetIncomeViewModel extends AndroidViewModel {
     private void updateIncome() {
         if (validateForm()) {
             if (income != null) {
+                income.setName(incomeName.getValue());
                 income.setAmount(Integer.parseInt(incomeAmount.getValue()));
                 income.setRecurrent(isRecurrent.getValue());
                 mRepository.updateIncome(income);
@@ -106,11 +109,11 @@ public class NetIncomeViewModel extends AndroidViewModel {
     }
 
     private void setUpIncomeForRecurrentWork(int incomeId) {
-        logInfo("Setting up income " + incomeId + " for recurrent work!");
+        logInfo(TAG,"Setting up income " + incomeId + " for recurrent work!");
         // check if recurrent work already exists
         RecurrentIncome work = mRIncomeRepository.getRIncome("income-worker" + incomeId);
         if (work != null) {
-            logInfo("Recurrent work for " + incomeId + " already exists.");
+            logInfo(TAG,"Recurrent work for " + incomeId + " already exists.");
             return;
         }
         int interval;
@@ -142,25 +145,25 @@ public class NetIncomeViewModel extends AndroidViewModel {
         // add reference to database
         RecurrentIncome recurrentIncome =
                 new RecurrentIncome(INCOME_WORKER_NAME + incomeId,
-                        0, intervalString);
+                        0, intervalString, Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
         mRIncomeRepository.insertRIncome(recurrentIncome);
 
-        logInfo(recurrentIncome.getWorkerName() +
+        logInfo(TAG,recurrentIncome.getWorkerName() +
                 " has been queued for a " + intervalString + " interval.");
     }
 
-    private Data createInputDataForWorkName(int id) {
-        Data.Builder builder = new Data.Builder();
-        builder.putString(KEY_WORKER_NAME, INCOME_WORKER_NAME + id);
-        return builder.build();
-    }
-
-    private void logInfo(String s) {
-        Log.i(TAG, s);
-    }
-
     private void removeIncomeFromRecurrentWork(int incomeId) {
-        logInfo("Removing income " + incomeId + " from recurrent work!");
+        logInfo(TAG, "Removing income " + incomeId + " from recurrent work!");
+        // cancel work related to income
+        WorkManager.getInstance(getApplication().getApplicationContext())
+                .cancelUniqueWork(INCOME_WORKER_NAME + incomeId);
+        // remove reference from database
+        RecurrentIncome recurrentIncome = mRIncomeRepository
+                .getRIncome(INCOME_WORKER_NAME + incomeId);
+        if (recurrentIncome != null)
+            mRIncomeRepository.deleteRIncome(recurrentIncome);
+
+        logInfo(TAG, "Removed income " + incomeId + " from recurrent work!");
     }
 
     public NetIncomeViewModel(@NonNull Application application) {
@@ -192,13 +195,4 @@ public class NetIncomeViewModel extends AndroidViewModel {
         return invalidAmount;
     }
 
-    private String getMonthFromInt(int month) {
-        String monthString = "";
-        DateFormatSymbols dfs = new DateFormatSymbols();
-        String[] months = dfs.getMonths();
-        if (month >= 0 && month <= 11) {
-            monthString = months[month];
-        }
-        return monthString;
-    }
 }
