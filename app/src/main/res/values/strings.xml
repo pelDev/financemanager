@@ -17,11 +17,53 @@
     <string name="label_budget_category">Budget Category</string>
     <string name="label_budget_amount">Budgeted Amount</string>
     <string name="budget_screen_title">Add Budget</string>
-    <string name="add_income_button">Add Income</string>
+    <string name="add_income_button">Save</string>
     <string name="net_income_hint">10,000</string>
     <string name="empty_recycler_message">Data Set is Currently Empty</string>
     <string name="menu_card">Cards</string>
     <string name="card_activity_title">Cards</string>
     <string name="add_card_button">+ Add Card</string>
     <string name="addcard_activity_title">Add Card</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_transactions">Transactions</string>
+    <string name="title_tansaction_activity">Transactions</string>
+    <string name="amount_to_deposit_title">Amount to Deposit</string>
+    <string name="amount_to_deposit_view">3,000</string>
+    <string name="name_of_currency">NGN</string>
+    <string name="fixed_deposit_amount_1">NGN5,000</string>
+    <string name="fixed_deposit_amount_2">NGN10,000</string>
+    <string name="fixed_deposit_amount_3">NGN20,000</string>
+    <string name="fixed_deposit_amount_4">NGN25,000</string>
+    <string name="fixed_deposit_amount_5">NGN50,000</string>
+    <string name="fixed_deposit_amount_6">NGN100,000</string>
+    <string name="custom_amount_text_view">Add Custom Amount</string>
+    <string name="add_income_action_text">Add Income</string>
+    <string name="add_expense_action_text">Add Expense</string>
+    <string name="hint_expense_name">Expense Name</string>
+    <string name="hint_expense_amount">Amount</string>
+    <string name="button_add_expense">Save</string>
+    <string name="add_budget_action_text">Add Budget</string>
+    <string name="hint_income_amount">Income Amount</string>
+    <string name="hint_budget_amount">Budget Amount</string>
+    <string name="hint_expense_description">Description</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="is_income_recurrent">Is income recurrent?</string>
+    <string name="button_add_budget">Save</string>
+    <string name="hint_income_name">Income Name</string>
 </resources>

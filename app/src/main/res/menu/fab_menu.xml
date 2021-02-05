@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fab_add_income"
+        android:icon="@drawable/ic_action_income"
+        android:title="Add Income" />
+
+    <item
+        android:id="@+id/fab_add_expense"
+        android:icon="@drawable/ic_action_expenditure"
+        android:title="Add Expense" />
+
+    <item
+        android:id="@+id/fab_add_budget"
+        android:icon="@drawable/ic_budget"
+        android:title="Add Budget" />
+</menu>
