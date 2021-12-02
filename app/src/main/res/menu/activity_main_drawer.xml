@@ -14,12 +14,8 @@
             android:title="@string/menu_budget" />
         <item
             android:id="@+id/nav_todo"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_todo"
             android:title="@string/menu_todo" />
-        <item
-            android:id="@+id/nav_card"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_card" />
     </group>
 
     <item

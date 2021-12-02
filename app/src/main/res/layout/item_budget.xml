@@ -44,7 +44,6 @@
             android:text="dbhdcb"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textViewG"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
